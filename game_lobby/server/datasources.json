@@ -1,0 +1,12 @@
+{
+  "glmDS": {
+    "host": "localhost",
+    "port": 27017,
+    "url": "",
+    "database": "glmDB",
+    "password": "",
+    "name": "glmDS",
+    "user": "kjapp_dev",
+    "connector": "mongodb"
+  }
+}
