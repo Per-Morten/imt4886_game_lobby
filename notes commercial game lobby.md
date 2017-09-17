@@ -41,7 +41,7 @@ For example if “Minimum Players” is set to 2:
 Examples of virtual function callbacks that  can be used for custom lobby behaviour
 
 ```
-	public virtual void OnClientEnterLobby();
+    public virtual void OnClientEnterLobby();
     public virtual void OnClientExitLobby();
     public virtual void OnClientReady(bool readyState);
 ```
