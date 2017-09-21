@@ -2,7 +2,7 @@
   "name": "kjapp_gl",
   "version": "1.0.0",
   "description": "Game lobby system for NTNU Gjøvik, developed by the kjapp group.",
-  "main": "index.js",
+  "main": "DEBUG=App:* nodemon index.js",
   "scripts": {
     "test": "ava",
     "doc": "./node_modules/apidoc/bin/apidoc -i app/controllers -o documentation/api"
@@ -25,6 +25,12 @@
   },
   "dependencies": {
     "body-parser": "^1.18.1",
+    "debug": "^3.0.1",
+    "eslint": "^4.7.2",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.3.0",
     "express": "^4.15.4",
     "mongoose": "^4.11.12",
     "morgan": "^1.8.2"
