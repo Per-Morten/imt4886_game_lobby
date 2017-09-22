@@ -1,7 +1,7 @@
 const MatchModel = require('../models/Match');
 
 module.exports = (api) => {
-  api.route('/matches')
+  api.route('/')
     .get((req, res) => {
       MatchModel.getAll()
         .then(list => res.json(list))

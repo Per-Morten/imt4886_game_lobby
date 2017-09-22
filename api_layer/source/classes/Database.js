@@ -7,10 +7,9 @@ class Database {
     this.mongoose = mongoose;
     this.mongoose.Promise = global.Promise;
 
-    this.mongoose.connection.on('connected', this.onConnected);
-    this.mongoose.connection.on('disconnected', this.onDisconnect);
+    this.mongoose.connection.on('connected', this.onConnect);
+    this.mongoose.connection.on('disconnect', this.onDisconnect);
     this.mongoose.connection.on('error', this.onError);
-    this.debug = debug;
   }
 
   connect() {
@@ -18,16 +17,16 @@ class Database {
     return this.mongoose;
   }
 
-  onConnected() {
-    this.debug('Kjapp:server')(`Mongoose connected with uri ${dbConfig.uri}`);
+  onConnect() {
+    debug('Kjapp:server')(`Mongoose connected with uri ${dbConfig.uri}`);
   }
 
   onDisconnect() {
-    this.console.log('Server disconnected');
+    console.log('Server disconnected');
   }
 
   onError() {
-    this.console.log('Error');
+    console.log('Error');
   }
 }
 

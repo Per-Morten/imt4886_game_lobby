@@ -19,32 +19,33 @@ class Server {
 
     this.server = http.createServer(App);
     this.server.on('error', this.onError);
-    this.server.on('Listening', this.onListening);
+    this.server.on('listening', this.onListening);
+
 
     this.server.listen(this.port);
     return this.server;
   }
 
   normalizePort(val) {
-    let port = (typeof val === 'string') ? parseInt(val, 10) : val;
+    const port = (typeof val == 'string') ? parseInt(val, 10) : val;
     if (isNaN(port)) {
       return val;
     } else if (port >= 0) { // TODO change to relevant range
-      return this.port;
+      return port;
     } else {
       return false;
     }
   }
 
   onListening() {
-    const addr = this.server.adress();
-    const bind = (typeof this.port === 'string') ? `Pipe ${addr}` : `Port ${addr.port}`
+    const addr = this.server.address();
+    const bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`
     debug('Kjapp:server')(`Listening on ${bind}`);
   }
 
   onError(error) {
     if (error.syscall !== 'listen') throw error;
-    const bind = (typeof this.port === 'string') ? `Pipe ${this.port}` : `Port ${this.port}`;
+    const bind = (typeof this.port === 'string') ? `pipe ${this.port}` : `port ${this.port}`;
     switch (error.code) {
       case 'EACCES':
         console.error(`${bind} requires elevated privileges`);

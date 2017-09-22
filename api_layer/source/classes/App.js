@@ -2,7 +2,6 @@ const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const serverMiddleware = require('../middleware/server');
-
 const apiRoutes = require('../controllers');
 
 class App {
