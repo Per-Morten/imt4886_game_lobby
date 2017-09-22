@@ -29,38 +29,38 @@ test.cb.beforeEach((t) => {
     MatchModel.remove({}, () => t.end());
 });
 
-test.serial('Create a new user', async (t) => {
+test.serial('Create a new match', async (t) => {
     t.plan(2);
 
     const p = await MatchModel.create(Object.assign({}, match));
     if (p) {
         t.pass();
     } else {
-        t.fail('Could not create the user');
+        t.fail('Could not create the match');
     }
 
     const p2 = await MatchModel.find({ _id: p._id }).exec();
     if (p2) {
         t.pass();
     } else {
-        t.fail('Could not find created user');
+        t.fail('Could not find created match');
     }
 });
 
-test.serial('Find user by id', async (t) => {
+test.serial('Find match by id', async (t) => {
     t.plan(2);
 
     const p = await MatchModel.create(Object.assign({}, match));
     if (p) {
         t.pass();
     } else {
-        t.fail('Could not create the user');
+        t.fail('Could not create the match');
     }
 
     const p2 = await MatchModel.findById(p._id).exec();
     if (p2) {
         t.pass();
     } else {
-        t.fail('Could not find the created user');
+        t.fail('Could not find the created match');
     }
 });
