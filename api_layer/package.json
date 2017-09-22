@@ -2,8 +2,9 @@
   "name": "kjapp_gl",
   "version": "1.0.0",
   "description": "Game lobby system for NTNU Gjøvik, developed by the kjapp group.",
-  "main": "DEBUG=App:* nodemon index.js",
+  "main": "index.js",
   "scripts": {
+    "start": "DEBUG=Kjapp:* nodemon index.js",
     "test": "ava",
     "doc": "./node_modules/apidoc/bin/apidoc -i app/controllers -o documentation/api"
   },

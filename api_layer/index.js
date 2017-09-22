@@ -3,7 +3,7 @@ const Server = require('./source/classes/Server');
 const Database = require('./source/classes/Database');
 
 if (!module.parent) {
-  Database.connect();
+    Database.connect();
 }
 
 debug('Kjapp:server')('starting');
