@@ -32,33 +32,30 @@ test.cb.after((t) => {
     });
 });
 
-let gTestMatch1 = null;
-let gTestMatch2 = null;
-
 test.cb.beforeEach((t) => {
     MatchModel.remove({}, () => {
-        MatchModel.create(Object.assign({}, testMatch1))
-        .then(match => {
-            if (match) {
-                gTestMatch1 = match;
-                t.end()
-            }
-        })
-        .catch(err => t.fail(`Failed beforeEach with error ${err}`));
+        let promises = [
+            MatchModel.create(Object.assign({}, testMatch1)),
+            MatchModel.create(Object.assign({}, testMatch2))
+        ];
+        Promise.all(promises)
+            .then(matches => {
+                if(matches[0] && matches[1]) {
+                    t.context.matches = matches;
+                    t.end();
+                }
+            }).catch(err => console.log(err))
     });
 });
 
 const server = require('../../classes/App');
 
 test.serial('Should return a match', async(t) => {
-    if (!gTestMatch1)
-        t.fail('No new match');
-
     const retObject = ['gameToken', 'status', 'hostIP', 'hostPort', '_id', '__v'];
     t.plan(retObject.length + 1);
 
     await request(server)
-        .get('/Match/' + gTestMatch1._id)
+        .get('/Match/' + t.context.matches[0]._id)
         .expect(200)
         .then(response => {
             Object.entries(response.body).forEach(
@@ -77,44 +74,33 @@ test.serial('Should return a match', async(t) => {
 });
 
 test.serial('Delete a match', async(t) => {
-    if (!gTestMatch1)
-        t.fail('No new match was created');
-
-    MatchModel.create(Object.assign({}, testMatch2))
-    .then(match => {
-        if (match) {
-            gTestMatch2 = match;
-        }
-    })
-    .catch(err => t.fail(`Failed to create gTestMatch2 with error ${err}`));
-
-    const id = gTestMatch1._id;
+    let matches = t.context.matches;
 
     await request(server)
-        .delete('/Match/' + gTestMatch1._id)
+        .get('/Match/' + matches[0]._id)
         .expect(200)
-        .then(() => {})
         .catch(err => t.fail(err));
 
     await request(server)
+        .delete('/Match/' + matches[0]._id)
         .expect(204)
         .catch(err => t.fail(err));
+
+    await request(server)
+        .get('/Match/' + matches[0]._id)
         .expect(404)
-        .then(res => {})
         .catch(err => t.fail(err));
 
     await request(server)
-        .delete('/Match/' + gTestMatch1._id)
+        .delete('/Match/' + matches[0]._id)
         .expect(404)
-        .then(() => {})
         .catch(err => t.fail(err));
 
-    const retObject = ['gameToken', 'status', 'hostIP', 'hostPort', '_id', '__v'];
     await request(server)
-        .get('/Match/' + gTestMatch2._id)
+        .get('/Match/' + matches[1]._id)
         .expect(200)
-        .then(() => {})
         .catch(err => t.fail(err));
+
 
     t.pass();
 });
