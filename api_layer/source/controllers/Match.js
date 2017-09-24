@@ -18,9 +18,8 @@ module.exports = (api) => {
        .delete((req, res) => {
             const id = req.params.id;
             MatchModel.findByIdAndRemove(id, (err, match) => {
-                const errc = (match) ? 200 : 202;
-                const val = (match) ? match : {};
-                res.status(errc).json(val);
+                const errc = (match) ? 204 : 404;
+                res.status(errc).send();
             })
             .catch(err => res.status(500).json(errors.ERROR_500));
        });

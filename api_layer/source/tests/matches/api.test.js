@@ -97,7 +97,8 @@ test.serial('Delete a match', async(t) => {
         .catch(err => t.fail(err));
 
     await request(server)
-        .get('/Match/' + gTestMatch1._id)
+        .expect(204)
+        .catch(err => t.fail(err));
         .expect(404)
         .then(res => {})
         .catch(err => t.fail(err));
