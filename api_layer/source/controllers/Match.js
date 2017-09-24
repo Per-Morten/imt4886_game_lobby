@@ -14,6 +14,29 @@ module.exports = (api) => {
             .catch(err => res.status(500).json(errors.ERROR_500));
        });
 
+    /**
+     * @api {delete} /Match/:id Delete the specified match
+     * @apiName DeleteMatch
+     * @apiGroup Match
+     * @apiDescription
+     *  Deletes the match with the requested id.
+     *  Returns 204 on success,
+     *  404 if the match with requested id couldn't be found.
+     *
+     * @apiParam {Id} id The unique ID of the match.
+     *
+     * @apiSuccess (204) Success
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 204 OK
+     *     {}
+     *
+     * @apiError (404) MatchNotFound The supplied ID was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {}
+     */
     api.route('/Match/:id')
        .delete((req, res) => {
             const id = req.params.id;
