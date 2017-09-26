@@ -9,7 +9,7 @@ module.exports = (api) => {
         });
 
     /**
-     * @api {get} /Match/:gameToken Request matches with given gameToken
+     * @api {get} /match/:gameToken Request matches with given gameToken
      * @apiName GetMatches
      * @apiGroup Matches
      * @apiDescription
