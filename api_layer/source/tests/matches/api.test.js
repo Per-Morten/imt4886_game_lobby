@@ -60,7 +60,7 @@ const server = require('../../classes/App');
 
 test.serial('Returning matches with given gameToken: test', async(t) => {
     await request(server)
-        .get('/Matches/' + t.context.matches[0].gameToken)
+        .get('/matches/' + t.context.matches[0].gameToken)
         .expect(200)
         .then(response => {
             if(response.body.length != 2) {
