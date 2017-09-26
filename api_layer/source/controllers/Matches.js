@@ -20,7 +20,7 @@ module.exports = (api) => {
      * @apiSuccess (200) Success
      *
      */
-    api.route('/Matches/:gameToken')
+    api.route('/matches/:gameToken')
          .get((req, res) => {
             MatchModel.findByToken(req.params.gameToken)
                 .then(list => res.json(list))
