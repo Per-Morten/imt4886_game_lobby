@@ -21,7 +21,7 @@ public class KJAPPNetworkManager : NetworkManager
 
         StartClient();
     }
-
+    
     public void RequestMatches()
     {
         StartCoroutine(FetchMatches());
@@ -29,10 +29,10 @@ public class KJAPPNetworkManager : NetworkManager
 
     private IEnumerator UploadMatch()
     {
-        Match matchPOSTData = new Match(gameToken, 0, networkAddress, networkPort);
+        var matchPOSTData = new Match(gameToken, 0, networkAddress, networkPort);
 
         // https://forum.unity.com/threads/unitywebrequest-post-url-jsondata-sending-broken-json.414708/
-        UnityWebRequest webRequest = UnityWebRequest.Put(apiUrl + "/Match/" + gameToken, JsonUtility.ToJson(matchPOSTData) ?? "");
+        var webRequest = UnityWebRequest.Put(apiUrl + "/Match/" + gameToken, JsonUtility.ToJson(matchPOSTData) ?? "");
         webRequest.SetRequestHeader("Content-Type", "application/json");
         yield return webRequest.Send();
 
@@ -49,7 +49,7 @@ public class KJAPPNetworkManager : NetworkManager
     private IEnumerator FetchMatches()
     {
         // https://docs.unity3d.com/Manual/UnityWebRequest-RetrievingTextBinaryData.html
-        UnityWebRequest webRequest = UnityWebRequest.Get(apiUrl + "/Matches/" + gameToken);
+        var webRequest = UnityWebRequest.Get(apiUrl + "/Matches/" + gameToken);
 
         yield return webRequest.Send();
 
@@ -59,8 +59,8 @@ public class KJAPPNetworkManager : NetworkManager
         }
         else
         {
-            string jsonString = webRequest.downloadHandler.text;
-            Match[] matches = JsonHelper.getJsonArray<Match>(jsonString);
+            var jsonString = webRequest.downloadHandler.text;
+            var matches = JsonHelper.getJsonArray<Match>(jsonString);
             GameObject.FindGameObjectWithTag("UIHandler").GetComponent<UIHandler>().DisplayMatches(matches);
         }
     }
