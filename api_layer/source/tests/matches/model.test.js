@@ -64,3 +64,8 @@ test.serial('Find match by id', async (t) => {
         t.fail('Could not find the created match');
     }
 });
+
+// test.serial('Update status field', async (t) =>  {
+//     t.plan();
+
+// })
