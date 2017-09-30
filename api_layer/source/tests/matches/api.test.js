@@ -55,7 +55,7 @@ test.serial('Should return a match', async(t) => {
     t.plan(retObject.length + 1);
 
     await request(server)
-        .get('/Match/' + t.context.matches[0]._id)
+        .get('/match/' + t.context.matches[0]._id)
         .expect(200)
         .then(response => {
             Object.entries(response.body).forEach(

@@ -64,8 +64,8 @@ test.serial('Find match by id', async (t) => {
         t.fail('Could not create the match');
     }
 
-    const p2 = await MatchModel.findById(p._id).exec();
-    if (p2) {
+    const p2 = await MatchModel.findMatch(p._id);
+    if (p2.code == 200) {
         t.pass();
     } else {
         t.fail('Could not find the created match');

@@ -39,13 +39,10 @@ module.exports = (api) => {
      */
     api.route('/match/:id')
        .get((req, res) => {
-            let id = req.params.id;
-            MatchModel.findById(id, (err, match) => {
-                    const errc = (match) ? 200 : 404;
-                    const val = (match) ? match : {};
-                    res.status(errc).json(match);
-            })
-            .catch(err => res.status(500).json(errors.ERROR_500));
+            const id = req.params.id;
+            MatchModel.findMatch(id)
+            .then(out => res.status(out.code).json(out.match))
+            .catch(err => res.status(err.code).json(err));
        });
 
     /**

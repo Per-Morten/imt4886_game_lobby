@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const errors = require('../utility/error');
+
 
 const MatchSchema = mongoose.Schema({
     gameToken: {
@@ -24,6 +26,17 @@ MatchSchema.statics.findByToken = function (gameToken) {
         this.find({ gameToken }).exec()
             .then(match => resolve(match))
             .catch(err => reject(err));
+    });
+};
+
+MatchSchema.statics.findMatch = function(id) {
+    return new Promise((resolve, reject) => {
+        this.findById(id).exec()
+            .then(match => {
+                const code = (match) ? 200 : 404;
+                resolve({code, match});
+            })
+            .catch(err => reject(errors.ERROR_500))
     });
 };
 
