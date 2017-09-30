@@ -46,7 +46,7 @@ module.exports = (api) => {
        });
 
     /**
-     * @api {delete} /Match/:id Delete the specified match
+     * @api {delete} /match/:id Delete the specified match
      * @apiName DeleteMatch
      * @apiGroup Match
      * @apiDescription
@@ -68,13 +68,11 @@ module.exports = (api) => {
      *     HTTP/1.1 404 Not Found
      *     {}
      */
-    api.route('/Match/:id')
+    api.route('/match/:id')
        .delete((req, res) => {
             const id = req.params.id;
-            MatchModel.findByIdAndRemove(id, (err, match) => {
-                const errc = (match) ? 204 : 404;
-                res.status(errc).send();
-            })
-            .catch(err => res.status(500).json(errors.ERROR_500));
+            MatchModel.deleteMatch(id)
+            .then(out => res.status(out.code).send())
+            .catch(err => res.status(err.code).json(err));
        });
 }

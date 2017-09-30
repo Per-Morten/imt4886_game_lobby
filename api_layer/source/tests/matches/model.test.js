@@ -82,9 +82,9 @@ test.serial('Delete match', async (t) => {
         t.fail('Could not create the matches');
     }
 
-    await MatchModel.remove({ _id: m2._id }, () => {});
-    const test1 = await MatchModel.findById(m2._id);
-    if (!test1) {
+    await MatchModel.deleteMatch(m2._id);
+    const test1 = await MatchModel.findMatch(m2._id);
+    if (test1.code == 404) {
         t.pass();
     } else {
         t.fail('Did not delete the match');

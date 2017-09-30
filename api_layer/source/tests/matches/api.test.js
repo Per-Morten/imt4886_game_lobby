@@ -76,28 +76,29 @@ test.serial('Should return a match', async(t) => {
 test.serial('Delete a match', async(t) => {
     let matches = t.context.matches;
 
+    console.log("Test start");
     await request(server)
-        .get('/Match/' + matches[0]._id)
+        .get('/match/' + matches[0]._id)
         .expect(200)
         .catch(err => t.fail(err));
 
     await request(server)
-        .delete('/Match/' + matches[0]._id)
+        .delete('/match/' + matches[0]._id)
         .expect(204)
         .catch(err => t.fail(err));
 
     await request(server)
-        .get('/Match/' + matches[0]._id)
+        .get('/match/' + matches[0]._id)
         .expect(404)
         .catch(err => t.fail(err));
 
     await request(server)
-        .delete('/Match/' + matches[0]._id)
+        .delete('/match/' + matches[0]._id)
         .expect(404)
         .catch(err => t.fail(err));
 
     await request(server)
-        .get('/Match/' + matches[1]._id)
+        .get('/match/' + matches[1]._id)
         .expect(200)
         .catch(err => t.fail(err));
 
