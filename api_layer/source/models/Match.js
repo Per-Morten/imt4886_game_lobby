@@ -22,7 +22,7 @@ const MatchSchema = mongoose.Schema({
 MatchSchema.statics.findByToken = function (gameToken) {
     return new Promise((resolve, reject) => {
         this.find({ gameToken }).exec()
-            .then(match => resolve(match))
+            .then(matches => resolve(matches))
             .catch(err => reject(err));
     });
 };

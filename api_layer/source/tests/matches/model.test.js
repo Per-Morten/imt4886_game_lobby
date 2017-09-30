@@ -12,6 +12,13 @@ const match = {
     hostPort: 3000,
 };
 
+const match2 = {
+    gameToken: 'Game 1',
+    status: 1,
+    hostIP: '127.0.0.1',
+    hostPort: 3000,
+};
+
 test.cb.before((t) => {
     db('match-model-test')
         .then(() => t.end())
@@ -62,5 +69,25 @@ test.serial('Find match by id', async (t) => {
         t.pass();
     } else {
         t.fail('Could not find the created match');
+    }
+});
+
+test.serial('Find matches with gameToken', async (t) => {
+    t.plan(2);
+
+    const m1 = await MatchModel.create(Object.assign({}, match));
+    const m2 = await MatchModel.create(Object.assign({}, match2));
+
+    if(m1 && m2) {
+        t.pass();
+    } else {
+        t.fail('Could not create the matches');
+    }
+
+    const test1 = await MatchModel.findByToken(m1.gameToken);
+    if(test1) {
+        t.pass();
+    } else {
+        t.fail('Did not find matches with given gameToken');
     }
 });
