@@ -1,6 +1,6 @@
 module.exports = {
     ERROR_500: {
-        code: 1,
+        code: 500,
         message: 'Error 500 internal server error',
     },
 
