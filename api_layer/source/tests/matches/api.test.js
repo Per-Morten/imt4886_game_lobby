@@ -4,6 +4,7 @@ const request = require('supertest');
 const MatchModel = require('../../models/Match');
 const db = require('../database');
 const mongoose = require('mongoose');
+const matchDesc = require('./match_desc');
 
 const testMatch1 = {
     gameToken: 'Game 1',
@@ -25,6 +26,8 @@ const testMatch3 = {
     hostIP: '127.0.0.1',
     hostPort: 3000,
 };
+
+const invalidId = '111111111111111111111111';
 
 test.cb.before((t) => {
     db('match-api-test')
@@ -69,8 +72,7 @@ const server = require('../../classes/App');
 /// Single Match Tests
 ///////////////////////////////////////////////////////////
 test.serial('Should create a match', async(t) => {
-    const retObject = ['gameToken', 'status', 'hostIP', 'hostPort', '_id', '__v'];
-    t.plan(retObject.length + 2);
+    t.plan(matchDesc.length + 2);
 
     const newMatch = {
         gameToken: 'Game 3',
@@ -87,7 +89,7 @@ test.serial('Should create a match', async(t) => {
         .then(response => {
             Object.entries(response.body).forEach(
                 ([key, value]) => {
-                    if (retObject.indexOf(key) === -1 || value === '') {
+                    if (matchDesc.indexOf(key) === -1 || value === '') {
                         t.fail(`Match returned invalid object name ${key} value ${value}`);
                     } else {
                         t.pass();
@@ -113,8 +115,7 @@ test.serial('Should create a match', async(t) => {
 })
 
 test.serial('Should return a match', async(t) => {
-    const retObject = ['gameToken', 'status', 'hostIP', 'hostPort', '_id', '__v'];
-    t.plan(retObject.length + 1);
+    t.plan(matchDesc.length + 1);
 
     await request(server)
         .get('/match/' + t.context.matches[0]._id)
@@ -122,7 +123,7 @@ test.serial('Should return a match', async(t) => {
         .then(response => {
             Object.entries(response.body).forEach(
                 ([key, value]) => {
-                    if (retObject.indexOf(key) === -1 || value === '') {
+                    if (matchDesc.indexOf(key) === -1 || value === '') {
                         t.fail(`Match returned invalid object name ${key} value ${value}`);
                     } else {
                         t.pass();
