@@ -36,6 +36,9 @@ test.cb.beforeEach((t) => {
     MatchModel.remove({}, () => t.end());
 });
 
+///////////////////////////////////////////////////////////
+/// Single Match Tests
+///////////////////////////////////////////////////////////
 test.serial('Create a new match', async (t) => {
     t.plan(2);
 
@@ -64,14 +67,43 @@ test.serial('Find match by id', async (t) => {
         t.fail('Could not create the match');
     }
 
-    const p2 = await MatchModel.findById(p._id).exec();
-    if (p2) {
+    const p2 = await MatchModel.findMatch(p._id);
+    if (p2.code == 200) {
         t.pass();
     } else {
         t.fail('Could not find the created match');
     }
 });
 
+test.serial('Delete match', async (t) => {
+    t.plan(3);
+    const m1 = await MatchModel.create(Object.assign({}, match));
+    const m2 = await MatchModel.create(Object.assign({}, match2));
+    if (m1 && m2) {
+        t.pass();
+    } else {
+        t.fail('Could not create the matches');
+    }
+
+    await MatchModel.deleteMatch(m2._id);
+    const test1 = await MatchModel.findMatch(m2._id);
+    if (test1.code == 404) {
+        t.pass();
+    } else {
+        t.fail('Did not delete the match');
+    }
+
+    const test2 = await MatchModel.findById(m1._id);
+    if (test2) {
+        t.pass();
+    } else {
+        t.fail('Deleted to many or wrong match!');
+    }
+});
+
+///////////////////////////////////////////////////////////
+/// Multiple Matches Tests
+///////////////////////////////////////////////////////////
 test.serial('Find matches with gameToken', async (t) => {
     t.plan(2);
 

@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "DEBUG=Kjapp:* nodemon index.js",
+    "debug": "DEBUG=Kjapp:* nodemon index.js --inspect --debug-brk",
     "test": "ava",
-    "doc": "./node_modules/apidoc/bin/apidoc -i app/controllers -o documentation/api"
+    "doc": "./node_modules/apidoc/bin/apidoc -i source/controllers -o doc/api"
   },
   "repository": {
     "type": "git",

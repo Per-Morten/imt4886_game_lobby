@@ -58,6 +58,66 @@ test.cb.beforeEach((t) => {
 
 const server = require('../../classes/App');
 
+///////////////////////////////////////////////////////////
+/// Single Match Tests
+///////////////////////////////////////////////////////////
+test.serial('Should return a match', async(t) => {
+    const retObject = ['gameToken', 'status', 'hostIP', 'hostPort', '_id', '__v'];
+    t.plan(retObject.length + 1);
+
+    await request(server)
+        .get('/match/' + t.context.matches[0]._id)
+        .expect(200)
+        .then(response => {
+            Object.entries(response.body).forEach(
+                ([key, value]) => {
+                    if (retObject.indexOf(key) === -1 || value === '') {
+                        t.fail(`Match returned invalid object name ${key} value ${value}`);
+                    } else {
+                        t.pass();
+                    }
+                }
+            )
+        })
+        .catch(err => t.fail(err));
+
+    t.pass();
+});
+
+test.serial('Delete a match', async(t) => {
+    let matches = t.context.matches;
+
+    await request(server)
+        .get('/match/' + matches[0]._id)
+        .expect(200)
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .delete('/match/' + matches[0]._id)
+        .expect(204)
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .get('/match/' + matches[0]._id)
+        .expect(404)
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .delete('/match/' + matches[0]._id)
+        .expect(404)
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .get('/match/' + matches[1]._id)
+        .expect(200)
+        .catch(err => t.fail(err));
+
+    t.pass();
+});
+
+///////////////////////////////////////////////////////////
+/// Multiple Matches Tests
+///////////////////////////////////////////////////////////
 test.serial('Returning matches with given gameToken: test', async(t) => {
     await request(server)
         .get('/matches/' + t.context.matches[0].gameToken)
