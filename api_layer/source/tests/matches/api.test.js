@@ -73,11 +73,12 @@ test.serial('Should return a match', async(t) => {
     t.pass();
 });
 
-test.serial('Should be able to start match'. async(t) => {
+test.serial('Should be able to start match', async(t) => {
 
     await request(server)
         .put('/Match/' + t.context.matches[0]._id + '/' + t.context.matches[0]._status)
         .expect(204)
         .catch(err => t.fail(err));
+        t.pass();
 
 })

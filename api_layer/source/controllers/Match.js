@@ -2,19 +2,32 @@ const MatchModel = require('../models/Match');
 //const errors = require('../utility/error');
 
 
+
 module.exports = (api) => {
-    api.route('/match/:id/:gs')
-    .get((req, res) => {
+     api.route('/match/:id')
+        .get((req, res) => {
+             let id = req.params.id;
+             MatchModel.findById(id, (err, match) => {
+                     const errc = (match) ? 200 : 404;
+                     const val = (match) ? match : {};
+                     res.status(errc).json(match);
+             })
+             .catch(err => res.status(500).json(errors.ERROR_500));
+         });
+
+
+    api.route('/match/:id/:status')
+    .put((req, res) => {
         let id = req.params.id;
-        let gs = req.params.status;
+        let status = req.params.status;
         MatchModel.findById(id, (err, match) => {
             if (match != null) {
-                match.gs = true;
+                match.status = true;
                 match.save((err) => {
                     if (err) {
                         res.status(500).json({});
                     } else {
-                        res.status(201).json(match);
+                        res.status(204).json(match);
                     }
                 })
             } else {
