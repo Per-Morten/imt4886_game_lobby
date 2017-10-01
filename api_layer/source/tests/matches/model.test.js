@@ -65,7 +65,3 @@ test.serial('Find match by id', async (t) => {
     }
 });
 
-// test.serial('Update status field', async (t) =>  {
-//     t.plan();
-
-// })

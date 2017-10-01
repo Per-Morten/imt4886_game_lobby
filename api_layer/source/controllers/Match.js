@@ -4,6 +4,7 @@ const MatchModel = require('../models/Match');
 
 
 module.exports = (api) => {
+
      api.route('/match/:id')
         .get((req, res) => {
              let id = req.params.id;
@@ -16,50 +17,49 @@ module.exports = (api) => {
          });
 
 
-    api.route('/match/:id/:status')
-    .put((req, res) => {
-        let id = req.params.id;
-        let status = req.params.status;
-        MatchModel.findById(id, (err, match) => {
-            if (match != null) {
-                match.status = true;
-                match.save((err) => {
-                    if (err) {
-                        res.status(500).json({});
-                    } else {
-                        res.status(204).json(match);
-                    }
-                })
-            } else {
-                status = 404;
-            }
+  /**
+    * @api {put} /match/:id/:status update status of specified match
+    * @apiName UpdateMatchStatus
+    * @apiGroup Match
+    * @apiDescription
+    *   The status of the match with the specified ID is updated
+    *   Returns 204 on success,
+    *   404 if the match with requested ID couldn't be found ,
+    *   200 if the response says the status was updated
+    *
+    * @apiParam {Id} id the unique ID of the match.
+    * @apiParam {status} status the current status of the match. true if started. false if not.
+    *
+    * @apiSuccess (200) _id The unique identifier of the match.
+    * @apiSuccess (200) status The current status of the game. 0 for waiting, 1 for in session.
+    * @apiSuccess (204) Success
 
-        }).catch(err => res.status(500).json({}));
-    })
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 204 OK
+     *     {}
+     *
+     * @apiError (404) MatchNotFound The supplied ID was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {}
+     *
+     *  @apiSuccess (200) MatchUpdated: Success-Response
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {}
+  */
+  api.route('/match/:id/:status')
+
+       .put((req, res) => {
+            const id = req.params.id;
+            const status = req.params.status;
+            MatchModel.updateStatus(id, status)
+            .then(out => res.status(out.code).send())
+            .catch(err => res.status(err.code).json(err));
+           });
 }
 
-
-// module.exports = (api) => {
-//     api.route('/Match/:id/:gameStatus')
-//        .get((req, res) => {
-//             let id = req.params.id;
-//             let gs = req.params.gameStatus;
-//             // MatchModel.findById(id, (err, match) => {
-//             //         const errc = (match) ? 200 : 404;
-//             //         const val = (match) ? match : {};
-//             //         res.status(errc).json(match);
-
-//             // })
-//             // MatchModel.findById(gameStatus, (err, match) => {
-//             //         const errc = (match) ? 200 : 404;
-//             //         const val = (match) ? match : {};
-//             //         gameStatus = 1;
-//             //         MatchModel.save();
-//             // }
-//             // .catch(err => res.status(500).json({}));
-
-
-
-// });
-// }
 
