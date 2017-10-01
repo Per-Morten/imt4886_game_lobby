@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 
 const testMatch1 = {
     gameToken: 'Game 1',
-    status: 1,
+    status: 0,
     hostIP: '127.0.0.0',
     hostPort: 3000,
 };
@@ -55,7 +55,7 @@ test.serial('Should return a match', async(t) => {
     t.plan(retObject.length + 1);
 
     await request(server)
-        .get('/Match/' + t.context.matches[0]._id)
+        .get('/match/' + t.context.matches[0]._id)
         .expect(200)
         .then(response => {
             Object.entries(response.body).forEach(
@@ -73,12 +73,33 @@ test.serial('Should return a match', async(t) => {
     t.pass();
 });
 
+
 test.serial('Should be able to start match', async(t) => {
+    t.plan(3);
 
     await request(server)
-        .put('/Match/' + t.context.matches[0]._id + '/' + t.context.matches[0]._status)
+        .put('/match/' + t.context.matches[0]._id + '/' + 1)
         .expect(204)
         .catch(err => t.fail(err));
-        t.pass();
 
+    await request(server)
+        .get('/match/' + t.context.matches[0]._id)
+        .expect(200)
+        .then(response => {
+            if (response.body.status == 1)
+                t.pass();
+            else
+                t.fail(`Match no updated, status: ${response.status}`);
+        })
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .put('/match/' + '111111111111111111111111' + '/' + 1)
+        .expect(404)
+        .then(response => t.pass())
+        .catch(err => t.fail(err));
+
+    t.pass();
 })
+
+
