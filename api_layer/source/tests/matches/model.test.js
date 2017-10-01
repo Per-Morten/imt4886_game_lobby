@@ -101,6 +101,32 @@ test.serial('Delete match', async (t) => {
     }
 });
 
+test.serial('Update match playerCount', async(t) => {
+    t.plan(3);
+
+    const m1 = await MatchModel.createMatch(match);
+    if (m1.code == 200) {
+        t.pass();
+    } else {
+        t.fail('Could not create the matches');
+    }
+
+    const res = await MatchModel.updatePlayerCount(m1.match._id, 2);
+    const m2 = await MatchModel.findMatch(m1.match._id);
+    if (res.code == 204 && m2.code == 200 && m2.match.playerCount == 2)
+        t.pass();
+    else
+        t.fail('Coult not update playerCount');
+
+    const res2 = await MatchModel.updatePlayerCount(m1.match._id, -2);
+    const m3 = await MatchModel.findMatch(m1.match._id);
+    if (res2.code == 400 && m3.code == 200 && m3.match.playerCount == 2)
+        t.pass();
+    else
+        t.fail('Can set negative playerCount');
+
+});
+
 ///////////////////////////////////////////////////////////
 /// Multiple Matches Tests
 ///////////////////////////////////////////////////////////

@@ -148,4 +148,44 @@ module.exports = (api) => {
             .then(out => res.status(out.code).send())
             .catch(err => res.status(err.code).json(err));
         });
+
+    /**
+     * @api {put} /match/player_count/:id/:player_count Update the player count on a specific match
+     * @apiName UpdatePlayerCount
+     * @apiGroup Match
+     * @apiDescription
+     *  Updates the number of players on the specified match.
+     *  Returns 204 on success,
+     *  404 if the match with requested id couldn't be found.
+     *  400 if the request was invalid.
+     *
+     * @apiParam {Id} id The unique ID of the match.
+     * @apiParam {Number={1..inf}} player_count The new number of players.
+     *
+     * @apiSuccess (204) Success
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 204 OK
+     *     {}
+     *
+     * @apiError (404) MatchNotFound The supplied ID was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {}
+     *
+     * @apiError (400) InvalidRequest The supplied playerCount did not adhere to the given limits.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Not Found
+     *     {}
+     */
+    api.route('/match/player_count/:id/:player_count')
+       .put((req, res) => {
+            const id = req.params.id;
+            const playerCount = req.params.player_count;
+            MatchModel.updatePlayerCount(id, playerCount)
+            .then(out => res.status(out.code).send())
+            .catch(err => res.status(err.code).json(err));
+       });
 }
