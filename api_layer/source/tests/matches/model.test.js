@@ -123,3 +123,4 @@ test.serial('Find matches with gameToken', async (t) => {
         t.fail('Did not find matches with given gameToken');
     }
 });
+
