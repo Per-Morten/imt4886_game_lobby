@@ -42,15 +42,15 @@ test.cb.beforeEach((t) => {
 test.serial('Create a new match', async (t) => {
     t.plan(2);
 
-    const p = await MatchModel.create(Object.assign({}, match));
-    if (p) {
+    const p = await MatchModel.createMatch(match);
+    if (p.code == 200) {
         t.pass();
     } else {
         t.fail('Could not create the match');
     }
 
-    const p2 = await MatchModel.find({ _id: p._id }).exec();
-    if (p2) {
+    const p2 = await MatchModel.findMatch(p.match._id);
+    if (p2.code == 200) {
         t.pass();
     } else {
         t.fail('Could not find created match');
@@ -60,14 +60,14 @@ test.serial('Create a new match', async (t) => {
 test.serial('Find match by id', async (t) => {
     t.plan(2);
 
-    const p = await MatchModel.create(Object.assign({}, match));
-    if (p) {
+    const p = await MatchModel.createMatch(match);
+    if (p.code == 200) {
         t.pass();
     } else {
         t.fail('Could not create the match');
     }
 
-    const p2 = await MatchModel.findMatch(p._id);
+    const p2 = await MatchModel.findMatch(p.match._id);
     if (p2.code == 200) {
         t.pass();
     } else {
@@ -77,24 +77,24 @@ test.serial('Find match by id', async (t) => {
 
 test.serial('Delete match', async (t) => {
     t.plan(3);
-    const m1 = await MatchModel.create(Object.assign({}, match));
-    const m2 = await MatchModel.create(Object.assign({}, match2));
-    if (m1 && m2) {
+    const m1 = await MatchModel.createMatch(match);
+    const m2 = await MatchModel.createMatch(match2);
+    if (m1.code == 200 && m2.code == 200) {
         t.pass();
     } else {
         t.fail('Could not create the matches');
     }
 
-    await MatchModel.deleteMatch(m2._id);
-    const test1 = await MatchModel.findMatch(m2._id);
+    await MatchModel.deleteMatch(m2.match._id);
+    const test1 = await MatchModel.findMatch(m2.match._id);
     if (test1.code == 404) {
         t.pass();
     } else {
         t.fail('Did not delete the match');
     }
 
-    const test2 = await MatchModel.findById(m1._id);
-    if (test2) {
+    const test2 = await MatchModel.findMatch(m1.match._id);
+    if (test2.code == 200) {
         t.pass();
     } else {
         t.fail('Deleted to many or wrong match!');
@@ -107,16 +107,16 @@ test.serial('Delete match', async (t) => {
 test.serial('Find matches with gameToken', async (t) => {
     t.plan(2);
 
-    const m1 = await MatchModel.create(Object.assign({}, match));
-    const m2 = await MatchModel.create(Object.assign({}, match2));
+    const m1 = await MatchModel.createMatch(match);
+    const m2 = await MatchModel.createMatch(match2);
 
-    if(m1 && m2) {
+    if(m1.code == 200 && m2.code == 200) {
         t.pass();
     } else {
         t.fail('Could not create the matches');
     }
 
-    const test1 = await MatchModel.findByToken(m1.gameToken);
+    const test1 = await MatchModel.findByToken(m1.match.gameToken);
     if(test1) {
         t.pass();
     } else {
