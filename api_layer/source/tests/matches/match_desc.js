@@ -5,6 +5,7 @@ module.exports = [
     'status',
     'hostIP',
     'hostPort',
+    'playerCount',
     '_id',
     '__v',
 ];

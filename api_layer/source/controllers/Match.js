@@ -148,4 +148,13 @@ module.exports = (api) => {
             .then(out => res.status(out.code).send())
             .catch(err => res.status(err.code).json(err));
         });
+
+    api.route('/match/player_count/:id/:player_count')
+       .put((req, res) => {
+            const id = req.params.id;
+            const playerCount = req.params.player_count;
+            MatchModel.updatePlayerCount(id, playerCount)
+            .then(out => res.status(out.code).send())
+            .catch(err => res.status(err.code).json(err));
+       });
 }
