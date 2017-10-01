@@ -74,22 +74,10 @@ test.serial('Should return a match', async(t) => {
 });
 
 test.serial('Should be able to start match'. async(t) => {
-    const retObject = ['_id', '_status'];
-    t.plan(retObject.length);
 
     await request(server)
-        .put('/Match/' + t.context.matches[0]._id + '/' + ._gs)
-        .expect(201)
-        .then(response => {
-            Object.entries(response.body).forEach(
-                ([key, value]) => {
-                    if (retObject.indexOf(key) === 0 || value === '') {
-                        t.fail(`Match returned invalid object name ${key} value ${value}`);
-                    }
-                    else {
-                        t.pass();
-                    }
-                }
-        })
+        .put('/Match/' + t.context.matches[0]._id + '/' + t.context.matches[0]._status)
+        .expect(204)
+        .catch(err => t.fail(err));
 
 })

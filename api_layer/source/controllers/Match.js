@@ -8,22 +8,20 @@ module.exports = (api) => {
         let id = req.params.id;
         let gs = req.params.status;
         MatchModel.findById(id, (err, match) => {
-            if (match != null) { // hvis vi finner objektet vi er ute etter
-                match.gs = true;  //Gjøre endringer her
-                match.save((err) => { //MatchModel.save eller match.save
+            if (match != null) {
+                match.gs = true;
+                match.save((err) => {
                     if (err) {
-                        res.status(500).json({});   //Error når du prøvde å lagre obj
+                        res.status(500).json({});
                     } else {
-                        res.status(201).json(match); //Alt ok, 201 modified object
+                        res.status(201).json(match);
                     }
                 })
             } else {
-                status = 404;   //Fant ikke objekt
+                status = 404;
             }
 
-            //console.log('id');
-
-        }).catch(err => res.status(500).json({})); //Error når du prøvde å hente objekt
+        }).catch(err => res.status(500).json({}));
     })
 }
 
@@ -52,19 +50,3 @@ module.exports = (api) => {
 // });
 // }
 
-
-// MatchModel.findById(id, (err, match) => {
-//     if (match != null) { // hvis vi finner objektet vi er ute etter
-//         match.gameStatus = true;  //Gjøre endringer her
-//         match.save((err) => { //MatchModel.save eller match.save
-//             if (err) {
-//                 res.status(500).json({});   //Error når du prøvde å lagre obj
-//             } else {
-//                 res.status(201).json(match); //Alt ok, 201 modified object
-//             }
-//         }
-//     } else {
-//         res.status = 404;   //Fant ikke objekt
-//     }
-
-// )}.catch(err => res.status(500).json({}))); //Error når du prøvde å hente objekt
