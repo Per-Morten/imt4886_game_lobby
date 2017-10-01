@@ -42,15 +42,15 @@ test.cb.beforeEach((t) => {
 test.serial('Create a new match', async (t) => {
     t.plan(2);
 
-    const p = await MatchModel.create(Object.assign({}, match));
-    if (p) {
+    const p = await MatchModel.createMatch(match);
+    if (p.code == 200) {
         t.pass();
     } else {
         t.fail('Could not create the match');
     }
 
-    const p2 = await MatchModel.find({ _id: p._id }).exec();
-    if (p2) {
+    const p2 = await MatchModel.findMatch(p.match._id);
+    if (p2.code == 200) {
         t.pass();
     } else {
         t.fail('Could not find created match');

@@ -61,6 +61,52 @@ const server = require('../../classes/App');
 ///////////////////////////////////////////////////////////
 /// Single Match Tests
 ///////////////////////////////////////////////////////////
+test.serial('Should create a match', async(t) => {
+    const retObject = ['gameToken', 'status', 'hostIP', 'hostPort', '_id', '__v'];
+    t.plan(retObject.length + 2);
+
+    const newMatch = {
+        gameToken: 'Game 3',
+        status: 0,
+        hostIP: '127.0.0.1',
+        hostPort: 3000,
+    }
+
+    let checkMatch = null;
+
+    await request(server)
+        .post('/match/' + JSON.stringify(newMatch))
+        .expect(200)
+        .then(response => {
+            console.log("In response");
+            Object.entries(response.body).forEach(
+                ([key, value]) => {
+                    if (retObject.indexOf(key) === -1 || value === '') {
+                        t.fail(`Match returned invalid object name ${key} value ${value}`);
+                    } else {
+                        t.pass();
+                    }
+                }
+            )
+            checkMatch = response.body;
+        })
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .get('/match/' + checkMatch._id)
+        .expect(200)
+        .then(res => {
+            if (res._id == checkMatch._id)
+                t.pass();
+            else
+                t.pass(`Invalid value returned for created object. Should been ${checkMatch._id}, was ${res._id}`);
+        })
+        .catch(err => t.fail(err));
+
+    t.pass();
+})
+
+
 test.serial('Should return a match', async(t) => {
     const retObject = ['gameToken', 'status', 'hostIP', 'hostPort', '_id', '__v'];
     t.plan(retObject.length + 1);
