@@ -140,10 +140,10 @@ module.exports = (api) => {
      *     HTTP/1.1 404 Not Found
      *     {}
      */
-    api.route('/match/:id/:status')
+    api.route('/match/')
        .put((req, res) => {
-            const id = req.params.id;
-            const status = req.params.status;
+            const id = req.body.id;
+            const status = req.body.status;
             MatchModel.updateStatus(id, status)
             .then(out => res.status(out.code).send())
             .catch(err => res.status(err.code).json(err));
