@@ -82,9 +82,9 @@ test.serial('Should create a match', async(t) => {
     }
 
     let checkMatch = null;
-
     await request(server)
-        .post('/match/' + JSON.stringify(newMatch))
+        .post('/match/')
+        .send(newMatch)
         .expect(200)
         .then(response => {
             Object.entries(response.body).forEach(
@@ -101,7 +101,8 @@ test.serial('Should create a match', async(t) => {
         .catch(err => t.fail(err));
 
     await request(server)
-        .get('/match/' + checkMatch._id)
+        .get('/match/')
+        .send({id: checkMatch._id})
         .expect(200)
         .then(res => {
             if (res._id == checkMatch._id)
@@ -118,7 +119,8 @@ test.serial('Should return a match', async(t) => {
     t.plan(matchDesc.length + 1);
 
     await request(server)
-        .get('/match/' + t.context.matches[0]._id)
+        .get('/match/')
+        .send({id: t.context.matches[0]._id})
         .expect(200)
         .then(response => {
             Object.entries(response.body).forEach(
@@ -140,27 +142,32 @@ test.serial('Delete a match', async(t) => {
     let matches = t.context.matches;
 
     await request(server)
-        .get('/match/' + matches[0]._id)
+        .get('/match/')
+        .send({id: matches[0]._id})
         .expect(200)
         .catch(err => t.fail(err));
 
     await request(server)
-        .delete('/match/' + matches[0]._id)
+        .delete('/match/')
+        .send({id: matches[0]._id})
         .expect(204)
         .catch(err => t.fail(err));
 
     await request(server)
-        .get('/match/' + matches[0]._id)
+        .get('/match/')
+        .send({id: matches[0]._id})
         .expect(404)
         .catch(err => t.fail(err));
 
     await request(server)
-        .delete('/match/' + matches[0]._id)
+        .delete('/match/')
+        .send({id: matches[0]._id})
         .expect(404)
         .catch(err => t.fail(err));
 
     await request(server)
-        .get('/match/' + matches[1]._id)
+        .get('/match/')
+        .send({id: matches[1]._id})
         .expect(200)
         .catch(err => t.fail(err));
 
@@ -171,12 +178,14 @@ test.serial('Should be able to start match', async(t) => {
     t.plan(3);
 
     await request(server)
-        .put('/match/' + t.context.matches[0]._id + '/' + 1)
+        .put('/match/status')
+        .send({id: t.context.matches[0]._id, status: 1})
         .expect(204)
         .catch(err => t.fail(err));
 
     await request(server)
-        .get('/match/' + t.context.matches[0]._id)
+        .get('/match/')
+        .send({id: t.context.matches[0]._id})
         .expect(200)
         .then(response => {
             if (response.body.status == 1)
@@ -187,7 +196,8 @@ test.serial('Should be able to start match', async(t) => {
         .catch(err => t.fail(err));
 
     await request(server)
-        .put('/match/' + '111111111111111111111111' + '/' + 1)
+        .put('/match/status')
+        .send({id: invalidId, status: 1})
         .expect(404)
         .then(response => t.pass())
         .catch(err => t.fail(err));
@@ -197,12 +207,14 @@ test.serial('Should be able to start match', async(t) => {
 
 test.serial('Update playercount', async(t) => {
     await request(server)
-        .put('/match/player_count/' + t.context.matches[0]._id + '/' + 2)
+        .put('/match/player_count/')
+        .send({id: t.context.matches[0]._id, playerCount: 2})
         .expect(204)
         .catch(err => t.fail(err));
 
     await request(server)
-        .get('/match/' + t.context.matches[0]._id)
+        .get('/match/')
+        .send({id: t.context.matches[0]._id})
         .expect(200)
         .then(response => {
             if (response.body.playerCount == 2)
@@ -213,7 +225,8 @@ test.serial('Update playercount', async(t) => {
         .catch(err => t.fail(err));
 
     await request(server)
-        .put('/match/player_count/' + invalidId + '/' + 3)
+        .put('/match/player_count/')
+        .send({id: invalidId, playerCount: 3})
         .expect(404)
         .then(response => t.pass())
         .catch(err => t.fail(err));
@@ -224,7 +237,8 @@ test.serial('Update playercount', async(t) => {
 ///////////////////////////////////////////////////////////
 test.serial('Returning matches with given gameToken: test', async(t) => {
     await request(server)
-        .get('/matches/' + t.context.matches[0].gameToken)
+        .get('/matches/')
+        .send({gameToken: t.context.matches[0].gameToken})
         .expect(200)
         .then(response => {
             if(response.body.length != 2) {

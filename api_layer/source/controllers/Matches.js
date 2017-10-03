@@ -9,7 +9,7 @@ module.exports = (api) => {
         });
 
     /**
-     * @api {get} /matches/:gameToken Request matches with given gameToken
+     * @api {get} /matches/ Request matches with given gameToken
      * @apiName GetMatches
      * @apiGroup Matches
      * @apiDescription
@@ -20,9 +20,9 @@ module.exports = (api) => {
      * @apiSuccess (200) Success
      *
      */
-    api.route('/matches/:gameToken')
+    api.route('/matches/')
          .get((req, res) => {
-            MatchModel.findByToken(req.params.gameToken)
+            MatchModel.findByToken(req.body.gameToken)
                 .then(list => res.json(list))
                 .catch(err => res.json(err));
         });
