@@ -108,9 +108,9 @@ module.exports = (api) => {
      *       "hostPort": 3000
      *     }
      */
-    api.route('/match/:matchinfo')
+    api.route('/match/')
        .post((req, res) => {
-            const info = JSON.parse(req.params.matchinfo);
+            const info = req.body;
             MatchModel.createMatch(info)
             .then(out => res.status(out.code).json(out.match))
             .catch(err => res.status(err.code).json(err));

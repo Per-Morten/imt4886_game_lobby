@@ -82,9 +82,9 @@ test.serial('Should create a match', async(t) => {
     }
 
     let checkMatch = null;
-
     await request(server)
-        .post('/match/' + JSON.stringify(newMatch))
+        .post('/match/')
+        .send(newMatch)
         .expect(200)
         .then(response => {
             Object.entries(response.body).forEach(
