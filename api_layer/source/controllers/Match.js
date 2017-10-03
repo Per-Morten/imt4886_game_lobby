@@ -3,7 +3,7 @@ const errors = require('../utility/error');
 
 module.exports = (api) => {
     /**
-     * @api {get} /match/:id Get match with a specific id
+     * @api {get} /match/ Get match with a specific id
      * @apiName GetMatch
      * @apiGroup Match
      * @apiDescription
@@ -18,6 +18,7 @@ module.exports = (api) => {
      * @apiSuccess (200) status The current status of the game. 0 for waiting, 1 for in session.
      * @apiSuccess (200) hostIP The ip address of the host of the match.
      * @apiSuccess (200) hostPort The port that the match is run on.
+     * @apiSuccess (200) playerCount The number of players in the match.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -27,7 +28,8 @@ module.exports = (api) => {
      *       "gameToken": "Game 1"
      *       "status": 1
      *       "hostIP": "127.0.0.0",
-     *       "hostPort": 3000
+     *       "hostPort": 3000,
+     *       "playerCount": 1
      *     }
      *
      * @apiError (404) MatchNotFound The supplied ID was not found.
@@ -45,7 +47,7 @@ module.exports = (api) => {
         });
 
     /**
-     * @api {delete} /match/:id Delete the specified match
+     * @api {delete} /match/ Delete the specified match
      * @apiName DeleteMatch
      * @apiGroup Match
      * @apiDescription
@@ -76,7 +78,7 @@ module.exports = (api) => {
         });
 
     /**
-     * @api {post} /match/:matchinfo Create a match with the specified parameters
+     * @api {post} /match/ Create a match with the specified parameters
      * @apiName CreateMatch
      * @apiGroup Match
      * @apiDescription
@@ -96,6 +98,7 @@ module.exports = (api) => {
      * @apiSuccess (200) status The current status of the game. 0 for waiting, 1 for in session.
      * @apiSuccess (200) hostIP The ip address of the host of the match.
      * @apiSuccess (200) hostPort The port that the match is run on.
+     * @apiSuccess (200) playerCount The number of players in the match.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -105,7 +108,8 @@ module.exports = (api) => {
      *       "gameToken": "Game 1"
      *       "status": 1
      *       "hostIP": "127.0.0.0",
-     *       "hostPort": 3000
+     *       "hostPort": 3000,
+     *       "playerCount": 1
      *     }
      */
     api.route('/match/')
@@ -117,7 +121,7 @@ module.exports = (api) => {
         });
 
     /**
-     * @api {put} /match/:id/:status update status of specified match
+     * @api {put} /match/status Update status of specified match
      * @apiName UpdateMatchStatus
      * @apiGroup Match
      * @apiDescription
@@ -126,7 +130,8 @@ module.exports = (api) => {
      *   404 if the match with requested ID couldn't be found.
      *
      * @apiParam {Id} id the unique ID of the match.
-     * @apiParam {Number={0..1}} status the current status of the match. true if started. false if not.
+     * @apiParam {Number={0..1}} status the current status of the match.
+     *                           0 if waiting 1 if in session.
      *
      * @apiSuccess (204) Success
      *
@@ -150,7 +155,7 @@ module.exports = (api) => {
         });
 
     /**
-     * @api {put} /match/player_count/:id/:player_count Update the player count on a specific match
+     * @api {put} /match/player_count/ Update the player count on a specific match
      * @apiName UpdatePlayerCount
      * @apiGroup Match
      * @apiDescription
