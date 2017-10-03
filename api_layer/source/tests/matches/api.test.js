@@ -148,7 +148,8 @@ test.serial('Delete a match', async(t) => {
         .catch(err => t.fail(err));
 
     await request(server)
-        .delete('/match/' + matches[0]._id)
+        .delete('/match/')
+        .send({id: matches[0]._id})
         .expect(204)
         .catch(err => t.fail(err));
 
@@ -159,7 +160,8 @@ test.serial('Delete a match', async(t) => {
         .catch(err => t.fail(err));
 
     await request(server)
-        .delete('/match/' + matches[0]._id)
+        .delete('/match/')
+        .send({id: matches[0]._id})
         .expect(404)
         .catch(err => t.fail(err));
 

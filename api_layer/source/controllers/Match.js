@@ -67,9 +67,9 @@ module.exports = (api) => {
      *     HTTP/1.1 404 Not Found
      *     {}
      */
-    api.route('/match/:id')
+    api.route('/match/')
        .delete((req, res) => {
-            const id = req.params.id;
+            const id = req.body.id;
             MatchModel.deleteMatch(id)
             .then(out => res.status(out.code).send())
             .catch(err => res.status(err.code).json(err));
