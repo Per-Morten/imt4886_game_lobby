@@ -237,7 +237,8 @@ test.serial('Update playercount', async(t) => {
 ///////////////////////////////////////////////////////////
 test.serial('Returning matches with given gameToken: test', async(t) => {
     await request(server)
-        .get('/matches/' + t.context.matches[0].gameToken)
+        .get('/matches/')
+        .send({gameToken: t.context.matches[0].gameToken})
         .expect(200)
         .then(response => {
             if(response.body.length != 2) {
