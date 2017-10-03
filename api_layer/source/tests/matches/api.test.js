@@ -178,7 +178,7 @@ test.serial('Should be able to start match', async(t) => {
     t.plan(3);
 
     await request(server)
-        .put('/match/')
+        .put('/match/status')
         .send({id: t.context.matches[0]._id, status: 1})
         .expect(204)
         .catch(err => t.fail(err));
@@ -196,7 +196,7 @@ test.serial('Should be able to start match', async(t) => {
         .catch(err => t.fail(err));
 
     await request(server)
-        .put('/match/')
+        .put('/match/status')
         .send({id: invalidId, status: 1})
         .expect(404)
         .then(response => t.pass())

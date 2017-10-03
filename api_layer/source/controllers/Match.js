@@ -140,7 +140,7 @@ module.exports = (api) => {
      *     HTTP/1.1 404 Not Found
      *     {}
      */
-    api.route('/match/')
+    api.route('/match/status')
        .put((req, res) => {
             const id = req.body.id;
             const status = req.body.status;
