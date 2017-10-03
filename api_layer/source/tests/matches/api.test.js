@@ -207,7 +207,8 @@ test.serial('Should be able to start match', async(t) => {
 
 test.serial('Update playercount', async(t) => {
     await request(server)
-        .put('/match/player_count/' + t.context.matches[0]._id + '/' + 2)
+        .put('/match/player_count/')
+        .send({id: t.context.matches[0]._id, playerCount: 2})
         .expect(204)
         .catch(err => t.fail(err));
 
@@ -224,7 +225,8 @@ test.serial('Update playercount', async(t) => {
         .catch(err => t.fail(err));
 
     await request(server)
-        .put('/match/player_count/' + invalidId + '/' + 3)
+        .put('/match/player_count/')
+        .send({id: invalidId, playerCount: 3})
         .expect(404)
         .then(response => t.pass())
         .catch(err => t.fail(err));

@@ -180,10 +180,10 @@ module.exports = (api) => {
      *     HTTP/1.1 400 Not Found
      *     {}
      */
-    api.route('/match/player_count/:id/:player_count')
+    api.route('/match/player_count/')
        .put((req, res) => {
-            const id = req.params.id;
-            const playerCount = req.params.player_count;
+            const id = req.body.id;
+            const playerCount = req.body.playerCount;
             MatchModel.updatePlayerCount(id, playerCount)
             .then(out => res.status(out.code).send())
             .catch(err => res.status(err.code).json(err));
