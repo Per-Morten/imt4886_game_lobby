@@ -36,9 +36,9 @@ module.exports = (api) => {
      *     HTTP/1.1 404 Not Found
      *     {}
      */
-    api.route('/match/:id')
+    api.route('/match/')
        .get((req, res) => {
-            const id = req.params.id;
+            const id = req.body.id;
             MatchModel.findMatch(id)
             .then(out => res.status(out.code).json(out.match))
             .catch(err => res.status(err.code).json(err));

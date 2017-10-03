@@ -101,7 +101,8 @@ test.serial('Should create a match', async(t) => {
         .catch(err => t.fail(err));
 
     await request(server)
-        .get('/match/' + checkMatch._id)
+        .get('/match/')
+        .send({id: checkMatch._id})
         .expect(200)
         .then(res => {
             if (res._id == checkMatch._id)
@@ -118,7 +119,8 @@ test.serial('Should return a match', async(t) => {
     t.plan(matchDesc.length + 1);
 
     await request(server)
-        .get('/match/' + t.context.matches[0]._id)
+        .get('/match/')
+        .send({id: t.context.matches[0]._id})
         .expect(200)
         .then(response => {
             Object.entries(response.body).forEach(
@@ -140,7 +142,8 @@ test.serial('Delete a match', async(t) => {
     let matches = t.context.matches;
 
     await request(server)
-        .get('/match/' + matches[0]._id)
+        .get('/match/')
+        .send({id: matches[0]._id})
         .expect(200)
         .catch(err => t.fail(err));
 
@@ -150,7 +153,8 @@ test.serial('Delete a match', async(t) => {
         .catch(err => t.fail(err));
 
     await request(server)
-        .get('/match/' + matches[0]._id)
+        .get('/match/')
+        .send({id: matches[0]._id})
         .expect(404)
         .catch(err => t.fail(err));
 
@@ -160,7 +164,8 @@ test.serial('Delete a match', async(t) => {
         .catch(err => t.fail(err));
 
     await request(server)
-        .get('/match/' + matches[1]._id)
+        .get('/match/')
+        .send({id: matches[1]._id})
         .expect(200)
         .catch(err => t.fail(err));
 
@@ -176,7 +181,8 @@ test.serial('Should be able to start match', async(t) => {
         .catch(err => t.fail(err));
 
     await request(server)
-        .get('/match/' + t.context.matches[0]._id)
+        .get('/match/')
+        .send({id: t.context.matches[0]._id})
         .expect(200)
         .then(response => {
             if (response.body.status == 1)
@@ -202,7 +208,8 @@ test.serial('Update playercount', async(t) => {
         .catch(err => t.fail(err));
 
     await request(server)
-        .get('/match/' + t.context.matches[0]._id)
+        .get('/match/')
+        .send({id: t.context.matches[0]._id})
         .expect(200)
         .then(response => {
             if (response.body.playerCount == 2)
