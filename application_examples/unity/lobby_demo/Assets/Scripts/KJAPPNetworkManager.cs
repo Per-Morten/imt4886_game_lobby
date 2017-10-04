@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -44,12 +45,7 @@ public class KJAPPNetworkManager : NetworkManager
     /// </summary>
     private IEnumerator UploadMatch()
     {
-        var matchPOSTData = new MatchPOST(gameToken, 0, networkAddress, networkPort);
-
-        // https://forum.unity.com/threads/unitywebrequest-post-url-jsondata-sending-broken-json.414708/
-        // The postData the POST request is empty as the API call takes the JSON string into its route.
-        var webRequest = UnityWebRequest.Post(apiUrl + "/match/" + (JsonUtility.ToJson(matchPOSTData) ?? ""), "");
-        webRequest.SetRequestHeader("Content-Type", "application/json");
+        var webRequest = CreateWebRequest("/match/", JsonUtility.ToJson(new MatchPOSTRequest(gameToken, 0, networkAddress, networkPort)), UnityWebRequest.kHttpVerbPOST);
         yield return webRequest.Send();
 
         if (webRequest.isNetworkError)
@@ -59,7 +55,7 @@ public class KJAPPNetworkManager : NetworkManager
         else
         {
             var jsonString = webRequest.downloadHandler.text;
-            matchId = JsonUtility.FromJson<Match>(jsonString)._id;
+            matchId = JsonUtility.FromJson<MatchResponse>(jsonString)._id;
             StartCoroutine(SetMatchStatusToInSession());
             StartHost();
         }
@@ -70,9 +66,7 @@ public class KJAPPNetworkManager : NetworkManager
     /// </summary>
     private IEnumerator SetMatchStatusToInSession()
     {
-        // This is a hack because Unity will not allow you to do PUT web requests with empty payload data, although this is allowed for POST requests.
-        var webRequest = UnityWebRequest.Post(apiUrl + "/match/" + matchId + "/" + MATCH_ACTIVE_STATUS, "");
-        webRequest.method = "PUT";
+        var webRequest = CreateWebRequest("/match/status", JsonUtility.ToJson(new MatchStatusPUTRequest(matchId, MATCH_ACTIVE_STATUS)), UnityWebRequest.kHttpVerbPUT);
         yield return webRequest.Send();
 
         if (webRequest.isNetworkError)
@@ -86,9 +80,8 @@ public class KJAPPNetworkManager : NetworkManager
     /// </summary>
     private IEnumerator FetchMatches()
     {
-        // https://docs.unity3d.com/Manual/UnityWebRequest-RetrievingTextBinaryData.html
-        var webRequest = UnityWebRequest.Get(apiUrl + "/matches/" + gameToken);
-
+        // As a note: the body-parser used on the server seems to completely ignore GET requests with bodies, so GET requests need to be reworked. 
+        var webRequest = CreateWebRequest("/matches/", JsonUtility.ToJson(new MatchesGETRequest(gameToken)), UnityWebRequest.kHttpVerbGET);
         yield return webRequest.Send();
 
         if (webRequest.isNetworkError)
@@ -98,7 +91,7 @@ public class KJAPPNetworkManager : NetworkManager
         else
         {
             var jsonString = webRequest.downloadHandler.text;
-            var matches = JsonHelper.getJsonArray<Match>(jsonString);
+            var matches = JsonHelper.getJsonArray<MatchResponse>(jsonString);
             GameObject.FindGameObjectWithTag("UIHandler").GetComponent<UIHandler>().DisplayMatches(matches);
         }
     }
@@ -108,7 +101,7 @@ public class KJAPPNetworkManager : NetworkManager
     /// </summary>
     private IEnumerator DeleteMatch()
     {
-        var webRequest = UnityWebRequest.Delete(apiUrl + "/match/" + matchId);
+        var webRequest = CreateWebRequest("/match/", JsonUtility.ToJson(new MatchDeleteRequest(matchId)), UnityWebRequest.kHttpVerbDELETE);
         yield return webRequest.Send();
 
         if (webRequest.isNetworkError)
@@ -130,5 +123,24 @@ public class KJAPPNetworkManager : NetworkManager
         {
             StartCoroutine(DeleteMatch());
         }
+    }
+
+    /// <summary>
+    /// Helper function for manually building web requests to avoid issues that you might end up having from Unity doing things like url-encoding your body. 
+    /// </summary>
+    /// <param name="apiRouteAppendage">The part of the route to the API we want to append, example: "/match/"</param>
+    /// <param name="jsonBody">The string containing the JSON object</param>
+    /// <param name="requestType">Whether the request should be GET/POST/PUT etc</param>
+    /// <returns>A web request that is ready for usage</returns>
+    private UnityWebRequest CreateWebRequest(string apiRouteAppendage, string jsonBody, string requestType)
+    {
+        // http://answers.unity3d.com/questions/1163204/prevent-unitywebrequestpost-from-url-encoding-the.html
+        var webRequest = new UnityWebRequest(apiUrl + apiRouteAppendage);
+        webRequest.uploadHandler = new UploadHandlerRaw(Encoding.ASCII.GetBytes(jsonBody));
+        webRequest.downloadHandler = new DownloadHandlerBuffer();
+        webRequest.method = requestType;
+        webRequest.SetRequestHeader("Content-Type", "application/json");
+
+        return webRequest;
     }
 }
