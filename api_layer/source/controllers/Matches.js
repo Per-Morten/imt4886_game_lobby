@@ -13,8 +13,8 @@ module.exports = (api) => {
      * @apiName GetMatches
      * @apiGroup Matches
      * @apiDescription
-     * Returns a list of all matches that contain the provided gameToken.
-     * This list is empty if no matches were found.
+     * Returns a JSON array of all matches that contain the provided gameToken.
+     * This array is empty if no matches were found.
      *
      * @apiParam {String} gameToken The unique game token of a game.
      * @apiSuccess (200) Success
