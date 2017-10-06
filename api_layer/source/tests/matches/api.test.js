@@ -249,3 +249,26 @@ test.serial('Returning matches with given gameToken: test', async(t) => {
 
     t.pass();
 });
+
+test.serial('Returning matches with given gameToken: test that are in session', async(t) => {
+    t.plan(1);
+
+    await request(server)
+        .put('/match/status/')
+        .send({id: t.context.matches[0]._id, status: 1})
+        .expect(204)
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .get('/matches/in_session/')
+        .send({gameToken: t.context.matches[0].gameToken})
+        .expect(200)
+        .then(response => {
+            if(response.body.length != 1) {
+                t.fail(`Returned ${response.body.length} matches when 1 match should have been returned`);
+            }
+        })
+        .catch(err => t.fail(err));
+
+    t.pass();
+});
