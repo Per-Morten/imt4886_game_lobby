@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 const errors = require('../utility/error');
+const GameModel = require('./Game');
 
 const MatchSchema = mongoose.Schema({
     gameToken: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
     status: {
