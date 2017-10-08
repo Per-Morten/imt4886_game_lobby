@@ -5,6 +5,7 @@ const MatchModel = require('../../models/Match');
 const db = require('../database');
 const mongoose = require('mongoose');
 const matchDesc = require('./match_desc');
+const GameModel = require('../../models/Game');
 
 const testMatch1 = {
     gameToken: 'Game 1',
@@ -25,6 +26,20 @@ const testMatch3 = {
     status: 0,
     hostIP: '127.0.0.1',
     hostPort: 3000,
+};
+
+const testGame1 = {
+    name: 'Game1',
+    valid: true,
+};
+
+const testGame2 = {
+    name: 'Game2',
+    valid: true,
+};
+
+const invalidGame = {
+    name: 'InvalidGame',
 };
 
 const invalidId = '111111111111111111111111';
@@ -51,17 +66,33 @@ test.cb.after((t) => {
 
 test.cb.beforeEach((t) => {
     MatchModel.remove({}, () => {
-        let promises = [
-            MatchModel.create(Object.assign({}, testMatch1)),
-            MatchModel.create(Object.assign({}, testMatch2)),
-            MatchModel.create(Object.assign({}, testMatch3))
+        let promises1 = [
+            GameModel.create(Object.assign({}, testGame1)),
+            GameModel.create(Object.assign({}, testGame2)),
+            GameModel.create(Object.assign({}, invalidGame)),
         ];
-        Promise.all(promises)
-            .then(matches => {
-                if(matches[0] && matches[1] && matches[2]) {
-                    t.context.matches = matches;
-                    t.end();
+        Promise.all(promises1)
+            .then(games => {
+                if (games[0] && games[1] && games[2]) {
+                    testMatch1.gameToken = games[0]._id;
+                    testMatch2.gameToken = games[1]._id;
+                    testMatch3.gameToken = games[0]._id;
+                    t.context.games = games;
+                    t.context.invalidGame = games[2];
                 }
+                let promises2 = [
+                    MatchModel.create(Object.assign({}, testMatch1)),
+                    MatchModel.create(Object.assign({}, testMatch2)),
+                    MatchModel.create(Object.assign({}, testMatch3)),
+                ];
+
+                Promise.all(promises2)
+                    .then(matches => {
+                        if (matches[0] && matches[1] && matches[2]) {
+                            t.context.matches = matches;
+                            t.end();
+                        }
+                    }).catch(err => console.log(err));
             }).catch(err => console.log(err))
     });
 });
@@ -75,7 +106,7 @@ test.serial('Should create a match', async(t) => {
     t.plan(matchDesc.length + 2);
 
     const newMatch = {
-        gameToken: 'Game 3',
+        gameToken: t.context.games[0]._id,
         status: 0,
         hostIP: '127.0.0.1',
         hostPort: 3000,
