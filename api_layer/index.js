@@ -8,7 +8,7 @@ if (!module.parent) {
 
 debug('Kjapp:server')('starting');
 
-const port = Server.normalizePort(process.env.PORT || 3000);
+const port = Server.normalizePort(process.env.PORT || 8333);
 
 Server.start(port);
 
