@@ -28,6 +28,14 @@ const MatchSchema = mongoose.Schema({
         required: true,
         default: 1,
     },
+    maxPlayerCount: {
+        type: Number,
+        required: true,
+
+        // Adding this default to deal with getting non-full matches that
+        // does not have a maxPlayerCount.
+        default: Number.MAX_SAFE_INTEGER,
+    }
 });
 
 MatchSchema.statics.findByToken = function (gameToken) {
@@ -107,8 +115,7 @@ MatchSchema.statics.updateStatus = function(id, status) {
 
 MatchSchema.statics.updatePlayerCount = function(id, playerCount) {
     return new Promise((resolve, reject) => {
-        if (playerCount < 1)
-        {
+        if (playerCount < 1) {
             resolve({code: 400});
             return;
         }
@@ -129,5 +136,21 @@ MatchSchema.statics.findByTokenInSession = function (gameToken) {
             .catch(err => reject(err));
     });
 };
+
+MatchSchema.statics.findByTokenNotFull = async function(gameToken) {
+    try {
+        let result = await GameModel.findById({_id: gameToken});
+        if (!result) {
+            return {code: 404};
+        }
+        let matches = await this.find({gameToken: gameToken})
+                                .$where('this.playerCount < this.maxPlayerCount')
+                                .exec();
+
+        return {code: 200, matches: matches};
+    } catch(err) {
+        throw errors.ERROR_500;
+    }
+}
 
 module.exports = mongoose.model('MatchModel', MatchSchema, 'matches');

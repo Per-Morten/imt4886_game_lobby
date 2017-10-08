@@ -45,4 +45,60 @@ module.exports = (api) => {
                 .then(list => res.json(list))
                 .catch(err => res.json(err));
         });
+
+    /**
+     * @api {get} /matches/not_full/ Request all the matches that are not full with a given gameToken
+     * @apiName GetMatchesNotFull
+     * @apiGroup Matches
+     * @apiDescription
+     * Returns a JSON array of all matches where playerCount < maxPlayerCount.
+     * The array does not include matches that have not specified maxPlayerCount.
+     *
+     * @apiParam {String} gameToken The unique game token of a game.
+     * @apiSuccess (200) Success
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     [
+     *       { _id: '59da7d0e704a440b4fc6d840',
+     *         name: 'Test Match 2',
+     *         gameToken: '59da7d0e704a440b4fc6d83d',
+     *         status: 0,
+     *         hostIP: '127.0.0.1',
+     *         hostPort: 3000,
+     *         __v: 0,
+     *         maxPlayerCount: 9007199254740991,
+     *         playerCount: 1 },
+     *       { _id: '59da7d0e704a440b4fc6d842',
+     *         name: 'Test Match 4',
+     *         gameToken: '59da7d0e704a440b4fc6d83d',
+     *         status: 0,
+     *         hostIP: '127.0.0.1',
+     *         hostPort: 3000,
+     *         __v: 0,
+     *         maxPlayerCount: 36,
+     *         playerCount: 35 },
+     *       { _id: '59da7d0e704a440b4fc6d843',
+     *         name: 'Test Match 5',
+     *         gameToken: '59da7d0e704a440b4fc6d83d',
+     *         status: 0,
+     *         hostIP: '127.0.0.1',
+     *         hostPort: 3000,
+     *         __v: 0,
+     *         maxPlayerCount: 36,
+     *         playerCount: 22 }
+     *      ]
+     *
+     * @apiError (404) TokenNotFound The supplied GameToken was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {}
+     */
+    api.route('/matches/not_full')
+        .get((req, res) => {
+            MatchModel.findByTokenNotFull(req.body.gameToken)
+                .then(out => res.status(out.code).json(out.matches))
+                .catch(err => res.status(err.code).json(err));
+        });
 };
