@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const errors = require('../utility/error');
+const GameModel = require('./Game');
 
 const MatchSchema = mongoose.Schema({
     name: {
@@ -7,7 +8,7 @@ const MatchSchema = mongoose.Schema({
         required: true,
     },
     gameToken: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
     status: {
@@ -67,14 +68,17 @@ MatchSchema.statics.deleteMatch = function(id) {
     });
 };
 
-MatchSchema.statics.createMatch = function(matchInfo) {
-    return new Promise((resolve, reject) => {
-        this.create(Object.assign({}, matchInfo))
-            .then(match => {
-                resolve({code: 200, match: match});
-            })
-            .catch(err => reject(errors.ERROR_500));
-    });
+MatchSchema.statics.createMatch = async function(matchInfo) {
+    try {
+        if (!await GameModel.isValid(matchInfo.gameToken)) {
+            return {code: 403};
+        }
+
+        let match = await this.create(Object.assign({}, matchInfo));
+        return {code: 200, match: match};
+    } catch (err) {
+        throw errors.ERROR_500;
+    }
 };
 
 MatchSchema.statics.updateStatus = function(id, status) {
