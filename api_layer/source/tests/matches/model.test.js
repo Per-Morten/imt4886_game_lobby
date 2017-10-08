@@ -3,6 +3,7 @@ import test from 'ava';
 const db = require('../database');
 const mongoose = require('mongoose');
 const MatchModel = require('../../models/Match');
+const GameModel = require('../../models/Game');
 
 
 const match = {
@@ -19,6 +20,16 @@ const match2 = {
     hostPort: 3000,
 };
 
+const testGame1 = {
+    name: 'game1',
+    valid: true,
+};
+
+const testGame2 = {
+    name: 'game2',
+    valid: true,
+};
+
 test.cb.before((t) => {
     db('match-model-test')
         .then(() => t.end())
@@ -33,7 +44,21 @@ test.cb.after((t) => {
 });
 
 test.cb.beforeEach((t) => {
-    MatchModel.remove({}, () => t.end());
+    MatchModel.remove({}, () => {
+        let promises = [
+            GameModel.create(Object.assign({}, testGame1)),
+            GameModel.create(Object.assign({}, testGame2))
+        ];
+        Promise.all(promises)
+            .then(games => {
+                if (games[0] && games[1]) {
+                    match.gameToken = games[0]._id;
+                    match2.gameToken = games[1]._id;
+                }
+                t.end();
+            })
+            .catch(err => console.log(err));
+    });
 });
 
 ///////////////////////////////////////////////////////////
