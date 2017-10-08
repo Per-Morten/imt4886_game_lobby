@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const matchDesc = require('./match_desc');
 
 const testMatch1 = {
+    name: 'Test Match 1',
     gameToken: 'Game 1',
     status: 0,
     hostIP: '127.0.0.0',
@@ -14,6 +15,7 @@ const testMatch1 = {
 };
 
 const testMatch2 = {
+    name: 'Test Match 2',
     gameToken: 'Game 2',
     status: 0,
     hostIP: '127.0.0.1',
@@ -21,6 +23,7 @@ const testMatch2 = {
 };
 
 const testMatch3 = {
+    name: 'Test Match 3',
     gameToken: 'Game 1',
     status: 0,
     hostIP: '127.0.0.1',
@@ -75,6 +78,7 @@ test.serial('Should create a match', async(t) => {
     t.plan(matchDesc.length + 2);
 
     const newMatch = {
+        name: 'Test Match',
         gameToken: 'Game 3',
         status: 0,
         hostIP: '127.0.0.1',
