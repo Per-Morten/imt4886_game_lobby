@@ -16,7 +16,7 @@ const match = {
 const match2 = {
     name: 'Test Match 2',
     gameToken: 'Game 1',
-    status: 1,
+    status: 0,
     hostIP: '127.0.0.1',
     hostPort: 3000,
 };
@@ -149,6 +149,26 @@ test.serial('Find matches with gameToken', async (t) => {
         t.pass();
     } else {
         t.fail('Did not find matches with given gameToken');
+    }
+});
+
+test.serial('Find in session matches with gameToken', async (t) => {
+    t.plan(2);
+
+    const m1 = await MatchModel.createMatch(match);
+    const m2 = await MatchModel.createMatch(match2);
+
+    if(m1.code == 200 && m2.code == 200) {
+        t.pass();
+    } else {
+        t.fail('Could not create the matches');
+    }
+
+    const test1 = await MatchModel.findByTokenInSession(m1.match.gameToken);
+    if(test1.length === 1) {
+        t.pass();
+    } else {
+        t.fail('Found 2 matches where only 1 is in session');
     }
 });
 
