@@ -116,7 +116,7 @@ MatchSchema.statics.updatePlayerCount = function(id, playerCount) {
 
 MatchSchema.statics.findByTokenInSession = function (gameToken) {
     return new Promise((resolve, reject) => {
-        this.find({ gameToken, 'status': 1 }).exec()
+        this.find({ gameToken, status: 1 }).exec()
             .then(matches => resolve(matches))
             .catch(err => reject(err));
     });
