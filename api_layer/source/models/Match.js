@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const errors = require('../utility/error');
 
 const MatchSchema = mongoose.Schema({
-    matchName: {
+    name: {
         type: String,
         required: true,
     },
