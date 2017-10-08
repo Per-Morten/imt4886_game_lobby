@@ -263,6 +263,23 @@ test.serial('Update playercount', async(t) => {
         .catch(err => t.fail(err));
 })
 
+test.serial('Cannot create match without valid token', async(t) => {
+    const newMatch = {
+      gameToken: t.context.invalidGame._id,
+      status: 0,
+      hostIP: '127.0.0.1',
+      hostPort: 3000,
+  }
+
+  await request(server)
+      .post('/match/')
+      .send(newMatch)
+      .expect(403)
+      .then(response => t.pass())
+      .catch(err => t.fail(err));
+
+});
+
 ///////////////////////////////////////////////////////////
 /// Multiple Matches Tests
 ///////////////////////////////////////////////////////////
