@@ -3,6 +3,10 @@ const errors = require('../utility/error');
 const GameModel = require('./Game');
 
 const MatchSchema = mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+    },
     gameToken: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -117,5 +121,13 @@ MatchSchema.statics.updatePlayerCount = function(id, playerCount) {
             .catch(err => reject(errors.ERROR_500));
     });
 }
+
+MatchSchema.statics.findByTokenInSession = function (gameToken) {
+    return new Promise((resolve, reject) => {
+        this.find({ gameToken, status: 1 }).exec()
+            .then(matches => resolve(matches))
+            .catch(err => reject(err));
+    });
+};
 
 module.exports = mongoose.model('MatchModel', MatchSchema, 'matches');

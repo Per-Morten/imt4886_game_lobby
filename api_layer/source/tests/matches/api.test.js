@@ -8,6 +8,7 @@ const matchDesc = require('./match_desc');
 const GameModel = require('../../models/Game');
 
 const testMatch1 = {
+    name: 'Test Match 1',
     gameToken: 'Game 1',
     status: 0,
     hostIP: '127.0.0.0',
@@ -15,6 +16,7 @@ const testMatch1 = {
 };
 
 const testMatch2 = {
+    name: 'Test Match 2',
     gameToken: 'Game 2',
     status: 0,
     hostIP: '127.0.0.1',
@@ -22,6 +24,7 @@ const testMatch2 = {
 };
 
 const testMatch3 = {
+    name: 'Test Match 3',
     gameToken: 'Game 1',
     status: 0,
     hostIP: '127.0.0.1',
@@ -107,6 +110,7 @@ test.serial('Should create a match', async(t) => {
 
     const newMatch = {
         gameToken: t.context.games[0]._id,
+        name: 'Test Match',
         status: 0,
         hostIP: '127.0.0.1',
         hostPort: 3000,
@@ -291,6 +295,29 @@ test.serial('Returning matches with given gameToken: test', async(t) => {
         .then(response => {
             if(response.body.length != 2) {
                 t.fail(`Returned ${response.body.length} matches when 2 matches should have been returned`);
+            }
+        })
+        .catch(err => t.fail(err));
+
+    t.pass();
+});
+
+test.serial('Returning matches with given gameToken: test that are in session', async(t) => {
+    t.plan(1);
+
+    await request(server)
+        .put('/match/status/')
+        .send({id: t.context.matches[0]._id, status: 1})
+        .expect(204)
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .get('/matches/in_session/')
+        .send({gameToken: t.context.matches[0].gameToken})
+        .expect(200)
+        .then(response => {
+            if(response.body.length != 1) {
+                t.fail(`Returned ${response.body.length} matches when 1 match should have been returned`);
             }
         })
         .catch(err => t.fail(err));

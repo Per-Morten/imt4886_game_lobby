@@ -14,6 +14,7 @@ module.exports = (api) => {
      * @apiParam {Id} id The unique id of the match.
      * @apiSuccess (200) _id The unique identifier of the match.
      * @apiSuccess (200) __v The version of the match in the database.
+     * @apiSuccess (200) name The name of the match.
      * @apiSuccess (200) gameToken The identifier of the game the match belongs to.
      * @apiSuccess (200) status The current status of the game. 0 for waiting, 1 for in session.
      * @apiSuccess (200) hostIP The ip address of the host of the match.
@@ -23,10 +24,11 @@ module.exports = (api) => {
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *     {
-     *       "_id": "59c7f0c9b0a0932165c058b6"
-     *       "__v": 0
-     *       "gameToken": "Game 1"
-     *       "status": 1
+     *       "_id": "59c7f0c9b0a0932165c058b6",
+     *       "__v": 0,
+     *       "name": "Match 1",
+     *       "gameToken": "Game 1",
+     *       "status": 1,
      *       "hostIP": "127.0.0.0",
      *       "hostPort": 3000,
      *       "playerCount": 1
@@ -82,8 +84,10 @@ module.exports = (api) => {
      * @apiName CreateMatch
      * @apiGroup Match
      * @apiDescription
-     *  Creates a match with the given parameters.
+     *  Creates a match with the given JSON object.
      *  Returns 200 on success together with the newly created match.
+     *
+     * @apiParam (MatchInfo){String} name The name of the match, provided by the host.
      *
      * @apiParam (MatchInfo){String} gameToken The gameToken belonging to this game
      *                                         (given to developers on per game basis).
@@ -94,6 +98,7 @@ module.exports = (api) => {
      *
      * @apiSuccess (200) _id The unique identifier of the match.
      * @apiSuccess (200) __v The version of the match in the database.
+     * @apiSuccess (200) name The name of the match.
      * @apiSuccess (200) gameToken The identifier of the game the match belongs to.
      * @apiSuccess (200) status The current status of the game. 0 for waiting, 1 for in session.
      * @apiSuccess (200) hostIP The ip address of the host of the match.
@@ -103,10 +108,11 @@ module.exports = (api) => {
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *     {
-     *       "_id": "59c7f0c9b0a0932165c058b6"
-     *       "__v": 0
-     *       "gameToken": "Game 1"
-     *       "status": 1
+     *       "_id": "59c7f0c9b0a0932165c058b6",
+     *       "__v": 0,
+     *       "name": "Match 1",
+     *       "gameToken": "Game 1",
+     *       "status": 1,
      *       "hostIP": "127.0.0.0",
      *       "hostPort": 3000,
      *       "playerCount": 1
