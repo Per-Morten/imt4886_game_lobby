@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const errors = require('../utility/error');
 
 const MatchSchema = mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+    },
     gameToken: {
         type: String,
         required: true,

@@ -6,6 +6,7 @@ const MatchModel = require('../../models/Match');
 
 
 const match = {
+    name: 'Test Match 1',
     gameToken: 'Game 1',
     status: 1,
     hostIP: '127.0.0.0',
@@ -13,6 +14,7 @@ const match = {
 };
 
 const match2 = {
+    name: 'Test Match 2',
     gameToken: 'Game 1',
     status: 1,
     hostIP: '127.0.0.1',
