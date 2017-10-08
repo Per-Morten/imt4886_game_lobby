@@ -31,6 +31,34 @@ const testMatch3 = {
     hostPort: 3000,
 };
 
+const testMatch4 = {
+    name: 'Test Match 4',
+    gameToken: 'Game 2',
+    status: 0,
+    hostIP: '127.0.0.1',
+    hostPort: 3000,
+    maxPlayerCount: 36,
+};
+
+const testMatch5 = {
+    name: 'Test Match 5',
+    gameToken: 'Game 2',
+    status: 0,
+    hostIP: '127.0.0.1',
+    hostPort: 3000,
+    maxPlayerCount: 36,
+};
+
+const testMatch6 = {
+    name: 'Test Match 6',
+    gameToken: 'Game 2',
+    status: 0,
+    hostIP: '127.0.0.1',
+    hostPort: 3000,
+    maxPlayerCount: 2,
+    playerCount: 2,
+};
+
 const testGame1 = {
     name: 'Game1',
     valid: true,
@@ -80,6 +108,11 @@ test.cb.beforeEach((t) => {
                     testMatch1.gameToken = games[0]._id;
                     testMatch2.gameToken = games[1]._id;
                     testMatch3.gameToken = games[0]._id;
+                    testMatch4.gameToken = games[1]._id;
+                    testMatch5.gameToken = games[1]._id;
+                    testMatch6.gameToken = games[1]._id;
+
+
                     t.context.games = games;
                     t.context.invalidGame = games[2];
                 }
@@ -87,11 +120,15 @@ test.cb.beforeEach((t) => {
                     MatchModel.create(Object.assign({}, testMatch1)),
                     MatchModel.create(Object.assign({}, testMatch2)),
                     MatchModel.create(Object.assign({}, testMatch3)),
+                    MatchModel.create(Object.assign({}, testMatch4)),
+                    MatchModel.create(Object.assign({}, testMatch5)),
+                    MatchModel.create(Object.assign({}, testMatch6)),
+
                 ];
 
                 Promise.all(promises2)
                     .then(matches => {
-                        if (matches[0] && matches[1] && matches[2]) {
+                        if (matches[0] && matches[1] && matches[2] && matches[3]) {
                             t.context.matches = matches;
                             t.end();
                         }
@@ -320,6 +357,42 @@ test.serial('Returning matches with given gameToken: test that are in session', 
                 t.fail(`Returned ${response.body.length} matches when 1 match should have been returned`);
             }
         })
+        .catch(err => t.fail(err));
+
+    t.pass();
+});
+
+test.serial('Get all matches that are not full', async(t) => {
+    t.plan(2);
+
+    await request(server)
+        .put('/match/player_count/')
+        .send({id: t.context.matches[3]._id, playerCount: 35})
+        .expect(204)
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .put('/match/player_count/')
+        .send({id: t.context.matches[4]._id, playerCount: 22})
+        .expect(204)
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .get('/matches/not_full')
+        .send({ gameToken: t.context.games[1]._id })
+        .expect(200)
+        .then(response => {
+            if (response.body.length != 3) {
+                t.fail(`Returned ${response.body.length} matches when 3 should have been returned`);
+            }
+        })
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .get('/matches/not_full')
+        .send({ gameToken: invalidId })
+        .expect(404)
+        .then(response => t.pass())
         .catch(err => t.fail(err));
 
     t.pass();

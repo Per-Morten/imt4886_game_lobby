@@ -7,6 +7,7 @@ module.exports = [
     'hostIP',
     'hostPort',
     'playerCount',
+    'maxPlayerCount',
     '_id',
     '__v',
 ];
