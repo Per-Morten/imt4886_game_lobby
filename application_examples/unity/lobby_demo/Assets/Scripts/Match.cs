@@ -57,3 +57,16 @@ public class MatchDeleteRequest
         this.id = id;
     }
 }
+
+[System.Serializable]
+public class MatchPlayerCountPUTRequest
+{
+    public string id = "";
+    public int playerCount = -1;
+
+    public MatchPlayerCountPUTRequest(string id, int playerCount)
+    {
+        this.id = id;
+        this.playerCount = playerCount;
+    }
+}

@@ -5,23 +5,28 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class MatchButton : MonoBehaviour {
-    private string networkAddress;
-    private int networkPort;
+    public Text matchNameText;
+    public Text matchStatusText;
+    public Text matchAddressText;
+    public Text matchPlayerCountText;
 
+    private MatchResponse match;
     private UIHandler uiHandler;
 
-    public void Initialize(string ip, int port, UIHandler uiHandlerReference)
+    public void Initialize(MatchResponse acquiredMatch, UIHandler uiHandlerReference)
     {
-        networkAddress = ip;
-        networkPort = port;
+        match = acquiredMatch;
         uiHandler = uiHandlerReference;
 
-        GetComponentInChildren<Text>().text = networkAddress;
+        matchNameText.text = "Match Name: " + match.name;
+        matchStatusText.text = "Match Status: " + ((match.status == 1) ? "In Progress" : "Not Started");
+        matchAddressText.text = "Host Address: " + match.hostIP + "/" + match.hostPort;
+        matchPlayerCountText.text = "Connected Players: " + match.playerCount + "/" + match.maxPlayerCount;
     }
 
     public void OnClick()
     {
-        NetworkManager.singleton.GetComponent<KJAPPNetworkManager>().StartClientConnection(networkAddress, networkPort);
+        NetworkManager.singleton.GetComponent<KJAPPNetworkManager>().StartClientConnection(match.hostIP, match.hostPort);
         uiHandler.ChangeMenu(uiHandler.waitForConnectionMenu);
         uiHandler.CleanUpMatchList();
     }

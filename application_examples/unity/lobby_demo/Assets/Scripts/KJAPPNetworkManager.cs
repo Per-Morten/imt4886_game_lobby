@@ -4,21 +4,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+/// <summary>
+/// A extended NetworkManager that works as an example for how to interact with the Lobby API
+/// </summary>
 public class KJAPPNetworkManager : NetworkManager
 {
     [Header("KJAPP specific")]
     public string gameToken;
     public string apiUrl;
+    public int maxPlayersPerMatch = 1;
 
     private string matchId = "";
     private const int MATCH_ACTIVE_STATUS = 1;
 
+    private int playerCount = 1;
+
+    #region Public Methods
     /// <summary>
     /// Public method that can be called by a button on the UI(as an example) in order to start the process creating a match.
     /// </summary>
-    public void StartHosting()
+    public void StartHosting(string matchName)
     {
-        StartCoroutine(UploadMatch());
+        StartCoroutine(UploadMatch(matchName));
     }
 
     /// <summary>
@@ -39,13 +46,15 @@ public class KJAPPNetworkManager : NetworkManager
     {
         StartCoroutine(FetchMatches());
     }
+    #endregion
 
+    #region API coroutines
     /// <summary>
     /// Coroutine that sends a web request to the API in order to create a new match. 
     /// </summary>
-    private IEnumerator UploadMatch()
+    private IEnumerator UploadMatch(string matchName)
     {
-        var webRequest = CreateWebRequestWithBody("/match/", JsonUtility.ToJson(new MatchPOSTRequest("testMatch", gameToken, 0, networkAddress, networkPort, 1, 8)), 
+        var webRequest = CreateWebRequestWithBody("/match/", JsonUtility.ToJson(new MatchPOSTRequest(matchName, gameToken, 0, networkAddress, networkPort, playerCount, maxPlayersPerMatch)), 
                                                                                 UnityWebRequest.kHttpVerbPOST);
         yield return webRequest.Send();
 
@@ -108,23 +117,70 @@ public class KJAPPNetworkManager : NetworkManager
         {
             Debug.Log(webRequest.error);
         }
-    }
-
-    /// <summary>
-    /// NetworkManager callback that runs whenever StopHost() is called.
-    /// A finished match should be deleted from the database so this callback can be used to do so. 
-    /// </summary>
-    public override void OnStopHost()
-    {
-        base.OnStopHost();
-
-        // Rather lengthy way of checking that we are the server.
-        if (client.connection.playerControllers[0].gameObject.GetComponent<NetworkIdentity>().isServer)
+        else
         {
-            StartCoroutine(DeleteMatch());
+            matchId = "";
         }
     }
 
+    /// <summary>
+    /// Coroutine that sends a web request to the API in order to update the amount of connected players.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator UpdatePlayerCount()
+    {
+        if (matchId != "")
+        {
+            var webRequest = CreateWebRequestWithBody("/match/player_count/", JsonUtility.ToJson(new MatchPlayerCountPUTRequest(matchId, playerCount)), UnityWebRequest.kHttpVerbPUT);
+            yield return webRequest.Send();
+
+            if (webRequest.isNetworkError)
+            {
+                Debug.Log(webRequest.error);
+            }
+        }
+    }
+    #endregion
+
+    #region Callbacks
+    
+    /// <summary>
+    /// NetworkManager callback that runs on the server whenever it stops.
+    /// A finished match should be deleted from the database so this callback can be used to do so. 
+    /// </summary>
+    public override void OnStopServer()
+    {
+        StartCoroutine(DeleteMatch());
+    }
+    
+    /// <summary>
+    /// Callback that is called on the server whenever a client connects. Note: The host also counts as a client
+    /// We use this to update the player count of the match. 
+    /// </summary>
+    public override void OnServerConnect(NetworkConnection conn)
+    {
+        // Somewhat of a hack, but we dont want to update the playerCount field of the host as this already is done through match creation
+        // The reason for this is that the match itself will not be accessible for PUT requests this early.
+        if (NetworkServer.connections.Count > 1)
+        {
+            playerCount++;
+            StartCoroutine(UpdatePlayerCount());
+        }
+    }
+    
+    /// <summary>
+    /// Callback that is called on the server whenever a client disconnects.
+    /// We use this to update the player count of the match.
+    /// </summary>
+    public override void OnServerDisconnect(NetworkConnection conn)
+    {
+        playerCount--;
+        StartCoroutine(UpdatePlayerCount());
+        NetworkServer.DestroyPlayersForConnection(conn);
+    }
+    #endregion
+
+    #region Helper Methods
     /// <summary>
     /// Helper function for manually building web requests to avoid issues that you might end up having from Unity doing things like url-encoding your body. 
     /// </summary>
@@ -143,4 +199,5 @@ public class KJAPPNetworkManager : NetworkManager
 
         return webRequest;
     }
+    #endregion
 }
