@@ -1,29 +1,36 @@
 ﻿[System.Serializable]
 public class MatchResponse
 {
+    public string name = null;
     public string gameToken = null;
     public int status = -1;
     public string hostIP = null;
     public int hostPort = -1;
-    public string _id = "";
+    public string _id = null;
     public int playerCount = -1;
+    public int maxPlayerCount = -1;
 }
 
 [System.Serializable]
 public class MatchPOSTRequest
 {
+    public string name = null;
     public string gameToken = null;
     public int status = -1;
     public string hostIP = null;
     public int hostPort = -1;
     public int playerCount = 1;
+    public int maxPlayerCount = 1;
 
-    public MatchPOSTRequest(string token, int status, string IP, int port)
+    public MatchPOSTRequest(string name, string gameToken, int status, string hostIP, int hostPort, int playerCount, int maxPlayerCount)
     {
-        gameToken = token;
+        this.name = name;
+        this.gameToken = gameToken;
         this.status = status;
-        hostIP = IP;
-        hostPort = port;
+        this.hostIP = hostIP;
+        this.hostPort = hostPort;
+        this.playerCount = playerCount;
+        this.maxPlayerCount = maxPlayerCount;
     }
 }
 
@@ -37,17 +44,6 @@ public class MatchStatusPUTRequest
     {
         this.id = id;
         this.status = status;
-    }
-}
-
-[System.Serializable]
-public class MatchesGETRequest
-{
-    public string gameToken = "";
-
-    public MatchesGETRequest(string gToken)
-    {
-        gameToken = gToken;
     }
 }
 
