@@ -1,9 +1,14 @@
 const mongoose = require('mongoose');
 const errors = require('../utility/error');
+const GameModel = require('./Game');
 
 const MatchSchema = mongoose.Schema({
-    gameToken: {
+    name: {
         type: String,
+        required: true,
+    },
+    gameToken: {
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
     status: {
@@ -23,6 +28,14 @@ const MatchSchema = mongoose.Schema({
         required: true,
         default: 1,
     },
+    maxPlayerCount: {
+        type: Number,
+        required: true,
+
+        // Adding this default to deal with getting non-full matches that
+        // does not have a maxPlayerCount.
+        default: Number.MAX_SAFE_INTEGER,
+    }
 });
 
 MatchSchema.statics.findByToken = function (gameToken) {
@@ -63,14 +76,17 @@ MatchSchema.statics.deleteMatch = function(id) {
     });
 };
 
-MatchSchema.statics.createMatch = function(matchInfo) {
-    return new Promise((resolve, reject) => {
-        this.create(Object.assign({}, matchInfo))
-            .then(match => {
-                resolve({code: 200, match: match});
-            })
-            .catch(err => reject(errors.ERROR_500));
-    });
+MatchSchema.statics.createMatch = async function(matchInfo) {
+    try {
+        if (!await GameModel.isValid(matchInfo.gameToken)) {
+            return {code: 403};
+        }
+
+        let match = await this.create(Object.assign({}, matchInfo));
+        return {code: 200, match: match};
+    } catch (err) {
+        throw errors.ERROR_500;
+    }
 };
 
 MatchSchema.statics.updateStatus = function(id, status) {
@@ -99,8 +115,7 @@ MatchSchema.statics.updateStatus = function(id, status) {
 
 MatchSchema.statics.updatePlayerCount = function(id, playerCount) {
     return new Promise((resolve, reject) => {
-        if (playerCount < 1)
-        {
+        if (playerCount < 1) {
             resolve({code: 400});
             return;
         }
@@ -112,6 +127,30 @@ MatchSchema.statics.updatePlayerCount = function(id, playerCount) {
             })
             .catch(err => reject(errors.ERROR_500));
     });
+}
+
+MatchSchema.statics.findByTokenInSession = function (gameToken) {
+    return new Promise((resolve, reject) => {
+        this.find({ gameToken, status: 1 }).exec()
+            .then(matches => resolve(matches))
+            .catch(err => reject(err));
+    });
+};
+
+MatchSchema.statics.findByTokenNotFull = async function(gameToken) {
+    try {
+        let result = await GameModel.findById({_id: gameToken});
+        if (!result) {
+            return {code: 404};
+        }
+        let matches = await this.find({gameToken: gameToken})
+                                .$where('this.playerCount < this.maxPlayerCount')
+                                .exec();
+
+        return {code: 200, matches: matches};
+    } catch(err) {
+        throw errors.ERROR_500;
+    }
 }
 
 module.exports = mongoose.model('MatchModel', MatchSchema, 'matches');
