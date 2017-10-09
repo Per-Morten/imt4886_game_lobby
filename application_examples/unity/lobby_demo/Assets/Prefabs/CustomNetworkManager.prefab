@@ -122,5 +122,5 @@ MonoBehaviour:
   matchSize: 4
   isNetworkActive: 0
   matchMaker: {fileID: 0}
-  gameToken: testToken
-  apiUrl: http://192.168.56.101:3000
+  gameToken: 59db2ce5899d1b843c18f01a
+  apiUrl: http://192.168.56.101:8333

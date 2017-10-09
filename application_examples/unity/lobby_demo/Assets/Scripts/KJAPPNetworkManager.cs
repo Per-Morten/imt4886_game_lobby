@@ -45,7 +45,8 @@ public class KJAPPNetworkManager : NetworkManager
     /// </summary>
     private IEnumerator UploadMatch()
     {
-        var webRequest = CreateWebRequest("/match/", JsonUtility.ToJson(new MatchPOSTRequest(gameToken, 0, networkAddress, networkPort)), UnityWebRequest.kHttpVerbPOST);
+        var webRequest = CreateWebRequestWithBody("/match/", JsonUtility.ToJson(new MatchPOSTRequest("testMatch", gameToken, 0, networkAddress, networkPort, 1, 8)), 
+                                                                                UnityWebRequest.kHttpVerbPOST);
         yield return webRequest.Send();
 
         if (webRequest.isNetworkError)
@@ -66,7 +67,7 @@ public class KJAPPNetworkManager : NetworkManager
     /// </summary>
     private IEnumerator SetMatchStatusToInSession()
     {
-        var webRequest = CreateWebRequest("/match/status", JsonUtility.ToJson(new MatchStatusPUTRequest(matchId, MATCH_ACTIVE_STATUS)), UnityWebRequest.kHttpVerbPUT);
+        var webRequest = CreateWebRequestWithBody("/match/status", JsonUtility.ToJson(new MatchStatusPUTRequest(matchId, MATCH_ACTIVE_STATUS)), UnityWebRequest.kHttpVerbPUT);
         yield return webRequest.Send();
 
         if (webRequest.isNetworkError)
@@ -80,8 +81,7 @@ public class KJAPPNetworkManager : NetworkManager
     /// </summary>
     private IEnumerator FetchMatches()
     {
-        // As a note: the body-parser used on the server seems to completely ignore GET requests with bodies, so GET requests need to be reworked. 
-        var webRequest = CreateWebRequest("/matches/", JsonUtility.ToJson(new MatchesGETRequest(gameToken)), UnityWebRequest.kHttpVerbGET);
+        var webRequest = UnityWebRequest.Get(apiUrl + "/matches/" + gameToken);
         yield return webRequest.Send();
 
         if (webRequest.isNetworkError)
@@ -101,7 +101,7 @@ public class KJAPPNetworkManager : NetworkManager
     /// </summary>
     private IEnumerator DeleteMatch()
     {
-        var webRequest = CreateWebRequest("/match/", JsonUtility.ToJson(new MatchDeleteRequest(matchId)), UnityWebRequest.kHttpVerbDELETE);
+        var webRequest = CreateWebRequestWithBody("/match/", JsonUtility.ToJson(new MatchDeleteRequest(matchId)), UnityWebRequest.kHttpVerbDELETE);
         yield return webRequest.Send();
 
         if (webRequest.isNetworkError)
@@ -132,7 +132,7 @@ public class KJAPPNetworkManager : NetworkManager
     /// <param name="jsonBody">The string containing the JSON object</param>
     /// <param name="requestType">Whether the request should be GET/POST/PUT etc</param>
     /// <returns>A web request that is ready for usage</returns>
-    private UnityWebRequest CreateWebRequest(string apiRouteAppendage, string jsonBody, string requestType)
+    private UnityWebRequest CreateWebRequestWithBody(string apiRouteAppendage, string jsonBody, string requestType)
     {
         // http://answers.unity3d.com/questions/1163204/prevent-unitywebrequestpost-from-url-encoding-the.html
         var webRequest = new UnityWebRequest(apiUrl + apiRouteAppendage);
