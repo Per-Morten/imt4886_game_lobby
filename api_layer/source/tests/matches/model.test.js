@@ -181,6 +181,7 @@ test.serial('Find in session matches with gameToken', async (t) => {
     t.plan(2);
 
     const m1 = await MatchModel.createMatch(match);
+    await MatchModel.updateStatus(m1.match._id, 1);
     const m2 = await MatchModel.createMatch(match2);
 
     if(m1.code == 200 && m2.code == 200) {
