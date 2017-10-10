@@ -38,6 +38,20 @@ const MatchSchema = mongoose.Schema({
     }
 });
 
+MatchSchema.statics.isValidMatch = function(match) {
+    // Check valid ip Address
+    const ipCheck = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))$/
+    if (!ipCheck.test(match.hostIP))
+        return false;
+
+    // Check valid port number
+    const portCheck = /^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[0-5][0-9]{0,4})$/
+    if (!portCheck.test(match.hostPort))
+        return false;
+
+    return true;
+};
+
 MatchSchema.statics.findByToken = function (gameToken) {
     return new Promise((resolve, reject) => {
         this.find({ gameToken }).exec()
@@ -80,6 +94,10 @@ MatchSchema.statics.createMatch = async function(matchInfo) {
     try {
         if (!await GameModel.isValid(matchInfo.gameToken)) {
             return {code: 403};
+        }
+
+        if (!this.isValidMatch(matchInfo)) {
+            return {code: 400};
         }
 
         let match = await this.create(Object.assign({}, matchInfo));

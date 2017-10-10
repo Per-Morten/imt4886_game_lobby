@@ -321,6 +321,69 @@ test.serial('Cannot create match without valid token', async(t) => {
 
 });
 
+test.serial('Cannot create invalid match', async(t) => {
+    // Test for:
+    // Invalid ip addresses
+    const ipOutOfBoundsMatch = {
+        gameToken: t.context.games[0]._id,
+        name: 'ipOutOfBoundsMatch',
+        status: 0,
+        hostIP: '256.256.256.256',
+        hostPort: 3000,
+    };
+
+    await request(server)
+        .post('/match/')
+        .send(ipOutOfBoundsMatch)
+        .expect(400)
+        .catch(err => t.fail(err));
+
+    const ipNonNumericMatch = {
+        gameToken: t.context.games[0]._id,
+        name: 'ipNonNumericMatch',
+        status: 0,
+        hostIP: 'Test_ip_Address',
+        hostPort: 3000,
+    };
+
+    await request(server)
+        .post('/match/')
+        .send(ipNonNumericMatch)
+        .expect(400)
+        .catch(err => t.fail(err));
+
+    // Invalid port addresses (0-65535)
+    const portOutOfBoundsMatch = {
+        gameToken: t.context.games[0]._id,
+        name: 'portOutOfBoundsMatch',
+        status: 0,
+        hostIP: '128.0.0.1',
+        hostPort: 65536,
+    };
+
+    await request(server)
+        .post('/match/')
+        .send(portOutOfBoundsMatch)
+        .expect(400)
+        .catch(err => t.fail(err));
+
+    const portNonNumericMatch = {
+        gameToken: t.context.games[0]._id,
+        name: 'portOutOfBoundsMatch',
+        status: 0,
+        hostIP: '128.0.0.1',
+        hostPort: 'Abc',
+    };
+
+    await request(server)
+        .post('/match/')
+        .send(portNonNumericMatch)
+        .expect(400)
+        .catch(err => t.fail(err));
+
+    t.pass();
+});
+
 ///////////////////////////////////////////////////////////
 /// Multiple Matches Tests
 ///////////////////////////////////////////////////////////
