@@ -423,6 +423,35 @@ test.serial('Cannot create invalid match', async(t) => {
         })
         .catch(err => t.fail(err));
 
+    // Invalid maxPlayerCount
+    const outOfBoundsMaxPlayerMatch = {
+        gameToken: t.context.games[0]._id,
+        name: 'outOfBoundsMaxPlayerMatch',
+        hostIP: '128.0.0.1',
+        hostPort: 3000,
+        maxPlayerCount: -1,
+    };
+
+    await request(server)
+        .post('/match/')
+        .send(outOfBoundsMaxPlayerMatch)
+        .expect(400)
+        .catch(err => t.fail(err));
+
+    const nonNumericMaxPlayerMatch = {
+        gameToken: t.context.games[0]._id,
+        name: 'nonNumericMaxPlayerMatch',
+        hostIP: '128.0.0.1',
+        hostPort: 3000,
+        maxPlayerCount: 'Test',
+    };
+
+    await request(server)
+        .post('/match/')
+        .send(nonNumericMaxPlayerMatch)
+        .expect(400)
+        .catch(err => t.fail(err));
+
     t.pass();
 });
 

@@ -50,6 +50,10 @@ MatchSchema.statics.isValidMatch = function(match) {
     if (!portCheck.test(match.hostPort))
         return false;
 
+    // Check that we have a legal maxPlayerCount
+    if (match.maxPlayerCount && (match.maxPlayerCount < 1 || isNaN(match.maxPlayerCount)))
+        return false;
+
     return true;
 };
 
