@@ -14,6 +14,7 @@ const MatchSchema = mongoose.Schema({
     status: {
         type: Number,
         required: true,
+        default: 0,
     },
     hostIP: {
         type: String,
@@ -100,12 +101,22 @@ MatchSchema.statics.createMatch = async function(matchInfo) {
             return {code: 400};
         }
 
-        let match = await this.create(Object.assign({}, matchInfo));
+        let newMatch = {
+                    gameToken: matchInfo.gameToken,
+                    name: matchInfo.name,
+                    hostIP: matchInfo.hostIP,
+                    hostPort: matchInfo.hostPort,
+                    maxPlayerCount: matchInfo.maxPlayerCount,
+        };
+
+        let match = await this.create(Object.assign({}, newMatch));
+
         return {code: 200, match: match};
     } catch (err) {
         throw errors.ERROR_500;
     }
 };
+
 
 MatchSchema.statics.updateStatus = function(id, status) {
     return new Promise((resolve, reject) => {

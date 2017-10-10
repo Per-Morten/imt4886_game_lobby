@@ -381,6 +381,48 @@ test.serial('Cannot create invalid match', async(t) => {
         .expect(400)
         .catch(err => t.fail(err));
 
+    // Ignore playerCount
+    const ignorePlayerCountMatch = {
+        gameToken: t.context.games[0]._id,
+        name: 'ignorePlayerCountMatch',
+        status: 0,
+        hostIP: '128.0.0.1',
+        hostPort: 3000,
+        playerCount: 300,
+    };
+
+    await request(server)
+        .post('/match/')
+        .send(ignorePlayerCountMatch)
+        .expect(200)
+        .then(res => {
+            if (res.body && res.body.playerCount !== 1) {
+                t.fail(`playerCount ${res.body.playerCount} was not 1`);
+            }
+        })
+        .catch(err => t.fail(err));
+
+    // Ignore status
+    const ignoreStatusMatch = {
+        gameToken: t.context.games[0]._id,
+        name: 'ignoreStatusMatch',
+        status: 0,
+        hostIP: '128.0.0.1',
+        hostPort: 3000,
+        playerCount: 300,
+    };
+
+    await request(server)
+        .post('/match/')
+        .send(ignoreStatusMatch)
+        .expect(200)
+        .then(res => {
+            if (res.body && res.body.status !== 0) {
+                t.fail(`Status ${res.body.status} was not 0`);
+            }
+        })
+        .catch(err => t.fail(err));
+
     t.pass();
 });
 
