@@ -340,10 +340,10 @@ MonoBehaviour:
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_HorizontalOverflow: 1
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'IP Address: 192.192.192.192'
+  m_Text: 'Host Address: 193.90.59.192/7777'
 --- !u!222 &222115122097130008
 CanvasRenderer:
   m_ObjectHideFlags: 1
