@@ -29,7 +29,7 @@ module.exports = (api) => {
 
 
     /**
-     * @api {get} /matches/:gameToken Request matches with given gameToken
+     * @api {get} /matches/no_body/:gameToken Request matches with given gameToken
      * @apiName GetMatchesNoBody
      * @apiGroup Matches
      * @apiDescription
@@ -40,7 +40,7 @@ module.exports = (api) => {
      * @apiSuccess (200) Success
      *
      */
-    api.route('/matches/:gameToken')
+    api.route('/matches/no_body/:gameToken')
          .get((req, res) => {
             MatchModel.findByToken(req.params.gameToken)
                 .then(list => res.json(list))
@@ -67,7 +67,7 @@ module.exports = (api) => {
         });
 
     /**
-     * @api {get} /matches/in_session/:gameToken Request matches that are in session with given gameToken
+     * @api {get} /matches/in_session/no_body/:gameToken Request matches that are in session with given gameToken
      * @apiName GetMatchesInSessionNoBody
      * @apiGroup Matches
      * @apiDescription
@@ -78,7 +78,7 @@ module.exports = (api) => {
      * @apiSuccess (200) Success
      *
      */
-    api.route('/matches/in_session/:gameToken')
+    api.route('/matches/in_session/no_body/:gameToken')
         .get((req, res) => {
             MatchModel.findByTokenInSession(req.params.gameToken)
                 .then(list => res.json(list))
@@ -142,7 +142,7 @@ module.exports = (api) => {
         });
 
     /**
-     * @api {get} /matches/not_full/:gameToken Request all the matches that are not full with a given gameToken
+     * @api {get} /matches/not_full/no_body/:gameToken Request all the matches that are not full with a given gameToken
      * @apiName GetMatchesNotFullNoBody
      * @apiGroup Matches
      * @apiDescription
@@ -190,7 +190,7 @@ module.exports = (api) => {
      *     HTTP/1.1 404 Not Found
      *     {}
      */
-    api.route('/matches/not_full/:gameToken')
+    api.route('/matches/not_full/no_body/:gameToken')
         .get((req, res) => {
             MatchModel.findByTokenNotFull(req.params.gameToken)
                 .then(out => res.status(out.code).json(out.matches))

@@ -88,13 +88,11 @@ module.exports = (api) => {
      *  Returns 200 on success together with the newly created match.
      *
      * @apiParam (MatchInfo){String} name The name of the match, provided by the host.
-     *
      * @apiParam (MatchInfo){String} gameToken The gameToken belonging to this game
      *                                         (given to developers on per game basis).
-     * @apiParam (MatchInfo){Number={0..1}} status The current status of the match,
-     *                                             0 for waiting, 1 for in game.
      * @apiParam (MatchInfo){String} hostIP The ip address of the machine hosting the match.
      * @apiParam (MatchInfo){Number} hostPort The port which the host is listening on for the match.
+     * @apiParam (MatchInfo){Number} maxPlayerCount (optional) The maximum number of players in the match.
      *
      * @apiSuccess (200) _id The unique identifier of the match.
      * @apiSuccess (200) __v The version of the match in the database.
@@ -112,11 +110,18 @@ module.exports = (api) => {
      *       "__v": 0,
      *       "name": "Match 1",
      *       "gameToken": "Game 1",
-     *       "status": 1,
+     *       "status": 0,
      *       "hostIP": "127.0.0.0",
      *       "hostPort": 3000,
-     *       "playerCount": 1
+     *       "playerCount": 1,
+     *       "maxPlayerCount": 300
      *     }
+     *
+     * @apiError (400) BadRequest Could not create the match because of some invalid parameters.
+     *                 For example invalid ip addresses, ports, or maxPlayerCount.
+     *
+     * @apiError (403) InvalidToken Invalid gameToken or gameToken that has not yet been accepted was sent.
+     *                 Tokens need to be accepted by an admin before use.
      */
     api.route('/match/')
        .post((req, res) => {
