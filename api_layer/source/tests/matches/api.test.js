@@ -381,6 +381,21 @@ test.serial('Cannot create invalid match', async(t) => {
         .expect(400)
         .catch(err => t.fail(err));
 
+    // Valid port number
+    const validPortMatch = {
+        gameToken: t.context.games[0]._id,
+        name: 'validPortMatch',
+        status: 0,
+        hostIP: '128.0.0.1',
+        hostPort: 7777,
+    };
+
+    await request(server)
+        .post('/match/')
+        .send(validPortMatch)
+        .expect(200)
+        .catch(err => t.fail(err));
+
     // Ignore playerCount
     const ignorePlayerCountMatch = {
         gameToken: t.context.games[0]._id,
