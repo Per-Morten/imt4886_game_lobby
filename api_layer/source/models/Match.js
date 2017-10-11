@@ -46,8 +46,7 @@ MatchSchema.statics.isValidMatch = function(match) {
         return false;
 
     // Check valid port number
-    const portCheck = /^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[0-5][0-9]{0,4})$/
-    if (!portCheck.test(match.hostPort))
+    if (isNaN(match.hostPort) || match.hostPort < 0 || match.hostPort > 65535)
         return false;
 
     // Check that we have a legal maxPlayerCount
