@@ -14,6 +14,7 @@ const MatchSchema = mongoose.Schema({
     status: {
         type: Number,
         required: true,
+        default: 0,
     },
     hostIP: {
         type: String,
@@ -37,6 +38,24 @@ const MatchSchema = mongoose.Schema({
         default: Number.MAX_SAFE_INTEGER,
     }
 });
+
+MatchSchema.statics.isValidMatch = function(match) {
+    // Check valid ip Address
+    const ipCheck = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))$/
+    if (!ipCheck.test(match.hostIP))
+        return false;
+
+    // Check valid port number
+    const portCheck = /^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[0-5][0-9]{0,4})$/
+    if (!portCheck.test(match.hostPort))
+        return false;
+
+    // Check that we have a legal maxPlayerCount
+    if (match.maxPlayerCount && (match.maxPlayerCount < 1 || isNaN(match.maxPlayerCount)))
+        return false;
+
+    return true;
+};
 
 MatchSchema.statics.findByToken = function (gameToken) {
     return new Promise((resolve, reject) => {
@@ -82,12 +101,26 @@ MatchSchema.statics.createMatch = async function(matchInfo) {
             return {code: 403};
         }
 
-        let match = await this.create(Object.assign({}, matchInfo));
+        if (!this.isValidMatch(matchInfo)) {
+            return {code: 400};
+        }
+
+        let newMatch = {
+                    gameToken: matchInfo.gameToken,
+                    name: matchInfo.name,
+                    hostIP: matchInfo.hostIP,
+                    hostPort: matchInfo.hostPort,
+                    maxPlayerCount: matchInfo.maxPlayerCount,
+        };
+
+        let match = await this.create(Object.assign({}, newMatch));
+
         return {code: 200, match: match};
     } catch (err) {
         throw errors.ERROR_500;
     }
 };
+
 
 MatchSchema.statics.updateStatus = function(id, status) {
     return new Promise((resolve, reject) => {
