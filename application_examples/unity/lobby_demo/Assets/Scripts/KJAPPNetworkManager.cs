@@ -12,10 +12,10 @@ public class KJAPPNetworkManager : NetworkManager
     [Header("KJAPP specific")]
     public string gameToken;
     public string apiUrl;
-    public int maxPlayersPerMatch = 1;
+    public int maxPlayersPerMatch = 8;
 
     private string matchId = "";
-    private const int MATCH_ACTIVE_STATUS = 1;
+    private const int MATCH_STATUS_IN_SESSION = 1;
 
     private int playerCount = 1;
 
@@ -25,7 +25,7 @@ public class KJAPPNetworkManager : NetworkManager
     /// </summary>
     public void StartHosting(string matchName)
     {
-        StartCoroutine(UploadMatch(matchName));
+        StartCoroutine(AcquireExternalNetworkAddress(matchName));
     }
 
     /// <summary>
@@ -48,13 +48,54 @@ public class KJAPPNetworkManager : NetworkManager
     }
     #endregion
 
-    #region API coroutines
+    #region Private Helper Methods
+    /// <summary>
+    /// Helper function for manually building web requests to avoid issues that you might end up having from Unity doing things like url-encoding your body. 
+    /// </summary>
+    /// <param name="apiRouteAppendage">The part of the route to the API we want to append, example: "/match/"</param>
+    /// <param name="jsonBody">The string containing the JSON object</param>
+    /// <param name="requestType">Whether the request should be GET/POST/PUT etc</param>
+    /// <returns>A web request that is ready for usage</returns>
+    private UnityWebRequest CreateWebRequestWithBody(string apiRouteAppendage, string jsonBody, string requestType)
+    {
+        // http://answers.unity3d.com/questions/1163204/prevent-unitywebrequestpost-from-url-encoding-the.html
+        var webRequest = new UnityWebRequest(apiUrl + apiRouteAppendage);
+        webRequest.uploadHandler = new UploadHandlerRaw(Encoding.ASCII.GetBytes(jsonBody));
+        webRequest.downloadHandler = new DownloadHandlerBuffer();
+        webRequest.method = requestType;
+        webRequest.SetRequestHeader("Content-Type", "application/json");
+
+        return webRequest;
+    }
+
+    /// <summary>
+    /// Coroutine that fetches the external IP address before calling UploadMatch();
+    /// </summary>
+    /// <param name="matchName">The name of the match acquired from the InputField in the UI</param>
+    private IEnumerator AcquireExternalNetworkAddress(string matchName)
+    {
+        var webRequest = UnityWebRequest.Get("https://api.ipify.org?format=json");
+        yield return webRequest.Send();
+
+        if (webRequest.isNetworkError)
+        {
+            Debug.Log(webRequest.error);
+        }
+        else
+        {
+            networkAddress = JsonUtility.FromJson<NetworkAddressResponse>(webRequest.downloadHandler.text).ip;
+            StartCoroutine(UploadMatch(matchName));
+        }
+    }
+    #endregion
+
+    #region API Coroutines
     /// <summary>
     /// Coroutine that sends a web request to the API in order to create a new match. 
     /// </summary>
     private IEnumerator UploadMatch(string matchName)
     {
-        var webRequest = CreateWebRequestWithBody("/match/", JsonUtility.ToJson(new MatchPOSTRequest(matchName, gameToken, 0, networkAddress, networkPort, playerCount, maxPlayersPerMatch)), 
+        var webRequest = CreateWebRequestWithBody("/match/", JsonUtility.ToJson(new MatchPOSTRequest(matchName, gameToken, networkAddress, networkPort,  maxPlayersPerMatch)), 
                                                                                 UnityWebRequest.kHttpVerbPOST);
         yield return webRequest.Send();
 
@@ -76,7 +117,7 @@ public class KJAPPNetworkManager : NetworkManager
     /// </summary>
     private IEnumerator SetMatchStatusToInSession()
     {
-        var webRequest = CreateWebRequestWithBody("/match/status", JsonUtility.ToJson(new MatchStatusPUTRequest(matchId, MATCH_ACTIVE_STATUS)), UnityWebRequest.kHttpVerbPUT);
+        var webRequest = CreateWebRequestWithBody("/match/status", JsonUtility.ToJson(new MatchStatusPUTRequest(matchId, MATCH_STATUS_IN_SESSION)), UnityWebRequest.kHttpVerbPUT);
         yield return webRequest.Send();
 
         if (webRequest.isNetworkError)
@@ -90,7 +131,7 @@ public class KJAPPNetworkManager : NetworkManager
     /// </summary>
     private IEnumerator FetchMatches()
     {
-        var webRequest = UnityWebRequest.Get(apiUrl + "/matches/" + gameToken);
+        var webRequest = UnityWebRequest.Get(apiUrl + "/matches/no_body/" + gameToken);
         yield return webRequest.Send();
 
         if (webRequest.isNetworkError)
@@ -180,24 +221,14 @@ public class KJAPPNetworkManager : NetworkManager
     }
     #endregion
 
-    #region Helper Methods
+    #region Inner Classes
     /// <summary>
-    /// Helper function for manually building web requests to avoid issues that you might end up having from Unity doing things like url-encoding your body. 
+    /// Minor helper class used to contain the external ip address acquired from https://api.ipify.org
     /// </summary>
-    /// <param name="apiRouteAppendage">The part of the route to the API we want to append, example: "/match/"</param>
-    /// <param name="jsonBody">The string containing the JSON object</param>
-    /// <param name="requestType">Whether the request should be GET/POST/PUT etc</param>
-    /// <returns>A web request that is ready for usage</returns>
-    private UnityWebRequest CreateWebRequestWithBody(string apiRouteAppendage, string jsonBody, string requestType)
+    [System.Serializable]
+    private class NetworkAddressResponse
     {
-        // http://answers.unity3d.com/questions/1163204/prevent-unitywebrequestpost-from-url-encoding-the.html
-        var webRequest = new UnityWebRequest(apiUrl + apiRouteAppendage);
-        webRequest.uploadHandler = new UploadHandlerRaw(Encoding.ASCII.GetBytes(jsonBody));
-        webRequest.downloadHandler = new DownloadHandlerBuffer();
-        webRequest.method = requestType;
-        webRequest.SetRequestHeader("Content-Type", "application/json");
-
-        return webRequest;
+        public string ip = "";
     }
     #endregion
 }
