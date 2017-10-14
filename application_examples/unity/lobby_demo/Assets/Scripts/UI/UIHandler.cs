@@ -18,6 +18,9 @@ public class UIHandler : MonoBehaviour
     [Header("Input Fields")]
     public Text matchNameInput;
 
+    [Header("Toggles")]
+    public Toggle loopBackHostToggle;
+
     void Start()
     {
         currentMenu = rootMenu;
@@ -27,7 +30,8 @@ public class UIHandler : MonoBehaviour
     {
         if (matchNameInput.text != null && matchNameInput.text != "")
         {
-            NetworkManager.singleton.GetComponent<KJAPPNetworkManager>().StartHosting(matchNameInput.text);
+            NetworkManager.singleton.GetComponent<KJAPPNetworkManager>().StartHosting(matchNameInput.text, loopBackHostToggle.isOn);
+            ChangeMenu(waitForConnectionMenu);
         }
     }
     

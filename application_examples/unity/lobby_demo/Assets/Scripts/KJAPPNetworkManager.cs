@@ -3,6 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Threading.Tasks;
 
 /// <summary>
 /// A extended NetworkManager that works as an example for how to interact with the Lobby API
@@ -23,9 +24,19 @@ public class KJAPPNetworkManager : NetworkManager
     /// <summary>
     /// Public method that can be called by a button on the UI(as an example) in order to start the process creating a match.
     /// </summary>
-    public void StartHosting(string matchName)
+    /// <param name="matchName">Name of the match</param>
+    /// <param name="loopBackHost">Whether we want to use 127.0.0.1 as host IP or not. This primarily used for testing purposes on the local machine</param>
+    public void StartHosting(string matchName, bool loopBackHost)
     {
-        StartCoroutine(AcquireExternalNetworkAddress(matchName));
+        if (!loopBackHost)
+        {
+            StartCoroutine(AcquireExternalNetworkAddress(matchName));
+        }
+        else
+        {
+            networkAddress = "127.0.0.1";
+            StartCoroutine(UploadMatch(matchName));
+        }
     }
 
     /// <summary>
@@ -109,6 +120,7 @@ public class KJAPPNetworkManager : NetworkManager
             matchId = JsonUtility.FromJson<MatchResponse>(jsonString)._id;
             StartCoroutine(SetMatchStatusToInSession());
             StartHost();
+            OpenNat.PortForward().Wait();
         }
     }
 
