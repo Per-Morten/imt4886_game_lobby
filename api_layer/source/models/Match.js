@@ -23,6 +23,11 @@ const MatchSchema = mongoose.Schema({
         required: true,
         default: 1,
     },
+    miscInfo: {
+        type: String,
+        required: true,
+        default: '',
+    },
 });
 
 MatchSchema.statics.findByToken = function (gameToken) {
@@ -65,6 +70,7 @@ MatchSchema.statics.deleteMatch = function(id) {
 
 MatchSchema.statics.createMatch = function(matchInfo) {
     return new Promise((resolve, reject) => {
+        matchInfo.miscInfo = encodeURIComponent(matchInfo.miscInfo);
         this.create(Object.assign({}, matchInfo))
             .then(match => {
                 resolve({code: 200, match: match});
