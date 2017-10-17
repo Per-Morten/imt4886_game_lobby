@@ -2,16 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class UIHandler : MonoBehaviour
 {
     public GameObject matchButtonPrefab;
 
+    [Header("Menus")]
     public GameObject matchListMenu;
     public GameObject waitForConnectionMenu;
 
     public GameObject rootMenu;
     private GameObject currentMenu;
+
+    [Header("Input Fields")]
+    public Text matchNameInput;
+
+    [Header("Toggles")]
+    public Toggle loopBackHostToggle;
 
     void Start()
     {
@@ -20,7 +28,11 @@ public class UIHandler : MonoBehaviour
 
     public void StartHost()
     {
-        NetworkManager.singleton.GetComponent<KJAPPNetworkManager>().StartHosting();
+        if (matchNameInput.text != null && matchNameInput.text != "")
+        {
+            NetworkManager.singleton.GetComponent<KJAPPNetworkManager>().StartHosting(matchNameInput.text, loopBackHostToggle.isOn);
+            ChangeMenu(waitForConnectionMenu);
+        }
     }
     
     public void RequestMatches()
@@ -35,12 +47,12 @@ public class UIHandler : MonoBehaviour
         currentMenu.SetActive(true);
     }
 
-    public void DisplayMatches(Match[] matches)
+    public void DisplayMatches(MatchResponse[] matches)
     {
         foreach(var match in matches)
         {
             var matchButton = Instantiate(matchButtonPrefab, matchListMenu.transform);
-            matchButton.GetComponent<MatchButton>().Initialize(match.hostIP, match.hostPort, this);
+            matchButton.GetComponent<MatchButton>().Initialize(match, this);
         }
     }
 
