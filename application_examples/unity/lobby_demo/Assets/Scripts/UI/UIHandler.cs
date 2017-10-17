@@ -35,7 +35,7 @@ public class UIHandler : MonoBehaviour
         currentMenu.SetActive(true);
     }
 
-    public void DisplayMatches(Match[] matches)
+    public void DisplayMatches(MatchResponse[] matches)
     {
         foreach(var match in matches)
         {
