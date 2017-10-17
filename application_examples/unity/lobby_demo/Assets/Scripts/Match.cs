@@ -1,34 +1,68 @@
 ﻿[System.Serializable]
-public class Match
+public class MatchResponse
 {
+    public string name = null;
     public string gameToken = null;
     public int status = -1;
     public string hostIP = null;
     public int hostPort = -1;
-    public string _id = "";
+    public string _id = null;
+    public int playerCount = -1;
+    public int maxPlayerCount = -1;
+}
 
-    public Match(string token, int status, string IP, int port)
+[System.Serializable]
+public class MatchPOSTRequest
+{
+    public string name = null;
+    public string gameToken = null;
+    public string hostIP = null;
+    public int hostPort = -1;
+    public int maxPlayerCount = 1;
+
+    public MatchPOSTRequest(string name, string gameToken, string hostIP, int hostPort, int maxPlayerCount)
     {
-        gameToken = token;
-        this.status = status;
-        hostIP = IP;
-        hostPort = port;
+        this.name = name;
+        this.gameToken = gameToken;
+        this.hostIP = hostIP;
+        this.hostPort = hostPort;
+        this.maxPlayerCount = maxPlayerCount;
     }
 }
 
 [System.Serializable]
-public class MatchPOST
+public class MatchStatusPUTRequest
 {
-    public string gameToken = null;
+    public string id = "";
     public int status = -1;
-    public string hostIP = null;
-    public int hostPort = -1;
 
-    public MatchPOST(string token, int status, string IP, int port)
+    public MatchStatusPUTRequest(string id, int status)
     {
-        gameToken = token;
+        this.id = id;
         this.status = status;
-        hostIP = IP;
-        hostPort = port;
+    }
+}
+
+[System.Serializable]
+public class MatchDeleteRequest
+{
+    public string id = "";
+
+    public MatchDeleteRequest(string id)
+    {
+        this.id = id;
+    }
+}
+
+[System.Serializable]
+public class MatchPlayerCountPUTRequest
+{
+    public string id = "";
+    public int playerCount = -1;
+
+    public MatchPlayerCountPUTRequest(string id, int playerCount)
+    {
+        this.id = id;
+        this.playerCount = playerCount;
     }
 }
