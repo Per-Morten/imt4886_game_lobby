@@ -36,6 +36,11 @@ const MatchSchema = mongoose.Schema({
         // Adding this default to deal with getting non-full matches that
         // does not have a maxPlayerCount.
         default: Number.MAX_SAFE_INTEGER,
+    },
+    miscInfo: {
+        type: String,
+        required: true,
+        default: ' ',
     }
 });
 
@@ -110,6 +115,7 @@ MatchSchema.statics.createMatch = async function(matchInfo) {
                     hostIP: matchInfo.hostIP,
                     hostPort: matchInfo.hostPort,
                     maxPlayerCount: matchInfo.maxPlayerCount,
+                    miscInfo: encodeURIComponent(matchInfo.miscInfo),
         };
 
         let match = await this.create(Object.assign({}, newMatch));

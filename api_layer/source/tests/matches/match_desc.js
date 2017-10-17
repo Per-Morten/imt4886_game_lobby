@@ -8,6 +8,7 @@ module.exports = [
     'hostPort',
     'playerCount',
     'maxPlayerCount',
+    'miscInfo',
     '_id',
     '__v',
 ];
