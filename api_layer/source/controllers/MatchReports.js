@@ -135,4 +135,62 @@ module.exports = (api) => {
             .then(out => res.status(out.code).json(out.average))
             .catch(err => res.status(err.code).json(err));
       });
+
+    /**
+     * @api {get} /match_reports/median/no_body/:gameToken/:fieldName Requests an average value from a specified field and gameToken in all reports.
+     * @apiName GetMatchReportMedianNoBody
+     * @apiGroup MatchReports
+     * @apiDescription
+     * This request takes a gameToken and a string used to represent a field name within the variable data object of a report.
+     * The request then returns the median of this field from all reports within a given gameToken/game.
+     *
+     * @apiParam {String} gameToken The unique game token of a game.
+     * @apiParam {String} fieldName The name of the field we want the median value from
+     * @apiSuccess (200) Success
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {500}
+     *
+     * @apiError (404) TokenNotFound The supplied GameToken was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {}
+     */
+   api.route('/match_reports/median/no_body/:gameToken/:fieldName')
+      .get((req, res) => {
+            MatchReportModel.getMedian(req.params.gameToken, req.params.fieldName)
+            .then(out => res.status(out.code).json(out.median))
+            .catch(err => res.status(err.code).json(err));
+      });
+
+    /**
+     * @api {get} /match_reports/median/ Requests an median value from a specified field and gameToken in all reports.
+     * @apiName GetMatchReportMedianJSONBody
+     * @apiGroup MatchReports
+     * @apiDescription
+     * This request takes a gameToken and a string used to represent a field name within the variable data object of a report. (Acquired from the body)
+     * The request then returns the median of this field from all reports within a given gameToken/game.
+     *
+     * @apiParam {String} gameToken The unique game token of a game.
+     * @apiParam {String} fieldName The name of the field we want the median value from
+     * @apiSuccess (200) Success
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {500}
+     *
+     * @apiError (404) TokenNotFound The supplied GameToken was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {}
+     */
+   api.route('/match_reports/median/')
+      .get((req, res) => {
+            MatchReportModel.getMedian(req.body.gameToken, req.body.fieldName)
+            .then(out => res.status(out.code).json(out.median))
+            .catch(err => res.status(err.code).json(err));
+      });
 }

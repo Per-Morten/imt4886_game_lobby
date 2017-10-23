@@ -65,7 +65,7 @@ MatchReportSchema.statics.getAverage = async function(gameToken, fieldName) {
             return {code: 404};
         }
 
-        let reports = await this.find({gameToken: gameToken})
+        let reports = await this.find({ gameToken: gameToken })
                                 .exec();
 
         if(reports.length > 0 && reports[0].data[fieldName] != null) {
@@ -74,6 +74,34 @@ MatchReportSchema.statics.getAverage = async function(gameToken, fieldName) {
                 sum += element.data[fieldName];
             });
             return {code: 200, average: sum / reports.length};
+        } else {
+            return {code: 404};
+        }
+    } catch (err) {
+        throw errors.ERROR_500;
+    }
+};
+
+// Assumes that the given field exists within data
+MatchReportSchema.statics.getMedian = async function(gameToken, fieldName) {
+    try {
+        let result = await GameModel.findById({_id: gameToken});
+        if(!result) {
+            return {code: 404};
+        }
+
+        let reports = await this.find({ gameToken: gameToken })
+                                .exec();
+
+        if(reports.length > 0 && reports[0].data[fieldName] != null) {
+            reports.sort(function(a, b) { return (a.data[fieldName] > b.data[fieldName]); });
+            let half = Math.floor(reports.length / 2);
+
+            if(reports.length % 2 != 0) {
+                return {code: 200, median: reports[half].data[fieldName]};
+            } else {
+                return {code: 200, median: (reports[half-1].data[fieldName] + reports[half].data[fieldName]) / 2};
+            }
         } else {
             return {code: 404};
         }

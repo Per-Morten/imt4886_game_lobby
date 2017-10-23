@@ -50,6 +50,15 @@ const testReport2 = {
     },
 };
 
+const testReport3 = {
+    matchID: 'asdknaknalskd',
+    gameToken: 'Game 1',
+    data: {
+        duration: 50,
+        score: 12516,
+    },
+};
+
 test.cb.before((t) => {
     db('match-model-test')
         .then(() => t.end())
@@ -76,6 +85,7 @@ test.cb.beforeEach((t) => {
                     match2.gameToken = games[1]._id;
                     testReport1.gameToken = games[0]._id;
                     testReport2.gameToken = games[0]._id;
+                    testReport3.gameToken = games[0]._id;
                 }
                 t.end();
             })
@@ -282,6 +292,28 @@ test.serial('Get average duration and score from the database', async (t) => {
     }
 });
 
+
+test.serial('Get median duration from the database', async (t) => {
+    t.plan(2);
+
+    const report1 = await MatchReportModel.createReport(testReport1);
+    const report2 = await MatchReportModel.createReport(testReport2);
+    const report3 = await MatchReportModel.createReport(testReport3);
+
+    if(report1.code == 200 && report2.code == 200 && report3.code) {
+        t.pass();
+    } else {
+        t.fail('could not create end of match reports');
+    }
+
+    const expectedMedianDuration = 200;
+    const test1 = await MatchReportModel.getMedian(testReport2.gameToken, 'duration');
+    if(test1.code == 200 && test1.median == expectedMedianDuration) {
+        t.pass();
+    } else {
+        t.fail(`Received ${test1.median} when ${expectedMedianDuration} is expected`);
+    }
+});
 
 test.serial('Deleting report from database', async (t) => {
     t.plan(2);

@@ -632,7 +632,7 @@ test.serial('Match report tests for POST, GET, DELETE and average values', async
 
     const expectedAverage = (testReport1.data.duration + testReport2.data.duration) / 2;
     await request(server)
-        .get('/match_reports/average')
+        .get('/match_reports/average/')
         .send({ gameToken: testReport1.gameToken, fieldName: 'duration' })
         .expect(200)
         .then(response => {
