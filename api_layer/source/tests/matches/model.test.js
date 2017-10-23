@@ -281,3 +281,22 @@ test.serial('Get average duration and score from the database', async (t) => {
         t.fail(`Received ${test2.average} when ${expectedAverageScore} is expected`);
     }
 });
+
+
+test.serial('Deleting report from database', async (t) => {
+    t.plan(2);
+
+    const report1 = await MatchReportModel.createReport(testReport1);
+    if(report1.code == 200) {
+        t.pass();
+    } else {
+        t.fail('Could not create end of match reports');
+    }
+
+    const test1 = await MatchReportModel.deleteReport(report1.report._id);
+    if(test1.code == 204) {
+        t.pass();
+    } else {
+        t.fail('Could not delete end of match report');
+    }
+});

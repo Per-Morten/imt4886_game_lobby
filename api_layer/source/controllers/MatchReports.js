@@ -78,6 +78,28 @@ module.exports = (api) => {
             .catch(err => res.status(err.code).json(err));
        });
 
+    /**
+     * @api {get} /match_reports/average/no_body/:gameToken/:fieldName Requests an average value from a specified field and gameToken in all reports.
+     * @apiName GetMatchReportAverageNoBody
+     * @apiGroup MatchReports
+     * @apiDescription
+     * This request takes a gameToken and a string used to represent a field name within the variable data object of a report.
+     * The request then returns the average of this field from all reports within a given gameToken/game.
+     *
+     * @apiParam {String} gameToken The unique game token of a game.
+     * @apiParam {String} fieldName The name of the field we want the average value from
+     * @apiSuccess (200) Success
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {850}
+     *
+     * @apiError (404) TokenNotFound The supplied GameToken was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {}
+     */
    api.route('/match_reports/average/no_body/:gameToken/:fieldName')
       .get((req, res) => {
             MatchReportModel.getAverage(req.params.gameToken, req.params.fieldName)
@@ -85,6 +107,28 @@ module.exports = (api) => {
             .catch(err => res.status(err.code).json(err));
       });
 
+    /**
+     * @api {get} /match_reports/average/ Requests an average value from a specified field and gameToken in all reports.
+     * @apiName GetMatchReportAverageJSONBody
+     * @apiGroup MatchReports
+     * @apiDescription
+     * This request takes a gameToken and a string used to represent a field name within the variable data object of a report. (Acquired from the body)
+     * The request then returns the average of this field from all reports within a given gameToken/game.
+     *
+     * @apiParam {String} gameToken The unique game token of a game.
+     * @apiParam {String} fieldName The name of the field we want the average value from
+     * @apiSuccess (200) Success
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {850}
+     *
+     * @apiError (404) TokenNotFound The supplied GameToken was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {}
+     */
    api.route('/match_reports/average/')
       .get((req, res) => {
             MatchReportModel.getAverage(req.body.gameToken, req.body.fieldName)

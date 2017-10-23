@@ -580,8 +580,9 @@ test.serial('Returning matches with given gameToken and partial matched name', a
 ///////////////////////////////////////////////////////////
 /// Post Match Reports Tests
 ///////////////////////////////////////////////////////////
-test.serial('Match report tests for POST, GET and average values', async(t) => {
-    t.plan(4);
+test.serial('Match report tests for POST, GET, DELETE and average values', async(t) => {
+    t.plan(5);
+    let deleteTestID = 0;
 
     const testReport1 = {
         matchID: '09mwuxcenwqiucnapsdfuhc',
@@ -605,7 +606,10 @@ test.serial('Match report tests for POST, GET and average values', async(t) => {
         .post('/match_report/')
         .send(testReport1)
         .expect(200)
-        .then(response => t.pass())
+        .then(response => {
+            deleteTestID = response.body._id;
+            t.pass();
+        })
         .catch(err => t.fail(err));
 
     await request(server)
@@ -638,6 +642,13 @@ test.serial('Match report tests for POST, GET and average values', async(t) => {
                 t.fail(`Received ${response.body} when ${expectedAverage} was expected`);
             }
         })
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .delete('/match_report/')
+        .send({ id: deleteTestID })
+        .expect(204)
+        .then(response => t.pass())
         .catch(err => t.fail(err));
 
     t.pass();

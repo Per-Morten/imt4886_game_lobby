@@ -43,4 +43,34 @@ module.exports = (api) => {
             .then(out => res.status(out.code).json(out.report))
             .catch(err => res.status(err.code).json(err));
         });
+
+    /**
+     * @api {delete} /match_report/ Delete the specified match report
+     * @apiName DeleteMatchReport
+     * @apiGroup MatchReport
+     * @apiDescription
+     *  Deletes the match report with the requested id.
+     *  Returns 204 on success,
+     *  404 if the match with requested id couldn't be found.
+     *
+     * @apiParam {Id} id The unique ID of the match report.
+     *
+     * @apiSuccess (204) Success
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 204 OK
+     *     {}
+     *
+     * @apiError (404) MatchReportNotFound The supplied ID was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {}
+     */
+    api.route('/match_report/')
+       .delete((req, res) => {
+            MatchReportModel.deleteReport(req.body.id)
+            .then(out => res.status(out.code).send())
+            .catch(err => res.status(err.code).json(err));
+       });
 }
