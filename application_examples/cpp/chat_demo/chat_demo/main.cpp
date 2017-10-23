@@ -1,13 +1,16 @@
 #include <algorithm>
+#include <atomic>
 #include <cinttypes>
 #include <cstdio>
 #include <iostream>
-#include <thread>
-#include <atomic>
 #include <string>
+#include <thread>
 
 #include <SDL.h>
 #include <SDL_net.h>
+
+#include "chat_server.h"
+
 
 // Turn off warning on strcpy
 #ifdef _MSC_VER
@@ -65,7 +68,6 @@ runServer()
     ClientSocket clients[MAX_CLIENTS];
     std::size_t clientCount = 0;
 
-
     bool running = true;
     while (running)
     {
@@ -87,7 +89,7 @@ runServer()
                 auto firstFree = std::find_if(std::begin(clients),
                                               std::end(clients),
                                               [](const auto& item) { return item.isFree; });
-                
+
                 firstFree->isFree = false;
                 firstFree->socket = SDLNet_TCP_Accept(serverSocket);
                 SDLNet_TCP_AddSocket(socketSet, firstFree->socket);
@@ -196,13 +198,14 @@ runClient()
     {
         do
         {
-            printf("In loop\n");
+            printf("Message: ");
             std::getline(std::cin, input);
             messageReady = true;
             if (input == "shutdown")
             {
                 running = false;
             }
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         } while (running);
     });
 
@@ -232,9 +235,6 @@ runClient()
     SDLNet_TCP_Close(client);
 
     return;
-
-    
-
 }
 
 
@@ -256,15 +256,17 @@ main(int argc, char** argv)
 
     if (argc > 1 && strcmp(argv[1], "-s") == 0)
     {
-        std::printf("Running client\n");
+        std::printf("Running server\n");
         std::fflush(stdout);
-        runClient();
+        ChatServer chat(8880, 10);
+        while (true);
     }
     else
     {
-        std::printf("Running server\n");
+        std::printf("Running client\n");
         std::fflush(stdout);
-        runServer();
+        runClient();
+        //runServer();
     }
 
     SDLNet_Quit();
