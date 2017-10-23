@@ -4,7 +4,7 @@ const db = require('../database');
 const mongoose = require('mongoose');
 const MatchModel = require('../../models/Match');
 const GameModel = require('../../models/Game');
-
+const MatchReportModel = require('../../models/MatchReport')
 
 const match = {
     name: 'Test Match 1',
@@ -32,6 +32,24 @@ const testGame2 = {
     valid: true,
 };
 
+const testReport1 = {
+    matchID: '09mwuxcenwqiucnapsdfuhc',
+    gameToken: 'Game 1',
+    data: {
+        duration: 1500,
+        score: 10000000,
+    },
+};
+
+const testReport2 = {
+    matchID: 'p9dyfp9aweuns0weucnr0weu',
+    gameToken: 'Game 1',
+    data: {
+        duration: 200,
+        score: 500,
+    },
+};
+
 test.cb.before((t) => {
     db('match-model-test')
         .then(() => t.end())
@@ -56,11 +74,15 @@ test.cb.beforeEach((t) => {
                 if (games[0] && games[1]) {
                     match.gameToken = games[0]._id;
                     match2.gameToken = games[1]._id;
+                    testReport1.gameToken = games[0]._id;
+                    testReport2.gameToken = games[0]._id;
                 }
                 t.end();
             })
             .catch(err => console.log(err));
     });
+
+    MatchReportModel.remove({});
 });
 
 ///////////////////////////////////////////////////////////
@@ -198,3 +220,64 @@ test.serial('Find in session matches with gameToken', async (t) => {
     }
 });
 
+///////////////////////////////////////////////////////////
+/// Post Match Reports Tests
+///////////////////////////////////////////////////////////
+test.serial('Add match report to database', async (t) => {
+    t.plan(1);
+
+    const report = await MatchReportModel.createReport(testReport1);
+
+    if(report.code == 200) {
+        t.pass();
+    } else {
+        t.fail('Could not add match report to database');
+    }
+});
+
+test.serial('Get match report from database', async (t) => {
+    t.plan(2);
+
+    const report = await MatchReportModel.createReport(testReport1);
+    if(report.code == 200) {
+        t.pass()
+    } else {
+        t.fail('Could not create end of match report');
+    }
+
+    const test1 = await MatchReportModel.getReportsWithToken(testReport1.gameToken);
+    if(test1.code == 200 && test1.reports.length == 1) {
+        t.pass();
+    } else {
+        t.fail('Could not get match report from the database');
+    }
+});
+
+test.serial('Get average duration and score from the database', async (t) => {
+    t.plan(3);
+
+    const report1 = await MatchReportModel.createReport(testReport1);
+    const report2 = await MatchReportModel.createReport(testReport2);
+    if(report1.code == 200 && report2.code == 200) {
+        t.pass();
+    } else {
+        t.fail('could not create end of match reports');
+    }
+
+    const expectedAverageDuration = (testReport1.data.duration + testReport2.data.duration) / 2;
+    const expectedAverageScore = (testReport1.data.score + testReport2.data.score) / 2;
+    const test1 = await MatchReportModel.getAverage(testReport1.gameToken, 'duration');
+    const test2 = await MatchReportModel.getAverage(testReport2.gameToken, 'score');
+
+    if(test1.code == 200 && test1.average == expectedAverageDuration) {
+        t.pass();
+    } else {
+        t.fail(`Received ${test1.average} when ${expectedAverageDuration} is expected`);
+    }
+
+    if(test2.code == 200 && test2.average == expectedAverageScore) {
+        t.pass();
+    } else {
+        t.fail(`Received ${test2.average} when ${expectedAverageScore} is expected`);
+    }
+});

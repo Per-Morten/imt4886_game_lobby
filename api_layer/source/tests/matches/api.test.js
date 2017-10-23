@@ -112,7 +112,6 @@ test.cb.beforeEach((t) => {
                     testMatch5.gameToken = games[1]._id;
                     testMatch6.gameToken = games[1]._id;
 
-
                     t.context.games = games;
                     t.context.invalidGame = games[2];
                 }
@@ -573,6 +572,72 @@ test.serial('Returning matches with given gameToken and partial matched name', a
         .send({ gameToken: t.context.matches[5].gameToken, name: 'øaishphfhdfisduhf'})
         .expect(404)
         .then(response => t.pass())
+        .catch(err => t.fail(err));
+
+    t.pass();
+});
+
+///////////////////////////////////////////////////////////
+/// Post Match Reports Tests
+///////////////////////////////////////////////////////////
+test.serial('Match report tests for POST, GET and average values', async(t) => {
+    t.plan(4);
+
+    const testReport1 = {
+        matchID: '09mwuxcenwqiucnapsdfuhc',
+        gameToken: t.context.games[0]._id,
+        data: {
+            duration: 1500,
+            score: 10000000,
+        },
+    };
+
+    const testReport2 = {
+        matchID: 'p9dyfp9aweuns0weucnr0weu',
+        gameToken: t.context.games[0]._id,
+        data: {
+            duration: 200,
+            score: 500,
+        },
+    };
+
+    await request(server)
+        .post('/match_report/')
+        .send(testReport1)
+        .expect(200)
+        .then(response => t.pass())
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .post('/match_report/')
+        .send(testReport2)
+        .expect(200)
+        .then(response => t.pass())
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .get('/match_reports/')
+        .send({ gameToken: testReport1.gameToken})
+        .expect(200)
+        .then(response => {
+            if(response.body.length != 2) {
+                t.fail(`Returned ${response.body.length} reports when 2 should have been returned`);
+            }
+        })
+        .catch(err => t.fail(err));
+
+    const expectedAverage = (testReport1.data.duration + testReport2.data.duration) / 2;
+    await request(server)
+        .get('/match_reports/average')
+        .send({ gameToken: testReport1.gameToken, fieldName: 'duration' })
+        .expect(200)
+        .then(response => {
+            if(response.body == expectedAverage) {
+                t.pass();
+            } else {
+                t.fail(`Received ${response.body} when ${expectedAverage} was expected`);
+            }
+        })
         .catch(err => t.fail(err));
 
     t.pass();
