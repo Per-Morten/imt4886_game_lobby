@@ -12,6 +12,8 @@
 #include "chat_server.h"
 #include "chat_client.h"
 
+#include "kjapp.h"
+
 // Turn off warning on strcpy
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -21,6 +23,8 @@
 #undef main
 constexpr Uint16 PORT = 8880;
 constexpr int BUFFER_LEN = 512;
+
+constexpr auto gameToken = "59ec8be7890cd692461bb7d4";
 
 int
 main(int argc, char** argv)
@@ -40,15 +44,20 @@ main(int argc, char** argv)
 
     if (argc > 1 && strcmp(argv[1], "-s") == 0)
     {
-        std::printf("Running server\n");
-        std::fflush(stdout);
-        ChatServer chat(8880, 10);
-    }
-    else
-    {
         std::printf("Running client\n");
         std::fflush(stdout);
         ChatClient("localhost", 8880);
+    }
+    else
+    {
+        std::printf("Running server\n");
+        std::fflush(stdout);
+        kjapp::hostMatch(gameToken,
+                         "Demo match",
+                         "localhost",
+                         8880,
+                         10);
+        ChatServer chat(8880, 10);
     }
 
     SDLNet_Quit();
