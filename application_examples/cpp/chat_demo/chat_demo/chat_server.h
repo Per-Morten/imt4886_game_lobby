@@ -65,8 +65,7 @@ private:
 
     constexpr static int BUFFER_LEN = 512;
 
-    std::atomic<bool> m_running{true};
-    std::thread m_thread{};
+    bool m_running{true};
 
     TCPsocket m_socket{};
     SDLNet_SocketSet m_socketSet{};

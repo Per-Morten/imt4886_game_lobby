@@ -25,14 +25,11 @@ ChatServer::ChatServer(std::uint16_t port,
 
     SDLNet_TCP_AddSocket(m_socketSet, m_socket);
 
-    m_thread = std::thread([this] { run(); });
+    run();
 }
 
 ChatServer::~ChatServer()
 {
-    m_running = false;
-    m_thread.join();
-
     SDLNet_FreeSocketSet(m_socketSet);
     SDLNet_TCP_Close(m_socket);
 }
@@ -62,6 +59,10 @@ ChatServer::handleChat()
         {
             char buffer[BUFFER_LEN];
             int bytesReceived = SDLNet_TCP_Recv(client.socket, buffer, BUFFER_LEN);
+
+            // Todo: Remove this when finished testing
+            if (std::strcmp(buffer, "shutdown") == 0)
+                m_running = false;
 
             // If the client is disconnecting
             if (bytesReceived == 0)
