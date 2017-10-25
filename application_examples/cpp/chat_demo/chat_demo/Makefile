@@ -10,3 +10,7 @@ clean:
 .PHONY: run_server
 run_server: clean all
 	./chat -s
+
+.PHONY: run_client
+run_client: clean all
+	./chat

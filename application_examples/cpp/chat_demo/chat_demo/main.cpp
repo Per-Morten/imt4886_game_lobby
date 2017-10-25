@@ -57,6 +57,11 @@ main(int argc, char** argv)
     {
         std::printf("Running client\n");
         std::fflush(stdout);
+        auto matches = kjapp::getMatches(gameToken, kjapp::Query::NON_FULL_MATCHES, "Demo");
+        for (std::size_t i = 0; i < matches.size(); ++i)
+        {
+            std::printf("Match %zu: name: %s\n", i, matches[i]["name"].dump().c_str());
+        }
         //ChatClient("localhost", 8880);
     }
 
