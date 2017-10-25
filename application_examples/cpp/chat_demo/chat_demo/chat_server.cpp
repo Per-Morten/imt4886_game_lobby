@@ -4,8 +4,10 @@
 #include <cstring>
 
 ChatServer::ChatServer(std::uint16_t port,
-                       std::size_t maxClients)
+                       std::size_t maxClients,
+                       std::atomic<bool>& running)
     : m_maxClients(maxClients)
+    , m_running(running)
 {
     IPaddress serverIP;
     if (SDLNet_ResolveHost(&serverIP, nullptr, port) == -1)
@@ -41,7 +43,7 @@ ChatServer::run()
     while (m_running)
     {
         // Wait up to 1 second for activity
-        int activity = SDLNet_CheckSockets(m_socketSet, 1000);
+        int activity = SDLNet_CheckSockets(m_socketSet, 1);
         if (activity)
         {
             checkForNewConnections();
@@ -63,7 +65,9 @@ ChatServer::handleChat()
 
             // Todo: Remove this when finished testing
             if (std::strcmp(buffer, "shutdown") == 0)
+            {
                 m_running = false;
+            }
 
             // If the client is disconnecting
             if (bytesReceived == 0)

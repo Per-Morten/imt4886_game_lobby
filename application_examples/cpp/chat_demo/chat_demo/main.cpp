@@ -48,10 +48,19 @@ main(int argc, char** argv)
         auto matchInfo = kjapp::hostMatch(gameToken,
                                           "Demo match",
                                           "127.0.0.1",
-                                          8880,
+                                          8000,
                                           10);
         std::printf("MatchInfo: %s\n", matchInfo.dump().c_str());
-        //ChatServer chat(8880, 10);
+        std::atomic<bool> running{true};
+        std::thread thread([&running]
+        {
+            ChatServer chat(8000, 10, running);
+        });
+
+        std::printf("Write something to stop\n");
+        std::getc(stdin);
+        running = false;
+        thread.join();
     }
     else
     {
@@ -60,9 +69,26 @@ main(int argc, char** argv)
         auto matches = kjapp::getMatches(gameToken, kjapp::Query::NON_FULL_MATCHES, "Demo");
         for (std::size_t i = 0; i < matches.size(); ++i)
         {
-            std::printf("Match %zu: name: %s\n", i, matches[i]["name"].dump().c_str());
+            std::printf("Match %zu: name: %s id: %s\n", i,
+                        matches[i]["name"].get<std::string>().c_str(),
+                        matches[i]["_id"].get<std::string>().c_str());
         }
-        //ChatClient("localhost", 8880);
+
+        std::printf("Write your choice\n");
+        int choice;
+        std::scanf("%d", &choice);
+
+        try
+        {
+            ChatClient(matches[choice]["hostIP"].get<std::string>().c_str(),
+                       matches[choice]["hostPort"].get<std::uint16_t>());
+            //ChatClient("127.0.0.1",
+            //           8000);
+        }
+        catch (const std::exception& e)
+        {
+            std::printf("Error: %s\n", e.what());
+        }
     }
 
     SDLNet_Quit();

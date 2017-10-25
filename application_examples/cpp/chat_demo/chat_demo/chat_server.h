@@ -35,7 +35,8 @@ public:
     ///     std::runtime_error.
     /////////////////////////////////////////////////////////////////
     ChatServer(std::uint16_t port,
-               std::size_t maxClients);
+               std::size_t maxClients,
+               std::atomic<bool>& running);
 
     /////////////////////////////////////////////////////////////////
     /// \brief
@@ -65,7 +66,7 @@ private:
 
     constexpr static int BUFFER_LEN = 512;
 
-    bool m_running{true};
+    std::atomic<bool>& m_running;
 
     TCPsocket m_socket{};
     SDLNet_SocketSet m_socketSet{};
