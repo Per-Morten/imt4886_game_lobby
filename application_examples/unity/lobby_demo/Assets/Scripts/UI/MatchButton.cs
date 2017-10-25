@@ -10,10 +10,10 @@ public class MatchButton : MonoBehaviour {
     public Text matchAddressText;
     public Text matchPlayerCountText;
 
-    private MatchResponse match;
+    private KJAPP.JSONObjects.Match.BaseResponse match;
     private UIHandler uiHandler;
 
-    public void Initialize(MatchResponse acquiredMatch, UIHandler uiHandlerReference)
+    public void Initialize(KJAPP.JSONObjects.Match.BaseResponse acquiredMatch, UIHandler uiHandlerReference)
     {
         match = acquiredMatch;
         uiHandler = uiHandlerReference;
