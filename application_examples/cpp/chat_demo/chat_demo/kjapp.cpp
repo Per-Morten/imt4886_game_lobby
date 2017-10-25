@@ -8,6 +8,9 @@
 #include <curl/curl.h>
 #include "json.hpp"
 
+
+const std::string KJAPP_URL = "up.imt.hig.no:8333";
+
 struct CurlDeleter
 {
     void operator()(CURL* curl)
@@ -61,13 +64,13 @@ kjapp::hostMatch(const std::string& gameToken,
                  const std::uint16_t hostPort,
                  const std::size_t maxPlayerCount)
 {
-    return hostMatch(gameToken, name, hostIp, hostPort, maxPlayerCount, " ");
+    return hostMatch(gameToken, name, hostIP, hostPort, maxPlayerCount, " ");
 }
 
-nlohnmann::json
+nlohmann::json
 kjapp::hostMatch(const std::string& gameToken,
                  const std::string& name,
-                 const std::string& hostIp,
+                 const std::string& hostIP,
                  const std::uint16_t hostPort,
                  const std::size_t maxPlayerCount,
                  const nlohmann::json& miscInfo)
@@ -85,7 +88,7 @@ kjapp::hostMatch(const std::string& gameToken,
     {
         {"gameToken", gameToken},
         {"name", name},
-        {"hostIP", hostIp},
+        {"hostIP", hostIP},
         {"hostPort", hostPort},
         {"maxPlayerCount", maxPlayerCount},
         {"miscInfo", miscInfo},
@@ -101,7 +104,8 @@ kjapp::hostMatch(const std::string& gameToken,
     curl_easy_setopt(handle.get(), CURLOPT_HTTPHEADER, headers);
 
     // Set address
-    curl_easy_setopt(handle.get(), CURLOPT_URL, "up.imt.hig.no:8333/match/");
+    std::string url = KJAPP_URL + "/match/";
+    curl_easy_setopt(handle.get(), CURLOPT_URL, url.data());
 
     // Perform the request
     const auto res =  curl_easy_perform(handle.get());
