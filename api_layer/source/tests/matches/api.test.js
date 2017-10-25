@@ -546,3 +546,34 @@ test.serial('Get all matches that are not full', async(t) => {
 
     t.pass();
 });
+
+test.serial('Returning matches with given gameToken and partial matched name', async(t) => {
+    t.plan(3);
+
+    await request(server)
+        .get('/matches/with_name/')
+        .send({ gameToken: t.context.matches[5].gameToken, name: '6'})
+        .expect(200)
+        .then(response => t.pass())
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .get('/matches/with_name/')
+        .send({ gameToken: t.context.matches[5].gameToken, name: 'Test'})
+        .expect(200)
+        .then(response => {
+            if(response.body.length != 4) {
+                t.fail(`Returned ${response.body.length} matches when 4 should have been returned`);
+            }
+        })
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .get('/matches/with_name/')
+        .send({ gameToken: t.context.matches[5].gameToken, name: 'øaishphfhdfisduhf'})
+        .expect(404)
+        .then(response => t.pass())
+        .catch(err => t.fail(err));
+
+    t.pass();
+});
