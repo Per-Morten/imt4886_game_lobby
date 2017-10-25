@@ -6,8 +6,7 @@
 #include <string>
 #include <thread>
 
-#include <SDL.h>
-#include <SDL_net.h>
+#include <SDL2/SDL_net.h>
 
 #include "chat_server.h"
 #include "chat_client.h"
@@ -44,20 +43,21 @@ main(int argc, char** argv)
 
     if (argc > 1 && strcmp(argv[1], "-s") == 0)
     {
-        std::printf("Running client\n");
+        std::printf("Running server\n");
         std::fflush(stdout);
-        ChatClient("localhost", 8880);
+        auto matchInfo = kjapp::hostMatch(gameToken,
+                                          "Demo match",
+                                          "127.0.0.1",
+                                          8880,
+                                          10);
+        std::printf("MatchInfo: %s\n", matchInfo.dump().c_str());
+        //ChatServer chat(8880, 10);
     }
     else
     {
-        std::printf("Running server\n");
+        std::printf("Running client\n");
         std::fflush(stdout);
-        kjapp::hostMatch(gameToken,
-                         "Demo match",
-                         "localhost",
-                         8880,
-                         10);
-        ChatServer chat(8880, 10);
+        //ChatClient("localhost", 8880);
     }
 
     SDLNet_Quit();

@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <thread>
-#include <SDL_net.h>
+#include <SDL2/SDL_net.h>
 
 class ChatClient
 {

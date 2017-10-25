@@ -1,6 +1,7 @@
 #include "chat_server.h"
 #include <stdexcept>
 #include <algorithm>
+#include <cstring>
 
 ChatServer::ChatServer(std::uint16_t port,
                        std::size_t maxClients)

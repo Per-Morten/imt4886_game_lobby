@@ -2,8 +2,9 @@
 #include <stdexcept>
 #include <string>
 #include <iostream>
+#include <cstring>
 
-ChatClient::ChatClient(const char* hostname, 
+ChatClient::ChatClient(const char* hostname,
                        std::uint16_t port)
 {
     IPaddress serverIP;
@@ -36,8 +37,8 @@ ChatClient::~ChatClient()
 void
 ChatClient::run()
 {
-    std::atomic<bool> messageReady = false;
-    std::atomic<bool> running = true;
+    std::atomic<bool> messageReady{false};
+    std::atomic<bool> running{true};
     std::string input;
     std::thread typingThread([&messageReady, &running, &input]
     {
