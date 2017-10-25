@@ -121,4 +121,4 @@ MatchReportSchema.statics.deleteReport = function(id) {
     });
 };
 
-module.exports = mongoose.model('MatchReportModel', MatchReportSchema, 'matchReports');
+module.exports = mongoose.model('MatchReportModel', MatchReportSchema, 'match_reports');
