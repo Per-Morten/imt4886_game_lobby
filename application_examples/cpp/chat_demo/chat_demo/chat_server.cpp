@@ -3,11 +3,12 @@
 #include <algorithm>
 #include <cstring>
 
-ChatServer::ChatServer(std::uint16_t port,
-                       std::size_t maxClients,
-                       std::atomic<bool>& running)
-    : m_maxClients(maxClients)
-    , m_running(running)
+ChatServer::ChatServer(SDL_Window* window,
+                       SDL_Renderer* renderer,
+                       std::uint16_t port,
+                       std::size_t maxClients)
+    : Scene(window, renderer)
+    , m_maxClients(maxClients)
 {
     IPaddress serverIP;
     if (SDLNet_ResolveHost(&serverIP, nullptr, port) == -1)
@@ -27,8 +28,6 @@ ChatServer::ChatServer(std::uint16_t port,
     }
 
     SDLNet_TCP_AddSocket(m_socketSet, m_socket);
-
-    run();
 }
 
 ChatServer::~ChatServer()
@@ -37,12 +36,24 @@ ChatServer::~ChatServer()
     SDLNet_TCP_Close(m_socket);
 }
 
-void
+SceneResult
 ChatServer::run()
 {
-    while (m_running)
+    while (true)
     {
-        // Wait up to 1 second for activity
+        SDL_RenderClear(m_renderer);
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT ||
+                (event.type == SDL_KEYUP &&
+                 event.key.keysym.sym == SDLK_ESCAPE))
+            {
+                return {false, nullptr};
+            }
+
+        }
+
         int activity = SDLNet_CheckSockets(m_socketSet, 1);
         if (activity)
         {
@@ -50,7 +61,12 @@ ChatServer::run()
             handleChat();
             removeDisconnectedClients();
         }
+
+        displayScroller();
+        SDL_RenderPresent(m_renderer);
     }
+
+    return {true, nullptr};
 }
 
 void
@@ -60,26 +76,17 @@ ChatServer::handleChat()
     {
         if (SDLNet_SocketReady(client.socket))
         {
-            std::printf("Socket is read\n");
             char buffer[BUFFER_LEN];
             int bytesReceived = SDLNet_TCP_Recv(client.socket, buffer, BUFFER_LEN);
-
-            // Todo: Remove this when finished testing
-            if (std::strcmp(buffer, "shutdown") == 0)
-            {
-                m_running = false;
-            }
 
             // If the client is disconnecting
             if (bytesReceived == 0)
             {
-                std::printf("Should delete\n");
                 client.toBeDeleted = true;
             }
             else
             {
-                std::printf("Got %d bytes, %s\n", bytesReceived, buffer);
-                broadcastMessage(buffer, client.socket);
+                broadcastMessage(buffer);
             }
         }
     }
@@ -98,7 +105,7 @@ ChatServer::checkForNewConnections()
             m_clients.push_back({});
             m_clients.back().socket = SDLNet_TCP_Accept(m_socket);
             SDLNet_TCP_AddSocket(m_socketSet, m_clients.back().socket);
-            broadcastMessage("New client has connected", nullptr);
+            broadcastMessage("New client has connected");
         }
         else
         {
@@ -118,13 +125,6 @@ ChatServer::removeDisconnectedClients()
         IPaddress* addr = SDLNet_TCP_GetPeerAddress(client.socket);
         if (client.toBeDeleted)
         {
-
-            std::printf("Deleting\n");
-            std::printf("Has: %u.%u.%u.%u\n",
-                            (std::uint8_t)(&addr->host)[0],
-                            (std::uint8_t)(&addr->host)[1],
-                            (std::uint8_t)(&addr->host)[2],
-                            (std::uint8_t)(&addr->host)[3]);
             SDLNet_TCP_DelSocket(m_socketSet, client.socket);
             SDLNet_TCP_Close(client.socket);
         }
@@ -138,14 +138,13 @@ ChatServer::removeDisconnectedClients()
 }
 
 void
-ChatServer::broadcastMessage(const char* message, TCPsocket sender)
+ChatServer::broadcastMessage(const char* message)
 {
     const int msgLength = std::strlen(message) + 1;
 
     // No need to send empty message
     if (msgLength == 1)
     {
-        std::printf("Message is empty\n");
         return;
     }
 
@@ -154,8 +153,10 @@ ChatServer::broadcastMessage(const char* message, TCPsocket sender)
         // Send to everyone, easier to have a two window part system
         if (!client.toBeDeleted)
         {
-            std::printf("Responding with %s\n", message);
             SDLNet_TCP_Send(client.socket, message, msgLength);
         }
     }
+
+    addTextToScroller(message);
 }
+

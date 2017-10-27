@@ -3,23 +3,33 @@
 #include <cstddef>
 #include <cstdint>
 #include <thread>
+#include <vector>
 #include <SDL2/SDL_net.h>
 #include <SDL2/SDL_ttf.h>
+#include "scene.h"
+
 
 class ChatClient
+    : public Scene
 {
 public:
-    ChatClient(const char* ipAddress,
+    ChatClient(SDL_Window* window,
+               SDL_Renderer* renderer,
+               const char* ipAddress,
                std::uint16_t port);
 
-    ~ChatClient();
+    virtual ~ChatClient();
+
+    virtual
+    SceneResult
+    run() override;
 
 private:
-    void run();
+    bool handleEvents();
+    void drawText();
+    void handleText();
 
-    void setupSDL();
-    void displayText(const std::string& str, int yPos);
-    void handleEvents();
+    static constexpr std::size_t DISPLAY_LIMIT = 10;
 
 
     // Network stuff
@@ -31,12 +41,5 @@ private:
     std::string m_message{};
     bool m_messageReady{false};
 
-    // Graphics stuff
-    static constexpr int FONT_HEIGHT = 18;
-    static constexpr std::size_t DISPLAY_LIMIT = 10;
-
-    SDL_Window* m_window{};
-    SDL_Renderer* m_renderer{};
-
-    TTF_Font* m_font{};
+    std::vector<std::string> m_receivedMessages{};
 };

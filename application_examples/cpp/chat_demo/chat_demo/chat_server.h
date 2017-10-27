@@ -5,8 +5,10 @@
 #include <thread>
 #include <vector>
 #include <SDL2/SDL_net.h>
+#include "scene.h"
 
 class ChatServer
+    : public Scene
 {
 public:
     ChatServer() = delete;
@@ -34,15 +36,20 @@ public:
     ///     be resolved, the constructor will throw a
     ///     std::runtime_error.
     /////////////////////////////////////////////////////////////////
-    ChatServer(std::uint16_t port,
-               std::size_t maxClients,
-               std::atomic<bool>& running);
+    ChatServer(SDL_Window* window,
+               SDL_Renderer* renderer,
+               std::uint16_t port,
+               std::size_t maxClients);
 
     /////////////////////////////////////////////////////////////////
     /// \brief
     ///     Closes the chat server and frees any memory.
     /////////////////////////////////////////////////////////////////
-    ~ChatServer();
+    virtual ~ChatServer();
+
+    virtual
+    SceneResult
+    run() override;
 
 private:
     struct ClientSocket
@@ -51,8 +58,7 @@ private:
         bool toBeDeleted{false};
     };
 
-    // Main thread executable function
-    void run();
+
 
     // Regular update of chat, i.e, receive messages and send them around
     void handleChat();
@@ -61,17 +67,13 @@ private:
     void checkForNewConnections();
     void removeDisconnectedClients();
 
-    // Sender of nullptr means that it should be sent to everyone
-    void broadcastMessage(const char* message, TCPsocket sender);
+    void broadcastMessage(const char* message);
 
     constexpr static int BUFFER_LEN = 512;
-
-    std::atomic<bool>& m_running;
 
     TCPsocket m_socket{};
     SDLNet_SocketSet m_socketSet{};
 
     std::vector<ClientSocket> m_clients{};
     const std::size_t m_maxClients{};
-
 };

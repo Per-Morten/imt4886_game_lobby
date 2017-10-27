@@ -1,4 +1,4 @@
-sources =  chat_client.cpp chat_server.cpp kjapp.cpp main.cpp
+sources =  chat_client.cpp chat_server.cpp kjapp.cpp main.cpp scene.cpp
 
 .PHONY: clean
 clean:
