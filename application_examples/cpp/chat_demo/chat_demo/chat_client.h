@@ -18,19 +18,25 @@ private:
     void run();
 
     void setupSDL();
-    //void displayText(const char* message);
-    void handleEvents(std::atomic<bool>& running);
+    void displayText(const std::string& str, int yPos);
+    void handleEvents();
 
+
+    // Network stuff
     TCPsocket m_socket{};
     SDLNet_SocketSet m_socketSet{};
+    bool m_running{true};
 
     // Input handling
     std::string m_message{};
     bool m_messageReady{false};
 
     // Graphics stuff
-    SDL_Window* m_window;
-    SDL_Renderer* m_renderer;
+    static constexpr int FONT_HEIGHT = 18;
+    static constexpr std::size_t DISPLAY_LIMIT = 10;
 
-    TTF_Font* m_font;
+    SDL_Window* m_window{};
+    SDL_Renderer* m_renderer{};
+
+    TTF_Font* m_font{};
 };

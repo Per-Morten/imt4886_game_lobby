@@ -140,7 +140,7 @@ ChatServer::removeDisconnectedClients()
 void
 ChatServer::broadcastMessage(const char* message, TCPsocket sender)
 {
-    const int msgLength = strlen(message) + 1;
+    const int msgLength = std::strlen(message) + 1;
 
     // No need to send empty message
     if (msgLength == 1)

@@ -43,28 +43,6 @@ ChatClient::~ChatClient()
     TTF_Quit();
 }
 
-//TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 24); //this opens a font style and sets a size
-//
-//SDL_Color White = {255, 255, 255};  // this is the color in rgb format, maxing out all would give you the color white, and it will be your text's color
-//
-//SDL_Surface* surfaceMessage = TTF_RenderText_Solid(Sans, "put your text here", White); // as TTF_RenderText_Solid could only be used on SDL_Surface then you have to create the surface first
-//
-//SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage); //now you can convert it into a texture
-//
-//SDL_Rect Message_rect; //create a rect
-//Message_rect.x = 0;  //controls the rect's x coordinate
-//Message_rect.y = 0; // controls the rect's y coordinte
-//Message_rect.w = 100; // controls the width of the rect
-//Message_rect.h = 100; // controls the height of the rect
-//
-////Mind you that (0,0) is on the top left of the window/screen, think a rect as the text's box, that way it would be very simple to understance
-//
-////Now since it's a texture, you have to put RenderCopy in your game loop area, the area where the whole code executes
-//
-//SDL_RenderCopy(renderer, Message, NULL, &Message_rect); //you put the renderer's name first, the Message, the crop size(you can ignore this if you don't want to dabble with cropping), and the rect which is the size and coordinate of your texture
-//
-////Don't forget too free your surface and texture
-
 void
 ChatClient::setupSDL()
 {
@@ -84,7 +62,7 @@ ChatClient::setupSDL()
     if (TTF_Init() < 0)
         std::printf("Could not initialize TTF");
 
-    m_font = TTF_OpenFont("Menlo-Regular.ttf", 18);
+    m_font = TTF_OpenFont("Menlo-Regular.ttf", FONT_HEIGHT);
     if (!m_font)
         std::printf("Could not create font\n");
 
@@ -101,89 +79,32 @@ ChatClient::setupSDL()
 
 }
 
-// void
-// ChatClient::displayText(const char* msg)
-// {
-//     SDL_Color white = {255, 255, 255, 255};
-//     SDL_Surface* surface = TTF_RenderText_Solid(m_font, msg, white);
-//     SDL_Texture* message = SDL_CreateTextureFromSurface(m_renderer, surface);
-
-//     SDL_Rect messageRect;
-//     messageRect.x = 0;
-//     messageRect.y = 0;
-//     messageRect.w = 100;
-//     messageRect.h = 100;
-
-//     SDL_RenderCopy(m_renderer, message, nullptr, &messageRect);
-
-//     SDL_FreeSurface(surface);
-//     SDL_DestroyTexture(message);
-// }
-
 void
-displayReceivedText(const std::vector<std::string>& vec,
-                    TTF_Font* font,
-                    SDL_Renderer* renderer,
-                    SDL_Window* window)
+ChatClient::displayText(const std::string& str,
+                        const int yPos)
 {
-    constexpr std::size_t fontHeight = 18;
-    int windowWidth = 0;
-    int windowHeight = 0;
-    SDL_GetWindowSize(window,
-                      &windowWidth,
-                      &windowHeight);
-
-
-    for (std::size_t i = 0; i < vec.size(); ++i)
-    {
-        SDL_Color white = {255, 255, 255, 255};
-        SDL_Surface* surface = TTF_RenderText_Solid(font, vec[i].c_str(), white);
-        SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surface);
-
-        SDL_Rect messageRect;
-        messageRect.x = 0;
-        messageRect.y = fontHeight * i;
-        messageRect.w = vec[i].size() * fontHeight;
-        messageRect.h = fontHeight;
-
-        SDL_RenderCopy(renderer, message, nullptr, &messageRect);
-
-        SDL_FreeSurface(surface);
-        SDL_DestroyTexture(message);
-    }
-}
-
-void
-displayWritingText(const std::string& str,
-                   TTF_Font* font,
-                   SDL_Renderer* renderer,
-                   SDL_Window* window)
-{
-    constexpr std::size_t fontHeight = 18;
-    int windowWidth = 0;
-    int windowHeight = 0;
-    SDL_GetWindowSize(window,
-                      &windowWidth,
-                      &windowHeight);
-
     SDL_Color white = {255, 255, 255, 255};
-    SDL_Surface* surface = TTF_RenderText_Solid(font, str.c_str(), white);
-    SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Surface* surface = TTF_RenderText_Solid(m_font,
+                                                str.c_str(),
+                                                white);
+
+    SDL_Texture* message = SDL_CreateTextureFromSurface(m_renderer,
+                                                        surface);
 
     SDL_Rect messageRect;
     messageRect.x = 0;
-    messageRect.y = windowHeight - fontHeight;
-    messageRect.w = str.size() * fontHeight;
-    messageRect.h = fontHeight;
+    messageRect.y = yPos;
+    messageRect.w = str.size() * FONT_HEIGHT;
+    messageRect.h = FONT_HEIGHT;
 
-    SDL_RenderCopy(renderer, message, nullptr, &messageRect);
+    SDL_RenderCopy(m_renderer, message, nullptr, &messageRect);
 
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(message);
 }
 
 void
-ChatClient::handleEvents(std::atomic<bool>& running)
+ChatClient::handleEvents()
 {
     SDL_Event event;
     while (SDL_PollEvent(&event))
@@ -192,7 +113,7 @@ ChatClient::handleEvents(std::atomic<bool>& running)
             (event.type == SDL_KEYUP &&
              event.key.keysym.sym == SDLK_ESCAPE))
         {
-            running = false;
+            m_running = false;
         }
 
         if (event.type == SDL_KEYUP)
@@ -219,45 +140,35 @@ ChatClient::handleEvents(std::atomic<bool>& running)
 void
 ChatClient::run()
 {
-//    std::atomic<bool> messageReady{false};
-    std::atomic<bool> running{true};
-//    std::string input;
-
-//    std::thread typingThread([&messageReady, &running, &input]
-//    {
-//        do
-//        {
-//            std::string buff;
-//            printf("Message: ");
-//            fflush(stdout);
-//            std::getline(std::cin, buff);
-//            input = buff;
-//            messageReady = true;
-//            if (input == "shutdown" ||
-//                input == "disconnect")
-//            {
-//                running = false;
-//            }
-//            std::this_thread::sleep_for(std::chrono::seconds(0));
-//        } while (running);
-//    });
-
     std::vector<std::string> receivedMessages;
 
     char buffer[512];
-    while (running)
+    while (m_running)
     {
-        handleEvents(running);
+        handleEvents();
         SDL_RenderClear(m_renderer);
-        displayReceivedText(receivedMessages, m_font, m_renderer, m_window);
-        displayWritingText(m_message, m_font, m_renderer, m_window);
-        //displayText(buffer);
+
+        // Display Received Text
+        displayText("Received: ", 0);
+        for (std::size_t i = 0; i < receivedMessages.size(); ++i)
+        {
+            displayText(receivedMessages[i], (i + 1) * FONT_HEIGHT);
+        }
+
+        // Display Writing Text
+        {
+            int height;
+            SDL_GetWindowSize(m_window, nullptr, &height);
+            std::string display = "Msg: " + m_message;
+            displayText(display, height - FONT_HEIGHT);
+        }
+
         if (SDLNet_CheckSockets(m_socketSet, 0) > 0 && SDLNet_SocketReady(m_socket))
         {
             int bytesRead = SDLNet_TCP_Recv(m_socket, buffer, 512);
             if (bytesRead <= 0)
             {
-                running = false;
+                m_running = false;
                 std::printf("Disconnected\n");
             }
             std::printf("Received: %s\n", buffer);
@@ -276,10 +187,6 @@ ChatClient::run()
             m_messageReady = false;
         }
 
-
-
         SDL_RenderPresent(m_renderer);
     }
-
-    //typingThread.join();
 }
