@@ -25,17 +25,15 @@ public:
     run() override;
 
 private:
-    bool handleEvents();
+    void handleEvents();
     void drawText();
     void handleText();
 
     static constexpr std::size_t DISPLAY_LIMIT = 10;
 
-
     // Network stuff
     TCPsocket m_socket{};
     SDLNet_SocketSet m_socketSet{};
-    bool m_running{true};
 
     // Input handling
     std::string m_message{};

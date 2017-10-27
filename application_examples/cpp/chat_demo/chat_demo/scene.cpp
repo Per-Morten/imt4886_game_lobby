@@ -39,7 +39,7 @@ Scene::displayText(const std::string& str,
                                                         surface);
 
     SDL_Rect messageRect;
-    messageRect.x = 0;
+    messageRect.x = xPos;
     messageRect.y = yPos;
     messageRect.w = str.size() * FONT_HEIGHT;
     messageRect.h = FONT_HEIGHT;
@@ -70,3 +70,12 @@ Scene::addTextToScroller(const std::string& str)
     m_scrollerStrings.push_back(str);
 }
 
+void
+Scene::handleEvent(const SDL_Event& event)
+{
+    if (event.type == SDL_QUIT)
+    {
+        m_running = false;
+        m_continueProgram = false;
+    }
+}

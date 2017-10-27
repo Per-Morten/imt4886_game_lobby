@@ -11,6 +11,7 @@
 
 #include "chat_server.h"
 #include "chat_client.h"
+#include "chat_menu.h"
 
 #include "kjapp.h"
 #include "scene.h"
@@ -53,8 +54,8 @@ constexpr auto gameToken = "59ec8be7890cd692461bb7d4";
 using WindowRenderer = std::pair<SDL_Window*, SDL_Renderer*>;
 
 WindowRenderer
-setupSDL(int height,
-         int width,
+setupSDL(int width,
+         int height,
          const char* windowText)
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -95,26 +96,32 @@ setupSDL(int height,
 int
 main(int argc, char** argv)
 {
-    auto windowAndRenderer = setupSDL(800, 640, "Chat");
+    auto windowAndRenderer = setupSDL(1280, 720, "Chat");
 
     std::printf("Arguments: %d %s\n", argc, argv[1]);
 
     std::stack<std::unique_ptr<Scene>> scenes;
-    if (argc > 1 && strcmp(argv[1], "-s") == 0)
-    {
-        auto ptr = std::make_unique<ChatServer>(windowAndRenderer.first,
-                                                windowAndRenderer.second,
-                                                8000, 10);
-        scenes.push(std::move(ptr));
-    }
-    else
-    {
-        auto ptr = std::make_unique<ChatClient>(windowAndRenderer.first,
-                                                windowAndRenderer.second,
-                                                "127.0.0.1",
-                                                8000);
-        scenes.push(std::move(ptr));
-    }
+//    if (argc > 1 && strcmp(argv[1], "-s") == 0)
+//    {
+//        auto ptr = std::make_unique<ChatServer>(windowAndRenderer.first,
+//                                                windowAndRenderer.second,
+//                                                8000, 10);
+//        scenes.push(std::move(ptr));
+//    }
+//    else
+//    {
+//        auto ptr = std::make_unique<ChatClient>(windowAndRenderer.first,
+//                                                windowAndRenderer.second,
+//                                                "127.0.0.1",
+//                                                8000);
+//        scenes.push(std::move(ptr));
+//    }
+
+    auto ptr = std::make_unique<ChatMenu>(windowAndRenderer.first,
+                                          windowAndRenderer.second);
+
+    scenes.push(std::move(ptr));
+
 
     while (!scenes.empty())
     {

@@ -39,19 +39,13 @@ ChatServer::~ChatServer()
 SceneResult
 ChatServer::run()
 {
-    while (true)
+    while (m_running)
     {
         SDL_RenderClear(m_renderer);
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
-            if (event.type == SDL_QUIT ||
-                (event.type == SDL_KEYUP &&
-                 event.key.keysym.sym == SDLK_ESCAPE))
-            {
-                return {false, nullptr};
-            }
-
+            Scene::handleEvent(event);
         }
 
         int activity = SDLNet_CheckSockets(m_socketSet, 1);
@@ -66,7 +60,7 @@ ChatServer::run()
         SDL_RenderPresent(m_renderer);
     }
 
-    return {true, nullptr};
+    return {m_continueProgram, nullptr};
 }
 
 void

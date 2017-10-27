@@ -4,9 +4,12 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <functional>
 
 class Scene;
 using SceneResult = std::pair<bool, std::unique_ptr<Scene>>;
+
+using EventHandler = std::function<void(const SDL_Event& event)>;
 
 class Scene
 {
@@ -32,6 +35,9 @@ protected:
     void
     addTextToScroller(const std::string& str);
 
+    void
+    handleEvent(const SDL_Event& event);
+
     static constexpr int FONT_HEIGHT = 18;
     static constexpr std::size_t DISPLAY_LIMIT = 10;
 
@@ -41,9 +47,14 @@ protected:
     TTF_Font* m_font{};
 
     std::vector<std::string> m_scrollerStrings{};
+    std::vector<EventHandler> m_eventHandlers{};
+
+    bool m_running{true};
+    bool m_continueProgram{true};
 };
 
 // Predeclarations
+class ChatMenu;
 class ChatClient;
 class ChatServer;
 class ChatRoomLister;

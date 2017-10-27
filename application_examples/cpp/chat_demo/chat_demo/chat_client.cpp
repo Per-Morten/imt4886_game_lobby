@@ -41,29 +41,25 @@ ChatClient::~ChatClient()
 SceneResult
 ChatClient::run()
 {
-    while (handleEvents())
+    while (m_running)
     {
         SDL_RenderClear(m_renderer);
+        handleEvents();
         handleText();
         drawText();
         SDL_RenderPresent(m_renderer);
     }
 
-    return {false, nullptr};
+    return {m_continueProgram, nullptr};
 }
 
-bool
+void
 ChatClient::handleEvents()
 {
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
-        if (event.type == SDL_QUIT ||
-            (event.type == SDL_KEYUP &&
-             event.key.keysym.sym == SDLK_ESCAPE))
-        {
-            return false;
-        }
+        Scene::handleEvent(event);
 
         if (event.type == SDL_KEYUP)
         {
@@ -83,8 +79,6 @@ ChatClient::handleEvents()
             m_message.push_back(event.text.text[0]);
         }
     }
-
-    return true;
 }
 
 void
@@ -105,21 +99,15 @@ ChatClient::handleText()
 {
     if (SDLNet_CheckSockets(m_socketSet, 0) > 0 && SDLNet_SocketReady(m_socket))
     {
-        char buffer[512];
+        char buffer[512] = {};
         int bytesRead = SDLNet_TCP_Recv(m_socket, buffer, 512);
         addTextToScroller(buffer);
-        //if (m_receivedMessages.size() > DISPLAY_LIMIT)
-        //{
-        //    // Ugly way of popping front
-        //    m_receivedMessages.erase(m_receivedMessages.begin());
-        //}
-        //m_receivedMessages.push_back({buffer});
     }
     if (m_messageReady)
     {
-        //std::printf("Sending: %s\n", m_message.data());
         SDLNet_TCP_Send(m_socket, m_message.data(), m_message.size() + 1);
         m_message.clear();
         m_messageReady = false;
+        // Handle the case where the user wants to disconnect here.
     }
 }
