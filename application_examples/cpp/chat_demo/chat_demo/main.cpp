@@ -66,24 +66,24 @@ main(int argc, char** argv)
     {
         std::printf("Running client\n");
         std::fflush(stdout);
-        auto matches = kjapp::getMatches(gameToken, kjapp::Query::NON_FULL_MATCHES, "Demo");
-        for (std::size_t i = 0; i < matches.size(); ++i)
-        {
-            std::printf("Match %zu: name: %s id: %s\n", i,
-                        matches[i]["name"].get<std::string>().c_str(),
-                        matches[i]["_id"].get<std::string>().c_str());
-        }
-
-        std::printf("Write your choice\n");
-        int choice;
-        std::scanf("%d", &choice);
+//        auto matches = kjapp::getMatches(gameToken, kjapp::Query::NON_FULL_MATCHES, "Demo");
+//        for (std::size_t i = 0; i < matches.size(); ++i)
+//        {
+//            std::printf("Match %zu: name: %s id: %s\n", i,
+//                        matches[i]["name"].get<std::string>().c_str(),
+//                        matches[i]["_id"].get<std::string>().c_str());
+//        }
+//
+//        std::printf("Write your choice\n");
+//        int choice;
+//        std::scanf("%d", &choice);
 
         try
         {
-            ChatClient(matches[choice]["hostIP"].get<std::string>().c_str(),
-                       matches[choice]["hostPort"].get<std::uint16_t>());
-            //ChatClient("127.0.0.1",
-            //           8000);
+            //ChatClient(matches[choice]["hostIP"].get<std::string>().c_str(),
+            //           matches[choice]["hostPort"].get<std::uint16_t>());
+            ChatClient("127.0.0.1",
+                       8000);
         }
         catch (const std::exception& e)
         {

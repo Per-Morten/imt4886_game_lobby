@@ -60,6 +60,7 @@ ChatServer::handleChat()
     {
         if (SDLNet_SocketReady(client.socket))
         {
+            std::printf("Socket is read\n");
             char buffer[BUFFER_LEN];
             int bytesReceived = SDLNet_TCP_Recv(client.socket, buffer, BUFFER_LEN);
 
@@ -72,10 +73,12 @@ ChatServer::handleChat()
             // If the client is disconnecting
             if (bytesReceived == 0)
             {
+                std::printf("Should delete\n");
                 client.toBeDeleted = true;
             }
             else
             {
+                std::printf("Got %d bytes, %s\n", bytesReceived, buffer);
                 broadcastMessage(buffer, client.socket);
             }
         }
@@ -112,8 +115,16 @@ ChatServer::removeDisconnectedClients()
 {
     for (auto& client : m_clients)
     {
+        IPaddress* addr = SDLNet_TCP_GetPeerAddress(client.socket);
         if (client.toBeDeleted)
         {
+
+            std::printf("Deleting\n");
+            std::printf("Has: %u.%u.%u.%u\n",
+                            (std::uint8_t)(&addr->host)[0],
+                            (std::uint8_t)(&addr->host)[1],
+                            (std::uint8_t)(&addr->host)[2],
+                            (std::uint8_t)(&addr->host)[3]);
             SDLNet_TCP_DelSocket(m_socketSet, client.socket);
             SDLNet_TCP_Close(client.socket);
         }
@@ -133,13 +144,17 @@ ChatServer::broadcastMessage(const char* message, TCPsocket sender)
 
     // No need to send empty message
     if (msgLength == 1)
+    {
+        std::printf("Message is empty\n");
         return;
+    }
 
     for (auto& client : m_clients)
     {
         // Send to everyone, easier to have a two window part system
         if (!client.toBeDeleted)
         {
+            std::printf("Responding with %s\n", message);
             SDLNet_TCP_Send(client.socket, message, msgLength);
         }
     }

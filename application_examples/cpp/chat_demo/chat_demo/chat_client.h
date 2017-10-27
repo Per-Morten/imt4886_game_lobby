@@ -18,11 +18,15 @@ private:
     void run();
 
     void setupSDL();
-    void displayText(const char* message);
+    //void displayText(const char* message);
     void handleEvents(std::atomic<bool>& running);
 
     TCPsocket m_socket{};
     SDLNet_SocketSet m_socketSet{};
+
+    // Input handling
+    std::string m_message{};
+    bool m_messageReady{false};
 
     // Graphics stuff
     SDL_Window* m_window;
