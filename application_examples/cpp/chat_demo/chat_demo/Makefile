@@ -1,5 +1,6 @@
 sources = 									\
 			chat_client.cpp 				\
+			chat_room_lister.cpp			\
 		  	chat_menu.cpp 					\
 		  	chat_server.cpp 				\
 		  	chat_server_configurator.cpp 	\

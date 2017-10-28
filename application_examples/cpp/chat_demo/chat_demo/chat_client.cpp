@@ -7,12 +7,14 @@
 
 ChatClient::ChatClient(SDL_Window* window,
                        SDL_Renderer* renderer,
-                       const char* ipAddress,
-                       std::uint16_t port)
+                       const std::string& ipAddress,
+                       std::uint16_t port,
+                       const std::string& username)
     : Scene(window, renderer)
+    , m_username(username)
 {
     IPaddress serverIP;
-    if (SDLNet_ResolveHost(&serverIP, ipAddress, port) == -1)
+    if (SDLNet_ResolveHost(&serverIP, ipAddress.c_str(), port) == -1)
         throw std::runtime_error(SDLNet_GetError());
 
     m_socket = SDLNet_TCP_Open(&serverIP);
@@ -105,7 +107,8 @@ ChatClient::handleText()
     }
     if (m_messageReady)
     {
-        SDLNet_TCP_Send(m_socket, m_message.data(), m_message.size() + 1);
+        auto fullText = m_username + m_message;
+        SDLNet_TCP_Send(m_socket, fullText.data(), fullText.size() + 1);
         m_message.clear();
         m_messageReady = false;
         // Handle the case where the user wants to disconnect here.

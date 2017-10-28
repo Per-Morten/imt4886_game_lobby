@@ -2,6 +2,7 @@
 #include "chat_server.h"
 #include "chat_client.h"
 #include "chat_server_configurator.h"
+#include "chat_room_lister.h"
 
 ChatMenu::ChatMenu(SDL_Window* window,
                    SDL_Renderer* renderer)
@@ -48,10 +49,8 @@ ChatMenu::run()
                 }
                 if (isClicked(m_joinButton, mouseX, mouseY))
                 {
-                    auto client = std::make_unique<ChatClient>(m_window,
-                                                               m_renderer,
-                                                               "127.0.0.1",
-                                                               8000);
+                    auto client = std::make_unique<ChatRoomLister>(m_window,
+                                                                   m_renderer);
                     return {m_continueProgram, std::move(client)};
                 }
             }

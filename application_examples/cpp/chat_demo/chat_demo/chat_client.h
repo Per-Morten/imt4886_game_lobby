@@ -15,8 +15,9 @@ class ChatClient
 public:
     ChatClient(SDL_Window* window,
                SDL_Renderer* renderer,
-               const char* ipAddress,
-               std::uint16_t port);
+               const std::string& ipAddress,
+               std::uint16_t port,
+               const std::string& userName);
 
     virtual ~ChatClient();
 
@@ -29,14 +30,13 @@ private:
     void drawText();
     void handleText();
 
-    static constexpr std::size_t DISPLAY_LIMIT = 10;
-
     // Network stuff
     TCPsocket m_socket{};
     SDLNet_SocketSet m_socketSet{};
 
     // Input handling
     std::string m_message{};
+    std::string m_username{};
     bool m_messageReady{false};
 
     std::vector<std::string> m_receivedMessages{};

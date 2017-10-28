@@ -47,6 +47,7 @@ protected:
 
     static constexpr int FONT_HEIGHT = 18;
     static constexpr std::size_t DISPLAY_LIMIT = 10;
+    static constexpr auto GAME_TOKEN = "59ec8be7890cd692461bb7d4";
 
     SDL_Window* m_window;
     SDL_Renderer* m_renderer;
@@ -68,7 +69,5 @@ class ChatServer;
 // Name, maximum number of users etc
 class ChatServerConfigurator;
 
+// Join and set username
 class ChatRoomLister;
-
-// Used to ask for username
-class ChatRoomEntry;

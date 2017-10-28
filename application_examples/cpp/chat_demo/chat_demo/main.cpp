@@ -103,21 +103,6 @@ main(int argc, char** argv)
     std::printf("Arguments: %d %s\n", argc, argv[1]);
 
     std::stack<std::unique_ptr<Scene>> scenes;
-//    if (argc > 1 && strcmp(argv[1], "-s") == 0)
-//    {
-//        auto ptr = std::make_unique<ChatServer>(windowAndRenderer.first,
-//                                                windowAndRenderer.second,
-//                                                8000, 10);
-//        scenes.push(std::move(ptr));
-//    }
-//    else
-//    {
-//        auto ptr = std::make_unique<ChatClient>(windowAndRenderer.first,
-//                                                windowAndRenderer.second,
-//                                                "127.0.0.1",
-//                                                8000);
-//        scenes.push(std::move(ptr));
-//    }
 
     auto ptr = std::make_unique<ChatMenu>(windowAndRenderer.first,
                                           windowAndRenderer.second);
