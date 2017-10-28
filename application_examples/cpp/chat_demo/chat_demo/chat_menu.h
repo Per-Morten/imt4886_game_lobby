@@ -19,10 +19,6 @@ private:
     void
     handleEvents();
 
-    bool
-    isClicked(const SDL_Rect& button,
-              int xPos, int yPos);
-
     SDL_Rect m_hostButton{};
     SDL_Rect m_joinButton{};
 

@@ -90,6 +90,8 @@ setupSDL(int width,
                            clearColor.b,
                            clearColor.a);
 
+    SDL_StartTextInput();
+
     return {window, renderer};
 }
 
@@ -175,6 +177,7 @@ main(int argc, char** argv)
         //}
     //}
 
+    SDL_StopTextInput();
     SDLNet_Quit();
     SDL_Quit();
 

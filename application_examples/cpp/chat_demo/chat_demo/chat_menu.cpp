@@ -1,6 +1,7 @@
 #include "chat_menu.h"
 #include "chat_server.h"
 #include "chat_client.h"
+#include "chat_server_configurator.h"
 
 ChatMenu::ChatMenu(SDL_Window* window,
                    SDL_Renderer* renderer)
@@ -9,6 +10,7 @@ ChatMenu::ChatMenu(SDL_Window* window,
     int height;
     int width;
     SDL_GetWindowSize(m_window, &width, &height);
+
 
     m_hostButton.w = width / 6;
     m_hostButton.h = height / 4;
@@ -38,9 +40,9 @@ ChatMenu::run()
 
                 if (isClicked(m_hostButton, mouseX, mouseY))
                 {
-                    auto server = std::make_unique<ChatServer>(m_window,
-                                                               m_renderer,
-                                                               8000, 10);
+                    auto server =
+                        std::make_unique<ChatServerConfigurator>(m_window,
+                                                                 m_renderer);
 
                     return {m_continueProgram, std::move(server)};
                 }
@@ -55,10 +57,11 @@ ChatMenu::run()
             }
         }
 
+        const SDL_Color black = {0, 0, 0, 255};
         SDL_RenderClear(m_renderer);
-        drawButtons();
+        drawButton(m_hostButton, black);
+        drawButton(m_joinButton, black);
 
-        // Random magic numbers that makes text appear semi in middle
         displayText("Host",
                     m_hostButton.x + m_hostButton.w / 3,
                     m_hostButton.y + m_hostButton.h / 2);
@@ -72,44 +75,3 @@ ChatMenu::run()
     return {m_continueProgram, nullptr};
 }
 
-void
-ChatMenu::drawButtons()
-{
-    SDL_Color prevColor;
-    SDL_GetRenderDrawColor(m_renderer,
-                           &prevColor.r,
-                           &prevColor.g,
-                           &prevColor.b,
-                           &prevColor.a);
-
-    SDL_Color black = {0, 0, 0, 255};
-
-    SDL_SetRenderDrawColor(m_renderer,
-                           black.r,
-                           black.g,
-                           black.b,
-                           black.a);
-
-
-    SDL_RenderFillRect(m_renderer,
-                       &m_hostButton);
-
-    SDL_RenderFillRect(m_renderer,
-                       &m_joinButton);
-
-    SDL_SetRenderDrawColor(m_renderer,
-                           prevColor.r,
-                           prevColor.g,
-                           prevColor.b,
-                           prevColor.a);
-
-}
-
-bool
-ChatMenu::isClicked(const SDL_Rect& button,
-                    const int xPos, const int yPos)
-{
-    return (xPos >= button.x && xPos <= button.x + button.w &&
-            yPos >= button.y && yPos <= button.y + button.h);
-
-}

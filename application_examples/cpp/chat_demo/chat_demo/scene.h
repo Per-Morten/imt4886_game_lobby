@@ -9,8 +9,6 @@
 class Scene;
 using SceneResult = std::pair<bool, std::unique_ptr<Scene>>;
 
-using EventHandler = std::function<void(const SDL_Event& event)>;
-
 class Scene
 {
 public:
@@ -33,10 +31,19 @@ protected:
     displayScroller();
 
     void
+    drawButton(const SDL_Rect& button,
+               const SDL_Color& color);
+
+    void
     addTextToScroller(const std::string& str);
 
     void
     handleEvent(const SDL_Event& event);
+
+    bool
+    isClicked(const SDL_Rect& button,
+              const int xPos,
+              const int yPos);
 
     static constexpr int FONT_HEIGHT = 18;
     static constexpr std::size_t DISPLAY_LIMIT = 10;
@@ -47,7 +54,6 @@ protected:
     TTF_Font* m_font{};
 
     std::vector<std::string> m_scrollerStrings{};
-    std::vector<EventHandler> m_eventHandlers{};
 
     bool m_running{true};
     bool m_continueProgram{true};
@@ -57,5 +63,12 @@ protected:
 class ChatMenu;
 class ChatClient;
 class ChatServer;
+
+// Used to set up any configuration for chat
+// Name, maximum number of users etc
+class ChatServerConfigurator;
+
 class ChatRoomLister;
-class UserNameEntry;
+
+// Used to ask for username
+class ChatRoomEntry;

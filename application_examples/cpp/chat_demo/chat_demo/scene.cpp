@@ -21,7 +21,6 @@ Scene::Scene(SDL_Window* window,
 
 Scene::~Scene()
 {
-    SDL_StopTextInput();
     TTF_CloseFont(m_font);
     TTF_Quit();
 }
@@ -60,6 +59,34 @@ Scene::displayScroller()
 }
 
 void
+Scene::drawButton(const SDL_Rect& button,
+                  const SDL_Color& color)
+{
+    SDL_Color prevColor;
+    SDL_GetRenderDrawColor(m_renderer,
+                           &prevColor.r,
+                           &prevColor.g,
+                           &prevColor.b,
+                           &prevColor.a);
+
+    SDL_SetRenderDrawColor(m_renderer,
+                           color.r,
+                           color.g,
+                           color.b,
+                           color.a);
+
+
+    SDL_RenderFillRect(m_renderer,
+                       &button);
+
+    SDL_SetRenderDrawColor(m_renderer,
+                           prevColor.r,
+                           prevColor.g,
+                           prevColor.b,
+                           prevColor.a);
+}
+
+void
 Scene::addTextToScroller(const std::string& str)
 {
     if (m_scrollerStrings.size() > DISPLAY_LIMIT)
@@ -79,3 +106,13 @@ Scene::handleEvent(const SDL_Event& event)
         m_continueProgram = false;
     }
 }
+
+bool
+Scene::isClicked(const SDL_Rect& button,
+                    const int xPos, const int yPos)
+{
+    return (xPos >= button.x && xPos <= button.x + button.w &&
+            yPos >= button.y && yPos <= button.y + button.h);
+
+}
+
