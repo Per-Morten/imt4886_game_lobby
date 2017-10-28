@@ -80,6 +80,7 @@ ChatServerConfigurator::run()
 
                         auto server = std::make_unique<ChatServer>(m_window,
                                                                    m_renderer,
+                                                                   m_name,
                                                                    port,
                                                                    std::stoul(m_maxClients));
 

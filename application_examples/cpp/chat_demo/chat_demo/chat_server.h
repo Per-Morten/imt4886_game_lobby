@@ -38,6 +38,7 @@ public:
     /////////////////////////////////////////////////////////////////
     ChatServer(SDL_Window* window,
                SDL_Renderer* renderer,
+               const std::string& name,
                std::uint16_t port,
                std::size_t maxClients);
 

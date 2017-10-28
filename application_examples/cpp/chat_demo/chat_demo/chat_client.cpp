@@ -107,7 +107,7 @@ ChatClient::handleText()
     }
     if (m_messageReady)
     {
-        auto fullText = m_username + m_message;
+        auto fullText = m_username + ": " + m_message;
         SDLNet_TCP_Send(m_socket, fullText.data(), fullText.size() + 1);
         m_message.clear();
         m_messageReady = false;

@@ -2,9 +2,12 @@
 #include <stdexcept>
 #include <algorithm>
 #include <cstring>
+#include <cinttypes>
+#include "kjapp.h"
 
 ChatServer::ChatServer(SDL_Window* window,
                        SDL_Renderer* renderer,
+                       const std::string& name,
                        std::uint16_t port,
                        std::size_t maxClients)
     : Scene(window, renderer)
@@ -28,6 +31,27 @@ ChatServer::ChatServer(SDL_Window* window,
     }
 
     SDLNet_TCP_AddSocket(m_socketSet, m_socket);
+
+    try
+    {
+        auto myIp = kjapp::getMyIP();
+        kjapp::hostMatch(GAME_TOKEN,
+                         name,
+                         myIp,
+                         port,
+                         maxClients);
+
+        char buffer[128];
+        std::sprintf(buffer, "Running server on: %s", myIp.c_str());
+
+        broadcastMessage(buffer);
+    }
+    catch (const std::exception& e)
+    {
+        SDLNet_FreeSocketSet(m_socketSet);
+        SDLNet_TCP_Close(m_socket);
+        throw e;
+    }
 }
 
 ChatServer::~ChatServer()

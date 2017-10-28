@@ -43,6 +43,45 @@ namespace
     namespace local
     {
         std::size_t
+        getMyIPCallback(void* contents, std::size_t size, std::size_t nmemb, void* userData)
+        {
+            auto data = static_cast<std::string*>(userData);
+
+            std::size_t realSize = size * nmemb;
+            std::string parseString(static_cast<char*>(contents), realSize);
+            nlohmann::json json = nlohmann::json::parse(parseString);
+            *data = json["ip"];
+
+            return size * nmemb;
+        }
+    }
+}
+
+std::string
+kjapp::getMyIP()
+{
+    auto handle = createCurlHandle();
+    curl_easy_setopt(handle.get(), CURLOPT_WRITEFUNCTION, local::getMyIPCallback);
+
+    std::string output;
+    curl_easy_setopt(handle.get(), CURLOPT_WRITEDATA, &output);
+
+    const auto url = "https://api.ipify.org?format=json";
+
+    curl_easy_setopt(handle.get(), CURLOPT_URL, url);
+
+    const auto res = curl_easy_perform(handle.get());
+    if (res != CURLE_OK)
+        throw std::runtime_error(curl_easy_strerror(res));
+
+    return output;
+}
+
+namespace
+{
+    namespace local
+    {
+        std::size_t
         hostMatchCallback(void* contents, std::size_t size, std::size_t nmemb, void* userData)
         {
             std::size_t realSize = size * nmemb;

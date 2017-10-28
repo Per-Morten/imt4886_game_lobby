@@ -200,8 +200,8 @@ ChatRoomLister::drawMatches()
         position.y = i * position.h;
 
         const auto color = (&m_matches[i] == m_selectedMatch)
-                              ? SDL_Color{0, 0, 128, 255}
-                              : SDL_Color{0, 0, 0, 255};
+                         ? SDL_Color{0, 0, 128, 255}
+                         : SDL_Color{0, 0, 0, 255};
 
         drawButton(position, color);
         displayText(m_matches[i]["name"].get<std::string>().c_str(), position.x, position.y);
