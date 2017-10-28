@@ -1,10 +1,9 @@
 #pragma once
-#include <atomic>
 #include <cstddef>
 #include <cstdint>
-#include <thread>
+#include <string>
 #include <vector>
-#include <SDL2/SDL_net.h>
+
 #include "scene.h"
 
 class ChatServer
@@ -58,8 +57,6 @@ private:
         TCPsocket socket{};
         bool toBeDeleted{false};
     };
-
-
 
     // Regular update of chat, i.e, receive messages and send them around
     void handleChat();

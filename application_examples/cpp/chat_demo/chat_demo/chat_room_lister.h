@@ -1,6 +1,9 @@
 #pragma once
-#include "scene.h"
+#include <string>
+#include <vector>
+
 #include "kjapp.h"
+#include "scene.h"
 
 class ChatRoomLister
     : public Scene

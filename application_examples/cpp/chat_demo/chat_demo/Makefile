@@ -8,20 +8,29 @@ sources = 									\
 		  	main.cpp 						\
 		  	scene.cpp						\
 
+std_flags =									\
+			-std=c++14						\
+			-Wold-style-cast				\
+			-Wall							\
+			-Wextra							\
+
+linker_flags = 								\
+			-lcurl							\
+			-lSDL2							\
+			-lSDL2_net						\
+			-lSDL2_ttf						\
+			-lpthread						\
+
 .PHONY: clean
 clean:
-	rm -f ./chat_client ./chat_server ./chat
+	rm -f ./chat
 
-all: $(sources) clean
-	g++-7 $(sources) -o chat -Wall -Wextra -std=c++14 -lcurl -lSDL2 -lSDL2_net -lSDL2_ttf -lpthread
+chat: $(sources) clean
+	g++-7 $(sources) -o chat $(std_flags) $(linker_flags)
 
-leak: $(sources) clean
-	g++-7 $(sources) -o chat -fno-omit-frame-pointer -fsanitize=address -g3 -Og -Wall -Wextra -std=c++14 -lcurl -lSDL2 -lSDL2_net -lSDL2_ttf -lpthread; ASAN_OPTIONS=detect_leaks=1
+chat_leak: $(sources) clean
+	g++-7 $(sources) -o chat -fno-omit-frame-pointer -fsanitize=address -g3 -Og $(std_flags) $(linker_flags); ASAN_OPTIONS=detect_leaks=1
 
-.PHONY: run_server
-run_server: clean all
-	./chat -s
-
-.PHONY: run_client
-run_client: clean all
+.PHONY: run
+run: clean chat
 	./chat

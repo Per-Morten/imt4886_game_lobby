@@ -1,8 +1,10 @@
 #include "chat_server.h"
-#include <stdexcept>
+
 #include <algorithm>
+#include <cstdio>
 #include <cstring>
-#include <cinttypes>
+#include <stdexcept>
+
 #include "kjapp.h"
 
 ChatServer::ChatServer(SDL_Window* window,
@@ -104,7 +106,9 @@ ChatServer::handleChat()
             }
             else
             {
-                broadcastMessage(buffer);
+                // Turning it into string here to ensure that we get null termination
+                std::string message(buffer, bytesReceived);
+                broadcastMessage(message.c_str());
             }
         }
     }
@@ -140,7 +144,6 @@ ChatServer::removeDisconnectedClients()
 {
     for (auto& client : m_clients)
     {
-        IPaddress* addr = SDLNet_TCP_GetPeerAddress(client.socket);
         if (client.toBeDeleted)
         {
             SDLNet_TCP_DelSocket(m_socketSet, client.socket);

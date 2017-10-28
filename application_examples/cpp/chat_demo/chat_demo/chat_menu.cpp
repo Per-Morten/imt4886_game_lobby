@@ -1,6 +1,4 @@
 #include "chat_menu.h"
-#include "chat_server.h"
-#include "chat_client.h"
 #include "chat_server_configurator.h"
 #include "chat_room_lister.h"
 

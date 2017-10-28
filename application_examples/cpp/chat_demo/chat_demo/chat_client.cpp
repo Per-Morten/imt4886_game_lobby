@@ -1,9 +1,6 @@
 #include "chat_client.h"
 #include <stdexcept>
-#include <string>
-#include <iostream>
 #include <cstring>
-#include <vector>
 
 ChatClient::ChatClient(SDL_Window* window,
                        SDL_Renderer* renderer,
@@ -93,7 +90,6 @@ ChatClient::drawText()
     SDL_GetWindowSize(m_window, nullptr, &height);
     std::string display = "Msg: " + m_message;
     displayText(display, 0, height - FONT_HEIGHT);
-
 }
 
 void
@@ -103,7 +99,10 @@ ChatClient::handleText()
     {
         char buffer[512] = {};
         int bytesRead = SDLNet_TCP_Recv(m_socket, buffer, 512);
-        addTextToScroller(buffer);
+
+        // Converting to std::string to ensure we get \0, which is why bytesRead is included.
+        std::string message(buffer, bytesRead);
+        addTextToScroller(message.c_str());
     }
     if (m_messageReady)
     {
@@ -111,6 +110,5 @@ ChatClient::handleText()
         SDLNet_TCP_Send(m_socket, fullText.data(), fullText.size() + 1);
         m_message.clear();
         m_messageReady = false;
-        // Handle the case where the user wants to disconnect here.
     }
 }

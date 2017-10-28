@@ -1,4 +1,8 @@
 #include "chat_room_lister.h"
+
+#include <cstdio>
+#include <cstdlib>
+
 #include "chat_client.h"
 
 ChatRoomLister::ChatRoomLister(SDL_Window* window,
@@ -111,6 +115,8 @@ ChatRoomLister::run()
                 {
                     try
                     {
+                        // Ensure that we update matches if we go back.
+                        m_updateMatches = true;
                         auto client = std::make_unique<ChatClient>(m_window,
                                                                    m_renderer,
                                                                    (*m_selectedMatch)["hostIP"].get<std::string>(),
@@ -150,7 +156,6 @@ ChatRoomLister::run()
         {
             try
             {
-                std::printf("Getting matches\n");
                 m_selectedMatch = nullptr;
                 m_updateMatches = false;
                 m_matches = kjapp::getMatches(GAME_TOKEN,

@@ -14,7 +14,8 @@ public:
     run() override;
 
 private:
-    void drawButtons();
+    void
+    drawButtons();
 
     void
     handleEvents();

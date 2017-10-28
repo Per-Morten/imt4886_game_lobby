@@ -1,10 +1,11 @@
 #pragma once
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <SDL2/SDL_net.h>
 #include <SDL2/SDL_ttf.h>
-#include <string>
-#include <memory>
-#include <vector>
-#include <functional>
 
 class Scene;
 using SceneResult = std::pair<bool, std::unique_ptr<Scene>>;
@@ -59,15 +60,3 @@ protected:
     bool m_running{true};
     bool m_continueProgram{true};
 };
-
-// Predeclarations
-class ChatMenu;
-class ChatClient;
-class ChatServer;
-
-// Used to set up any configuration for chat
-// Name, maximum number of users etc
-class ChatServerConfigurator;
-
-// Join and set username
-class ChatRoomLister;

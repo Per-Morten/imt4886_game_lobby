@@ -1,13 +1,11 @@
 #include "kjapp.h"
 
-#include <cinttypes>
 #include <cstdio>
 #include <cstring>
 #include <memory>
+#include <stdexcept>
 
 #include <curl/curl.h>
-#include "json.hpp"
-
 
 const std::string KJAPP_URL = "up.imt.hig.no:8333";
 
@@ -35,8 +33,6 @@ createCurlHandle()
 
     return CurlHandle(curl);
 }
-
-using json = nlohmann::json;
 
 namespace
 {
@@ -71,6 +67,7 @@ kjapp::getMyIP()
     curl_easy_setopt(handle.get(), CURLOPT_URL, url);
 
     const auto res = curl_easy_perform(handle.get());
+
     if (res != CURLE_OK)
         throw std::runtime_error(curl_easy_strerror(res));
 
@@ -90,7 +87,7 @@ namespace
             // so just ensuring that the std::string never reads more than realSize number of characters.
             std::string jsonString(static_cast<char*>(contents), realSize);
             nlohmann::json* output = static_cast<nlohmann::json*>(userData);
-            *output = json(jsonString);
+            *output = nlohmann::json(jsonString);
             return size * nmemb;
         };
     }
@@ -101,18 +98,8 @@ kjapp::hostMatch(const std::string& gameToken,
                  const std::string& name,
                  const std::string& hostIP,
                  const std::uint16_t hostPort,
-                 const std::size_t maxPlayerCount)
-{
-    return hostMatch(gameToken, name, hostIP, hostPort, maxPlayerCount, " ");
-}
-
-nlohmann::json
-kjapp::hostMatch(const std::string& gameToken,
-                 const std::string& name,
-                 const std::string& hostIP,
-                 const std::uint16_t hostPort,
                  const std::size_t maxPlayerCount,
-                 const nlohmann::json& miscInfo)
+                 const std::string& miscInfo)
 {
     auto handle = createCurlHandle();
 
@@ -217,15 +204,23 @@ kjapp::getMatches(const std::string& gameToken,
             url += "with_name/no_body/" + gameToken + "/" + name;
             return {};
         break;
+
+        case Query::NOT_IN_SESSION:
+            std::fprintf(stderr, "Query::NOT_IN_SESSION is not supported yet!\n");
+            return {};
+        break;
+
+        default:
+            std::fprintf(stderr, "Query is not supported yet\n");
+            return {};
+        break;
     }
 
     curl_easy_setopt(handle.get(), CURLOPT_URL, url.c_str());
 
     const auto res =  curl_easy_perform(handle.get());
     if (res != CURLE_OK)
-    {
         throw std::runtime_error(curl_easy_strerror(res));
-    }
 
     return output;
 }

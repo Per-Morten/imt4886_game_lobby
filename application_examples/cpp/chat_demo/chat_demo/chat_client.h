@@ -1,13 +1,9 @@
 #pragma once
-#include <atomic>
-#include <cstddef>
 #include <cstdint>
-#include <thread>
+#include <string>
 #include <vector>
-#include <SDL2/SDL_net.h>
-#include <SDL2/SDL_ttf.h>
-#include "scene.h"
 
+#include "scene.h"
 
 class ChatClient
     : public Scene

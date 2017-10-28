@@ -1,5 +1,9 @@
 #include "chat_server_configurator.h"
+
+#include <memory>
+
 #include "chat_server.h"
+
 
 ChatServerConfigurator::ChatServerConfigurator(SDL_Window* window,
                                                SDL_Renderer* renderer)

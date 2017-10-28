@@ -1,55 +1,16 @@
-#include <algorithm>
-#include <atomic>
-#include <cinttypes>
-#include <cstdio>
-#include <iostream>
 #include <string>
-#include <thread>
 #include <stack>
 
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_net.h>
+#include <stdexcept>
 
-#include "chat_server.h"
-#include "chat_client.h"
+#include "scene.h"
 #include "chat_menu.h"
 
 #include "kjapp.h"
-#include "scene.h"
-
-// Turn off warning on strcpy
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4996)
-#endif
 
 #undef main
-constexpr Uint16 PORT = 8880;
-constexpr int BUFFER_LEN = 512;
-
-constexpr auto gameToken = "59ec8be7890cd692461bb7d4";
-
-// void
-// runServer()
-// {
-//     std::printf("Running server\n");
-//     std::fflush(stdout);
-//     auto matchInfo = kjapp::hostMatch(gameToken,
-//                                       "Demo match",
-//                                       "127.0.0.1",
-//                                       8000,
-//                                       10);
-//     std::printf("MatchInfo: %s\n", matchInfo.dump().c_str());
-//     std::atomic<bool> running{true};
-//     std::thread thread([&running]
-//     {
-//         ChatServer chat(8000, 10, running);
-//     });
-
-//     std::printf("Write something to stop\n");
-//     std::getc(stdin);
-//     running = false;
-//     thread.join();
-// }
 
 using WindowRenderer = std::pair<SDL_Window*, SDL_Renderer*>;
 
@@ -96,11 +57,10 @@ setupSDL(int width,
 }
 
 int
-main(int argc, char** argv)
+main(int argc,
+     char** argv)
 {
     auto windowAndRenderer = setupSDL(1280, 720, "Chat");
-
-    std::printf("Arguments: %d %s\n", argc, argv[1]);
 
     std::stack<std::unique_ptr<Scene>> scenes;
 
@@ -126,49 +86,9 @@ main(int argc, char** argv)
         }
     }
 
-
-//    if (argc > 1 && strcmp(argv[1], "-s") == 0)
-//    {
-//        runServer();
-//    }
-//    else
-//    {
-        //std::printf("Running client\n");
-        //std::fflush(stdout);
-//        auto matches = kjapp::getMatches(gameToken, kjapp::Query::NON_FULL_MATCHES, "Demo");
-//        for (std::size_t i = 0; i < matches.size(); ++i)
-//        {
-//            std::printf("Match %zu: name: %s id: %s\n", i,
-//                        matches[i]["name"].get<std::string>().c_str(),
-//                        matches[i]["_id"].get<std::string>().c_str());
-//        }
-//
-//        std::printf("Write your choice\n");
-//        int choice;
-//        std::scanf("%d", &choice);
-
-        //try
-        //{
-        //    //ChatClient(matches[choice]["hostIP"].get<std::string>().c_str(),
-        //    //           matches[choice]["hostPort"].get<std::uint16_t>());
-        //    ChatClient(windowAndRenderer.first,
-        //               windowAndRenderer.second,
-        //               "127.0.0.1",
-        //               8000);
-        //}
-        //catch (const std::exception& e)
-        //{
-        //    std::printf("Error: %s\n", e.what());
-        //}
-    //}
-
     SDL_StopTextInput();
     SDLNet_Quit();
     SDL_Quit();
 
     return 0;
 }
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
