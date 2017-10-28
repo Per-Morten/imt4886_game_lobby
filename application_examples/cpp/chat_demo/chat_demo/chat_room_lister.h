@@ -22,9 +22,13 @@ private:
     void
     updateMatchSelection(const int mouseX, const int mouseY);
 
+    void
+    handleMouseWheel(const SDL_Event& event);
+
     kjapp::Query m_currentQuery{};
 
     std::vector<nlohmann::json> m_matches{};
+
     bool m_updateMatches{true};
     nlohmann::json* m_selectedMatch{};
 

@@ -128,6 +128,11 @@ ChatRoomLister::run()
                 updateMatchSelection(mouseX, mouseY);
             }
 
+            if (event.type == SDL_MOUSEWHEEL)
+            {
+                handleMouseWheel(event);
+            }
+
             if (event.type == SDL_TEXTINPUT)
             {
                 m_input->push_back(event.text.text[0]);
@@ -145,6 +150,7 @@ ChatRoomLister::run()
         {
             try
             {
+                std::printf("Getting matches\n");
                 m_selectedMatch = nullptr;
                 m_updateMatches = false;
                 m_matches = kjapp::getMatches(GAME_TOKEN,
@@ -191,7 +197,11 @@ ChatRoomLister::drawMatches()
     int width;
     SDL_GetWindowSize(m_window, &width, &height);
 
-    for (std::size_t i = 0; i < m_matches.size(); ++i)
+    const std::size_t displayLength = (m_matches.size() <= 5)
+                                    ? m_matches.size()
+                                    : 5;
+
+    for (std::size_t i = 0; i < displayLength; ++i)
     {
         SDL_Rect position;
         position.w = width;
@@ -215,7 +225,11 @@ ChatRoomLister::updateMatchSelection(const int mouseX, const int mouseY)
     int width;
     SDL_GetWindowSize(m_window, &width, &height);
 
-    for (std::size_t i = 0; i < m_matches.size(); ++i)
+    const std::size_t vecLength = (m_matches.size() <= 5)
+                                ? m_matches.size()
+                                : 5;
+
+    for (std::size_t i = 0; i < vecLength; ++i)
     {
         SDL_Rect position;
         position.w = width;
@@ -230,4 +244,21 @@ ChatRoomLister::updateMatchSelection(const int mouseX, const int mouseY)
                             : nullptr;
         }
     }
+}
+
+void
+ChatRoomLister::handleMouseWheel(const SDL_Event& event)
+{
+    if (m_matches.size() < 5 || std::abs(event.wheel.y) != 1)
+        return;
+
+    auto newFirst = (event.wheel.y == -1)
+                  ? std::next(std::begin(m_matches))
+                  : std::prev(std::end(m_matches));
+
+    std::rotate(std::begin(m_matches),
+                newFirst,
+                std::end(m_matches));
+
+    m_selectedMatch = nullptr;
 }
