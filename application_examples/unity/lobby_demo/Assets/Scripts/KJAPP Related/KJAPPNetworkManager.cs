@@ -14,11 +14,13 @@ public class KJAPPNetworkManager : NetworkManager
     public string gameToken;
     public string apiUrl;
     public int maxPlayersPerMatch = 8;
+    public bool matchReportsEnabled = false;
 
     private string matchId = "";
     private const int MATCH_STATUS_IN_SESSION = 1;
 
     private int playerCount = 1;
+    private float matchStartTime = -1;
 
     #region Public Methods
     /// <summary>
@@ -36,6 +38,11 @@ public class KJAPPNetworkManager : NetworkManager
         {
             networkAddress = "127.0.0.1";
             StartCoroutine(UploadMatch(matchName));
+        }
+
+        if (matchReportsEnabled)
+        {
+            matchStartTime = Time.realtimeSinceStartup;
         }
     }
 
@@ -106,8 +113,9 @@ public class KJAPPNetworkManager : NetworkManager
     /// </summary>
     private IEnumerator UploadMatch(string matchName)
     {
-        var webRequest = CreateWebRequestWithBody("/match/", JsonUtility.ToJson(new MatchPOSTRequest(matchName, gameToken, networkAddress, networkPort,  maxPlayersPerMatch)), 
-                                                                                UnityWebRequest.kHttpVerbPOST);
+        var webRequest = CreateWebRequestWithBody("/match/", 
+                                                  JsonUtility.ToJson(new KJAPP.JSONObjects.Match.POSTRequest(matchName, gameToken, networkAddress, networkPort,  maxPlayersPerMatch)), 
+                                                  UnityWebRequest.kHttpVerbPOST);
         yield return webRequest.Send();
 
         if (webRequest.isNetworkError)
@@ -117,7 +125,7 @@ public class KJAPPNetworkManager : NetworkManager
         else
         {
             var jsonString = webRequest.downloadHandler.text;
-            matchId = JsonUtility.FromJson<MatchResponse>(jsonString)._id;
+            matchId = JsonUtility.FromJson<KJAPP.JSONObjects.Match.BaseResponse>(jsonString)._id;
             StartCoroutine(SetMatchStatusToInSession());
             StartHost();
             OpenNat.PortForward().Wait();
@@ -129,7 +137,9 @@ public class KJAPPNetworkManager : NetworkManager
     /// </summary>
     private IEnumerator SetMatchStatusToInSession()
     {
-        var webRequest = CreateWebRequestWithBody("/match/status", JsonUtility.ToJson(new MatchStatusPUTRequest(matchId, MATCH_STATUS_IN_SESSION)), UnityWebRequest.kHttpVerbPUT);
+        var webRequest = CreateWebRequestWithBody("/match/status", 
+                                                  JsonUtility.ToJson(new KJAPP.JSONObjects.Match.StatusPUTRequest(matchId, MATCH_STATUS_IN_SESSION)), 
+                                                  UnityWebRequest.kHttpVerbPUT);
         yield return webRequest.Send();
 
         if (webRequest.isNetworkError)
@@ -153,7 +163,7 @@ public class KJAPPNetworkManager : NetworkManager
         else
         {
             var jsonString = webRequest.downloadHandler.text;
-            var matches = JsonHelper.getJsonArray<MatchResponse>(jsonString);
+            var matches = JsonHelper.getJsonArray<KJAPP.JSONObjects.Match.BaseResponse>(jsonString);
             GameObject.FindGameObjectWithTag("UIHandler").GetComponent<UIHandler>().DisplayMatches(matches);
         }
     }
@@ -163,7 +173,7 @@ public class KJAPPNetworkManager : NetworkManager
     /// </summary>
     private IEnumerator DeleteMatch()
     {
-        var webRequest = CreateWebRequestWithBody("/match/", JsonUtility.ToJson(new MatchDeleteRequest(matchId)), UnityWebRequest.kHttpVerbDELETE);
+        var webRequest = CreateWebRequestWithBody("/match/", JsonUtility.ToJson(new KJAPP.JSONObjects.Match.DeleteRequest(matchId)), UnityWebRequest.kHttpVerbDELETE);
         yield return webRequest.Send();
 
         if (webRequest.isNetworkError)
@@ -184,7 +194,9 @@ public class KJAPPNetworkManager : NetworkManager
     {
         if (matchId != "")
         {
-            var webRequest = CreateWebRequestWithBody("/match/player_count/", JsonUtility.ToJson(new MatchPlayerCountPUTRequest(matchId, playerCount)), UnityWebRequest.kHttpVerbPUT);
+            var webRequest = CreateWebRequestWithBody("/match/player_count/", 
+                                                      JsonUtility.ToJson(new KJAPP.JSONObjects.Match.PlayerCountPUTRequest(matchId, playerCount)), 
+                                                      UnityWebRequest.kHttpVerbPUT);
             yield return webRequest.Send();
 
             if (webRequest.isNetworkError)
@@ -193,16 +205,40 @@ public class KJAPPNetworkManager : NetworkManager
             }
         }
     }
+
+    /// <summary>
+    /// Coroutine that sends a match report to the API for archiving.
+    /// </summary>
+    /// <param name="reportData">An object containing matchID, gameToken and a data object that can be of any type</param>
+    private IEnumerator SendReport(object report)
+    {
+        var webRequest = CreateWebRequestWithBody("/match_report/", 
+                                                  JsonUtility.ToJson(report), 
+                                                  UnityWebRequest.kHttpVerbPOST);
+        yield return webRequest.Send();
+
+        if (webRequest.isNetworkError)
+        {
+            Debug.Log(webRequest.error);
+        }
+    }
     #endregion
 
     #region Callbacks
-    
     /// <summary>
     /// NetworkManager callback that runs on the server whenever it stops.
     /// A finished match should be deleted from the database so this callback can be used to do so. 
+    /// If you want to send match reports after a match ends, this could be a potential place to do so. 
     /// </summary>
     public override void OnStopServer()
     {
+        if (matchReportsEnabled)
+        {
+            StartCoroutine(SendReport(new ReportPOSTRequest(matchId,
+                                      gameToken,
+                                      new KJAPP.JSONObjects.Report.ExampleDataObject(GameManager.instance.score, (int)(Time.realtimeSinceStartup - matchStartTime)))));
+        }
+
         StartCoroutine(DeleteMatch());
     }
     
@@ -231,7 +267,7 @@ public class KJAPPNetworkManager : NetworkManager
         StartCoroutine(UpdatePlayerCount());
         NetworkServer.DestroyPlayersForConnection(conn);
     }
-    #endregion
+    #endregion 
 
     #region Inner Classes
     /// <summary>
@@ -241,6 +277,25 @@ public class KJAPPNetworkManager : NetworkManager
     private class NetworkAddressResponse
     {
         public string ip = "";
+    }
+
+    /// <summary>
+    /// Unity's ToJson method does unfortunately not work with variable "object" types as these cannot be serialized,
+    /// so the easiest workaround is to define the type of data yourself here. 
+    /// </summary>
+    [System.Serializable]
+    class ReportPOSTRequest
+    {
+        public string matchID = "";
+        public string gameToken = "";
+        public KJAPP.JSONObjects.Report.ExampleDataObject data = null;
+
+        public ReportPOSTRequest(string matchID, string gameToken, KJAPP.JSONObjects.Report.ExampleDataObject data)
+        {
+            this.matchID = matchID;
+            this.gameToken = gameToken;
+            this.data = data;
+        }
     }
     #endregion
 }

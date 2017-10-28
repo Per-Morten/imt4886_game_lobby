@@ -47,7 +47,7 @@ public class UIHandler : MonoBehaviour
         currentMenu.SetActive(true);
     }
 
-    public void DisplayMatches(MatchResponse[] matches)
+    public void DisplayMatches(KJAPP.JSONObjects.Match.BaseResponse[] matches)
     {
         foreach(var match in matches)
         {
