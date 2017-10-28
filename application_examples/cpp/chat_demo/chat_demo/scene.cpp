@@ -105,11 +105,18 @@ Scene::handleEvent(const SDL_Event& event)
         m_running = false;
         m_continueProgram = false;
     }
+
+    if (event.type == SDL_KEYUP &&
+        event.key.keysym.sym == SDLK_ESCAPE)
+    {
+        m_running = false;
+        m_continueProgram = true;
+    }
 }
 
 bool
 Scene::isClicked(const SDL_Rect& button,
-                    const int xPos, const int yPos)
+                 const int xPos, const int yPos)
 {
     return (xPos >= button.x && xPos <= button.x + button.w &&
             yPos >= button.y && yPos <= button.y + button.h);
