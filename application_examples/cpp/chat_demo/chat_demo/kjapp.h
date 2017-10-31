@@ -16,7 +16,7 @@ namespace kjapp
               const std::string& hostIP,
               const std::uint16_t hostPort,
               const std::size_t maxPlayerCount,
-              const std::string& miscInfo = "");
+              const std::string& miscInfo = " ");
 
     enum class Query
     {
