@@ -37,7 +37,7 @@ public class UIHandler : MonoBehaviour
     
     public void RequestMatches()
     {
-        NetworkManager.singleton.GetComponent<KJAPPNetworkManager>().RequestMatches();
+        NetworkManager.singleton.GetComponent<KJAPPNetworkManager>().RequestMatches(GETRequestFilters.noFilter);
     }
 
     public void ChangeMenu(GameObject newMenu)

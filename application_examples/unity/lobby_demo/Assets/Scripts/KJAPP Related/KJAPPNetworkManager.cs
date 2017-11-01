@@ -6,6 +6,18 @@ using UnityEngine.Networking;
 using System.Threading.Tasks;
 
 /// <summary>
+/// Enum used for defining which filter to use when sending a GET request for matches
+/// </summary>
+public enum GETRequestFilters
+{
+    noFilter = 0,
+    inSession,
+    notInSession,
+    notFull,
+    withName
+};
+
+/// <summary>
 /// A extended NetworkManager that works as an example for how to interact with the Lobby API
 /// </summary>
 public class KJAPPNetworkManager : NetworkManager
@@ -60,9 +72,9 @@ public class KJAPPNetworkManager : NetworkManager
     /// <summary>
     /// Public method that can be called by a button on the UI(as an example) in order to start the process of requesting a list of matches. 
     /// </summary>
-    public void RequestMatches()
+    public void RequestMatches(GETRequestFilters filter, string withName = "")
     {
-        StartCoroutine(FetchMatches());
+        StartCoroutine(FetchMatches(filter, withName));
     }
     #endregion
 
@@ -109,7 +121,7 @@ public class KJAPPNetworkManager : NetworkManager
 
     #region API Coroutines
     /// <summary>
-    /// Coroutine that sends a web request to the API in order to create a new match. 
+    /// Coroutine that sends a web request to the API in order to create a new match.
     /// </summary>
     private IEnumerator UploadMatch(string matchName)
     {
@@ -149,11 +161,37 @@ public class KJAPPNetworkManager : NetworkManager
     }
 
     /// <summary>
-    /// Coroutine that sends a web request to the API and receives a list of matches with given gameToken
+    /// Coroutine that sends a web request to the API and receives a list of matches with given gameToken. A filter is sent to specify what types of matches to GET.
     /// </summary>
-    private IEnumerator FetchMatches()
+    /// <param name="filter">The enum specifying how to filter the matches that are to be acquired.</param>
+    /// <param name="matchSearchName">The name of the match we want to search for in the case that filter is GETRequestFilters.byName</param>
+    private IEnumerator FetchMatches(GETRequestFilters filter, string matchSearchName = "")
     {
-        var webRequest = UnityWebRequest.Get(apiUrl + "/matches/no_body/" + gameToken);
+        var apiEndpoint = "";
+
+        switch(filter)
+        {
+            case GETRequestFilters.noFilter:
+                apiEndpoint = "/matches/no_body/" + gameToken;
+                break;
+            case GETRequestFilters.inSession:
+                apiEndpoint = "/matches/in_session/no_body/" + gameToken;
+                break;
+            case GETRequestFilters.notInSession:
+                apiEndpoint = "/matches/not_in_session/no_body/" + gameToken;
+                break;
+            case GETRequestFilters.notFull:
+                apiEndpoint = "/matches/not_full/no_body/" + gameToken;
+                break;
+            case GETRequestFilters.withName:
+                apiEndpoint = "/matches/with_name/no_body/" + gameToken + "/" + matchSearchName;
+                break;
+            default:
+                apiEndpoint = "/matches/no_body/" + gameToken;
+                break;
+        }
+
+        var webRequest = UnityWebRequest.Get(apiUrl + apiEndpoint);
         yield return webRequest.Send();
 
         if (webRequest.isNetworkError)
