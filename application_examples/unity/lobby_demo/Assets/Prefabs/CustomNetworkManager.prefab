@@ -66,7 +66,8 @@ MonoBehaviour:
   m_PlayerSpawnMethod: 1
   m_OfflineScene: MainMenu
   m_OnlineScene: OnlineScene
-  m_SpawnPrefabs: []
+  m_SpawnPrefabs:
+  - {fileID: 1246810857038330, guid: 1277f434816d76744bcace381b8029a0, type: 2}
   m_CustomConfig: 0
   m_MaxConnections: 4
   m_ConnectionConfig:
@@ -125,3 +126,4 @@ MonoBehaviour:
   gameToken: 59db2ce5899d1b843c18f01a
   apiUrl: http://192.168.56.101:8333
   maxPlayersPerMatch: 8
+  matchReportsEnabled: 0

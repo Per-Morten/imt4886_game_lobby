@@ -84,8 +84,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\KJAPPNetworkManager.cs" />
-    <Compile Include="Assets\Scripts\Match.cs" />
+    <Compile Include="Assets\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\KJAPP Related\JSONObjects.cs" />
+    <Compile Include="Assets\Scripts\KJAPP Related\KJAPPNetworkManager.cs" />
+    <Compile Include="Assets\Scripts\Pickup.cs" />
     <Compile Include="Assets\Scripts\PlayerInput.cs" />
     <Compile Include="Assets\Scripts\UI\MatchButton.cs" />
     <Compile Include="Assets\Scripts\UI\UIHandler.cs" />

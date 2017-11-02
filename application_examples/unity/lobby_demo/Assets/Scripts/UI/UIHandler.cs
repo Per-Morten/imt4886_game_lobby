@@ -37,7 +37,7 @@ public class UIHandler : MonoBehaviour
     
     public void RequestMatches()
     {
-        NetworkManager.singleton.GetComponent<KJAPPNetworkManager>().RequestMatches();
+        NetworkManager.singleton.GetComponent<KJAPPNetworkManager>().RequestMatches(GETRequestFilters.noFilter);
     }
 
     public void ChangeMenu(GameObject newMenu)
@@ -47,7 +47,7 @@ public class UIHandler : MonoBehaviour
         currentMenu.SetActive(true);
     }
 
-    public void DisplayMatches(MatchResponse[] matches)
+    public void DisplayMatches(KJAPP.JSONObjects.Match.BaseResponse[] matches)
     {
         foreach(var match in matches)
         {
