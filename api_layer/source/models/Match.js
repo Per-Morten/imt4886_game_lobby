@@ -191,4 +191,25 @@ MatchSchema.statics.findByTokenNotFull = async function(gameToken) {
     }
 }
 
+MatchSchema.statics.findByTokenAndName = async function(gameToken, name) {
+    try {
+        let result = await GameModel.findById({_id: gameToken});
+        if(!result) {
+            return {code: 404};
+        }
+
+        let regex = new RegExp(name, 'i');
+        let matches = await this.find({gameToken: gameToken, name: regex})
+                                .exec();
+
+        if(matches.length > 0) {
+            return {code: 200, matches: matches};
+        } else {
+            return {code: 404};
+        }
+    } catch(err) {
+        throw errors.ERROR_500;
+    }
+}
+
 module.exports = mongoose.model('MatchModel', MatchSchema, 'matches');

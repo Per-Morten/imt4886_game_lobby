@@ -196,4 +196,116 @@ module.exports = (api) => {
                 .then(out => res.status(out.code).json(out.matches))
                 .catch(err => res.status(err.code).json(err));
         });
+
+    /**
+     * @api {get} /matches/with_name/no_body/:gameToken/:name Requests all matches with a given token and partially matched name.
+     * @apiName GetMatchesWithNameNoBody
+     * @apiGroup Matches
+     * @apiDescription
+     * Returns a JSON array of all matches that partially match the given name.
+     *
+     * @apiParam {String} gameToken The unique game token of a game.
+     * @apiParam {String} name The match name we are searching for
+     * @apiSuccess (200) Success
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     [
+     *       { _id: '59da7d0e704a440b4fc6d840',
+     *         name: 'Test Match 2',
+     *         gameToken: '59da7d0e704a440b4fc6d83d',
+     *         status: 0,
+     *         hostIP: '127.0.0.1',
+     *         hostPort: 3000,
+     *         __v: 0,
+     *         maxPlayerCount: 9007199254740991,
+     *         playerCount: 1 },
+     *       { _id: '59da7d0e704a440b4fc6d842',
+     *         name: 'Test Match 4',
+     *         gameToken: '59da7d0e704a440b4fc6d83d',
+     *         status: 0,
+     *         hostIP: '127.0.0.1',
+     *         hostPort: 3000,
+     *         __v: 0,
+     *         maxPlayerCount: 36,
+     *         playerCount: 35 },
+     *       { _id: '59da7d0e704a440b4fc6d843',
+     *         name: 'Test Match 5',
+     *         gameToken: '59da7d0e704a440b4fc6d83d',
+     *         status: 0,
+     *         hostIP: '127.0.0.1',
+     *         hostPort: 3000,
+     *         __v: 0,
+     *         maxPlayerCount: 36,
+     *         playerCount: 22 }
+     *      ]
+     *
+     * @apiError (404) Supplied gameToken was not found or no matches with given name were found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {}
+     */
+    api.route('/matches/with_name/no_body/:gameToken/:name')
+        .get((req, res) => {
+            MatchModel.findByTokenAndName(req.params.gameToken, req.params.name)
+                .then(out => res.status(out.code).json(out.matches))
+                .catch(err => res.status(err.code).json(err));
+        });
+
+    /**
+     * @api {get} /matches/with_name Requests all matches with a given token and partially matched name.
+     * @apiName GetMatchesWithNameJSONBody
+     * @apiGroup Matches
+     * @apiDescription
+     * Returns a JSON array of all matches that partially match the given name.
+     *
+     * @apiParam {String} gameToken The unique game token of a game.
+     * @apiParam {String} name The match name we are searching for
+     * @apiSuccess (200) Success
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     [
+     *       { _id: '59da7d0e704a440b4fc6d840',
+     *         name: 'Test Match 2',
+     *         gameToken: '59da7d0e704a440b4fc6d83d',
+     *         status: 0,
+     *         hostIP: '127.0.0.1',
+     *         hostPort: 3000,
+     *         __v: 0,
+     *         maxPlayerCount: 9007199254740991,
+     *         playerCount: 1 },
+     *       { _id: '59da7d0e704a440b4fc6d842',
+     *         name: 'Test Match 4',
+     *         gameToken: '59da7d0e704a440b4fc6d83d',
+     *         status: 0,
+     *         hostIP: '127.0.0.1',
+     *         hostPort: 3000,
+     *         __v: 0,
+     *         maxPlayerCount: 36,
+     *         playerCount: 35 },
+     *       { _id: '59da7d0e704a440b4fc6d843',
+     *         name: 'Test Match 5',
+     *         gameToken: '59da7d0e704a440b4fc6d83d',
+     *         status: 0,
+     *         hostIP: '127.0.0.1',
+     *         hostPort: 3000,
+     *         __v: 0,
+     *         maxPlayerCount: 36,
+     *         playerCount: 22 }
+     *      ]
+     *
+     * @apiError (404) Supplied gameToken was not found or no matches with given name were found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {}
+     */
+    api.route('/matches/with_name/')
+        .get((req, res) => {
+            MatchModel.findByTokenAndName(req.body.gameToken, req.body.name)
+                .then(out => res.status(out.code).json(out.matches))
+                .catch(err => res.status(err.code).json(err));
+        });
 };
