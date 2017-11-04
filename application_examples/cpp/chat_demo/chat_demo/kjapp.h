@@ -8,6 +8,48 @@
 namespace kjapp
 {
     /////////////////////////////////////////////////////////////////
+    /// \enum Query
+    /// \brief
+    ///     Different categories of queries that can be done on
+    ///     the kjapp database over matches.
+    ///
+    /// \var Query::ALL_MATCHES
+    ///     Gets all the matches belonging to a specified
+    ///     game token.
+    ///
+    /// \var Query::NOT_IN_SESSION
+    ///     Gets all the matches belonging to a specified
+    ///     game token that are not in session.
+    ///
+    /// \var Query::IN_SESSION
+    ///     Gets all the matches belonging to a specified
+    ///     game token that are in session.
+    ///
+    /// \var Query::NON_FULL_MATCHES
+    ///     Gets all the matches belonging to a specified
+    ///     game token that are not full.
+    ///
+    /// \var Query::BY_NAME
+    ///     Gets all the matches belonging to a specified
+    ///     game token with a specified name.
+    ///     Both partial and full names can be specified.
+    /////////////////////////////////////////////////////////////////
+    enum class Query
+    {
+        ALL_MATCHES,
+        NOT_IN_SESSION,
+        IN_SESSION,
+        NON_FULL_MATCHES,
+        BY_NAME,
+    };
+
+    enum class Status
+    {
+        NOT_IN_SESSION,
+        IN_SESSION,
+    };
+
+    /////////////////////////////////////////////////////////////////
     /// \brief
     ///     Returns the external IP address of this computer.
     ///
@@ -96,42 +138,6 @@ namespace kjapp
               const std::string& miscInfo = " ");
 
     /////////////////////////////////////////////////////////////////
-    /// \enum Query
-    /// \brief
-    ///     Different categories of queries that can be done on
-    ///     the kjapp database over matches.
-    ///
-    /// \var Query::ALL_MATCHES
-    ///     Gets all the matches belonging to a specified
-    ///     game token.
-    ///
-    /// \var Query::NOT_IN_SESSION
-    ///     Gets all the matches belonging to a specified
-    ///     game token that are not in session.
-    ///
-    /// \var Query::IN_SESSION
-    ///     Gets all the matches belonging to a specified
-    ///     game token that are in session.
-    ///
-    /// \var Query::NON_FULL_MATCHES
-    ///     Gets all the matches belonging to a specified
-    ///     game token that are not full.
-    ///
-    /// \var Query::BY_NAME
-    ///     Gets all the matches belonging to a specified
-    ///     game token with a specified name.
-    ///     Both partial and full names can be specified.
-    /////////////////////////////////////////////////////////////////
-    enum class Query
-    {
-        ALL_MATCHES,
-        NOT_IN_SESSION,
-        IN_SESSION,
-        NON_FULL_MATCHES,
-        BY_NAME,
-    };
-
-    /////////////////////////////////////////////////////////////////
     /// \brief
     ///     Returns all the matches belonging to the specified
     ///     game token that also fits within the specified query.
@@ -173,12 +179,6 @@ namespace kjapp
     void
     deleteMatch(const std::string& gameToken,
                 const std::string& matchId);
-
-    enum class Status
-    {
-        NOT_IN_SESSION,
-        IN_SESSION,
-    };
 
     void
     updateMatchStatus(const std::string& gameToken,
