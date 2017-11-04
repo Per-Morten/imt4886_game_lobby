@@ -36,4 +36,15 @@ namespace kjapp
     deleteMatch(const std::string& gameToken,
                 const std::string& matchId);
 
+    enum class Status
+    {
+        NOT_IN_SESSION,
+        IN_SESSION,
+    };
+
+    void
+    updateMatchStatus(const std::string& gameToken,
+                      const std::string& matchId,
+                      Status status);
+
 }

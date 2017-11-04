@@ -43,6 +43,10 @@ ChatServer::ChatServer(SDL_Window* window,
                                    port,
                                    maxClients);
 
+        kjapp::updateMatchStatus(GAME_TOKEN,
+                                 m_match["_id"].get<std::string>(),
+                                 kjapp::Status::IN_SESSION);
+
         char buffer[128];
         std::sprintf(buffer, "Running server on: %s", myIp.c_str());
 
@@ -50,6 +54,7 @@ ChatServer::ChatServer(SDL_Window* window,
     }
     catch (const std::exception& e)
     {
+        std::printf("what: %s\n", e.what());
         SDLNet_FreeSocketSet(m_socketSet);
         SDLNet_TCP_Close(m_socket);
         throw e;

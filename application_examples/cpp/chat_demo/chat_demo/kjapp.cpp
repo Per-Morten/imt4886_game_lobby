@@ -278,5 +278,43 @@ kjapp::deleteMatch(const std::string& gameToken,
     }
 
     curl_slist_free_all(headers);
-
 }
+
+void
+kjapp::updateMatchStatus(const std::string& gameToken,
+                         const std::string& matchId,
+                         Status status)
+{
+    auto handle = createCurlHandle();
+
+    curl_easy_setopt(handle.get(), CURLOPT_CUSTOMREQUEST, "PUT");
+
+    std::string url = KJAPP_URL + "/match/status";
+
+    curl_easy_setopt(handle.get(), CURLOPT_URL, url.c_str());
+    nlohmann::json json =
+    {
+        {"gameToken", gameToken},
+        {"id", matchId},
+        {"status", static_cast<int>(status)},
+    };
+
+    auto jsonString = json.dump();
+    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDS, jsonString.data());
+    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDSIZE, jsonString.size());
+
+    curl_slist* headers = nullptr;
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    curl_easy_setopt(handle.get(), CURLOPT_HTTPHEADER, headers);
+
+    CURLcode res = curl_easy_perform(handle.get());
+
+    if (res != CURLE_OK)
+    {
+        curl_slist_free_all(headers);
+        handleCurlError(handle, res);
+    }
+
+    curl_slist_free_all(headers);
+}
+
