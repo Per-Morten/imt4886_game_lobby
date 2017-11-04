@@ -98,7 +98,7 @@ namespace kjapp
     enum class Query
     {
         ALL_MATCHES,
-        NOT_IN_SESSION, // NOT IMPLEMENTED!
+        NOT_IN_SESSION,
         IN_SESSION,
         NON_FULL_MATCHES,
         BY_NAME,

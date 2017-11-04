@@ -82,11 +82,8 @@ ChatRoomLister::run()
 
                 if (isClicked(m_notInSessionButton, mouseX, mouseY))
                 {
-                    std::printf("Not implemented\n");
-                    #if 0
                     m_currentQuery = kjapp::Query::NOT_IN_SESSION;
                     m_updateMatches = true;
-                    #endif
                 }
 
                 if (isClicked(m_nonFullButton, mouseX, mouseY))
