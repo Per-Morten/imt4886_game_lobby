@@ -216,6 +216,34 @@ namespace kjapp
     deleteMatch(const std::string& gameToken,
                 const std::string& matchId);
 
+    /////////////////////////////////////////////////////////////////
+    /// \brief
+    ///     Updates the status of the match belonging to the game
+    ///     with the specified game token, and identified by
+    ///     the specified matchId.
+    ///
+    /// \details
+    ///     Informs the kjapp game lobby that a match should be
+    ///     have its status changed.
+    ///     The most normal usage of this is to inform
+    ///     the game lobby that a match is set to in session
+    ///     which will then filter it out of getMatches queried
+    ///     for not in session.
+    ///
+    /// \param gameToken
+    ///     The gameToken of the game that the match belongs to.
+    ///
+    /// \param matchId
+    ///     The id of the match that is supposed to be updated.
+    ///
+    /// \param status
+    ///     The new status of the match.
+    ///
+    /// \throws std::runtime_exception
+    ///     * A curl handle couldn't be created.
+    ///     * The HTTP request returned an error code, i.e. 40X
+    ///     * miscInfo has a length of 0.
+    /////////////////////////////////////////////////////////////////
     void
     updateMatchStatus(const std::string& gameToken,
                       const std::string& matchId,
