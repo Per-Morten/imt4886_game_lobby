@@ -95,6 +95,33 @@ namespace kjapp
               const std::size_t maxPlayerCount,
               const std::string& miscInfo = " ");
 
+    /////////////////////////////////////////////////////////////////
+    /// \enum Query
+    /// \brief
+    ///     Different categories of queries that can be done on
+    ///     the kjapp database over matches.
+    ///
+    /// \var Query::ALL_MATCHES
+    ///     Gets all the matches belonging to a specified
+    ///     game token.
+    ///
+    /// \var Query::NOT_IN_SESSION
+    ///     Gets all the matches belonging to a specified
+    ///     game token that are not in session.
+    ///
+    /// \var Query::IN_SESSION
+    ///     Gets all the matches belonging to a specified
+    ///     game token that are in session.
+    ///
+    /// \var Query::NON_FULL_MATCHES
+    ///     Gets all the matches belonging to a specified
+    ///     game token that are not full.
+    ///
+    /// \var Query::BY_NAME
+    ///     Gets all the matches belonging to a specified
+    ///     game token with a specified name.
+    ///     Both partial and full names can be specified.
+    /////////////////////////////////////////////////////////////////
     enum class Query
     {
         ALL_MATCHES,
@@ -104,6 +131,40 @@ namespace kjapp
         BY_NAME,
     };
 
+    /////////////////////////////////////////////////////////////////
+    /// \brief
+    ///     Returns all the matches belonging to the specified
+    ///     game token that also fits within the specified query.
+    ///
+    /// \details
+    ///     The kjapp game lobby is queried for any matches
+    ///     belonging to the specified game token, that also
+    ///     satisfies the criteria specified by query.
+    ///
+    /// \param gameToken
+    ///     The gameToken of the game that is being queried
+    ///     for.
+    ///
+    /// \param query
+    ///     The query/filter that the matches should be filtered
+    ///     through.
+    ///
+    /// \param name
+    ///     Only used in the case where query == Query::BY_NAME.
+    ///     Partial or full name of the match you are searching
+    ///     for.
+    ///
+    /// \returns
+    ///     A vector of json match objects, same as the ones
+    ///     seen in kjapp::hostMatch.
+    ///
+    /// \throws std::runtime_exception
+    ///     * A curl handle couldn't be created.
+    ///     * The HTTP request returned an error code, i.e. 40X
+    ///     * miscInfo has a length of 0.
+    ///
+    /// \see kjapp::Query
+    /////////////////////////////////////////////////////////////////
     std::vector<nlohmann::json>
     getMatches(const std::string& gameToken,
                Query query = Query::ALL_MATCHES,
