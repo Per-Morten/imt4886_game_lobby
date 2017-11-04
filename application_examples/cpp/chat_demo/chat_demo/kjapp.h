@@ -47,4 +47,9 @@ namespace kjapp
                       const std::string& matchId,
                       Status status);
 
+    void
+    updatePlayerCount(const std::string& gameToken,
+                      const std::string& matchId,
+                      std::size_t playerCount);
+
 }

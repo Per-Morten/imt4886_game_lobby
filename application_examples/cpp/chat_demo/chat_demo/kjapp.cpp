@@ -51,6 +51,46 @@ handleCurlError(const CurlHandle& handle, CURLcode code)
     throw std::runtime_error(error.c_str());
 }
 
+using curlCallback = std::size_t(*)(void*, std::size_t, std::size_t, void*);
+
+void
+executeCurlRequest(const std::string& requestType,
+                   const std::string& url,
+                   const std::string& data,
+                   curlCallback callback = nullptr,
+                   void* callbackData = nullptr)
+{
+    auto handle = createCurlHandle();
+
+    if (callback)
+    {
+        curl_easy_setopt(handle.get(), CURLOPT_WRITEFUNCTION, callback);
+        curl_easy_setopt(handle.get(), CURLOPT_WRITEDATA, callbackData);
+    }
+
+
+    curl_easy_setopt(handle.get(), CURLOPT_CUSTOMREQUEST, requestType.c_str());
+
+    curl_easy_setopt(handle.get(), CURLOPT_URL, url.c_str());
+
+    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDS, data.data());
+    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDSIZE, data.size());
+
+    curl_slist* headers = nullptr;
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    curl_easy_setopt(handle.get(), CURLOPT_HTTPHEADER, headers);
+
+    CURLcode res = curl_easy_perform(handle.get());
+
+    if (res != CURLE_OK)
+    {
+        curl_slist_free_all(headers);
+        handleCurlError(handle, res);
+    }
+
+    curl_slist_free_all(headers);
+}
+
 namespace
 {
     namespace local
@@ -248,36 +288,15 @@ void
 kjapp::deleteMatch(const std::string& gameToken,
                    const std::string& matchId)
 {
-    auto handle = createCurlHandle();
-
-    curl_easy_setopt(handle.get(), CURLOPT_CUSTOMREQUEST, "DELETE");
-
-    std::string url = KJAPP_URL + "/match/";
-
-    curl_easy_setopt(handle.get(), CURLOPT_URL, url.c_str());
     nlohmann::json json =
     {
         {"gameToken", gameToken},
         {"id", matchId},
     };
 
-    auto jsonString = json.dump();
-    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDS, jsonString.data());
-    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDSIZE, jsonString.size());
-
-    curl_slist* headers = nullptr;
-    headers = curl_slist_append(headers, "Content-Type: application/json");
-    curl_easy_setopt(handle.get(), CURLOPT_HTTPHEADER, headers);
-
-    CURLcode res = curl_easy_perform(handle.get());
-
-    if (res != CURLE_OK)
-    {
-        curl_slist_free_all(headers);
-        handleCurlError(handle, res);
-    }
-
-    curl_slist_free_all(headers);
+    executeCurlRequest("DELETE",
+                       KJAPP_URL + "/match/",
+                       json.dump());
 }
 
 void
@@ -285,36 +304,34 @@ kjapp::updateMatchStatus(const std::string& gameToken,
                          const std::string& matchId,
                          Status status)
 {
-    auto handle = createCurlHandle();
 
-    curl_easy_setopt(handle.get(), CURLOPT_CUSTOMREQUEST, "PUT");
-
-    std::string url = KJAPP_URL + "/match/status";
-
-    curl_easy_setopt(handle.get(), CURLOPT_URL, url.c_str());
     nlohmann::json json =
     {
         {"gameToken", gameToken},
         {"id", matchId},
         {"status", static_cast<int>(status)},
     };
-
     auto jsonString = json.dump();
-    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDS, jsonString.data());
-    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDSIZE, jsonString.size());
 
-    curl_slist* headers = nullptr;
-    headers = curl_slist_append(headers, "Content-Type: application/json");
-    curl_easy_setopt(handle.get(), CURLOPT_HTTPHEADER, headers);
-
-    CURLcode res = curl_easy_perform(handle.get());
-
-    if (res != CURLE_OK)
-    {
-        curl_slist_free_all(headers);
-        handleCurlError(handle, res);
-    }
-
-    curl_slist_free_all(headers);
+    executeCurlRequest("PUT",
+                       KJAPP_URL + "/match/status",
+                       json.dump());
 }
 
+void
+kjapp::updatePlayerCount(const std::string& gameToken,
+                         const std::string& matchId,
+                         const std::size_t playerCount)
+{
+    nlohmann::json json =
+    {
+        {"gameToken", gameToken},
+        {"id", matchId},
+        {"playerCount", playerCount},
+    };
+    auto jsonString = json.dump();
+
+    executeCurlRequest("PUT",
+                       KJAPP_URL + "/match/player_count",
+                       json.dump());
+}

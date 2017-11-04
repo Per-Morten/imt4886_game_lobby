@@ -142,6 +142,9 @@ ChatServer::checkForNewConnections()
             m_clients.back().socket = SDLNet_TCP_Accept(m_socket);
             SDLNet_TCP_AddSocket(m_socketSet, m_clients.back().socket);
             broadcastMessage("New client has connected");
+            kjapp::updatePlayerCount(GAME_TOKEN,
+                                     m_match["_id"].get<std::string>(),
+                                     m_clients.size());
         }
         else
         {
@@ -170,6 +173,10 @@ ChatServer::removeDisconnectedClients()
                                    [](const auto& item)
                                    { return item.toBeDeleted; }),
                     std::end(m_clients));
+
+    kjapp::updatePlayerCount(GAME_TOKEN,
+                             m_match["_id"].get<std::string>(),
+                             m_clients.size());
 }
 
 void
