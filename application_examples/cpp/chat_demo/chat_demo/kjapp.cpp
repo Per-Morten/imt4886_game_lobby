@@ -334,10 +334,10 @@ namespace
     namespace local
     {
         std::size_t
-        postEndOfMatchReportCallback(void* contents,
-                                     std::size_t size,
-                                     std::size_t nmemb,
-                                     void* userData)
+        postMatchReportCallback(void* contents,
+                                std::size_t size,
+                                std::size_t nmemb,
+                                void* userData)
         {
             std::size_t realSize = size * nmemb;
 
@@ -354,14 +354,14 @@ namespace
 }
 
 nlohmann::json
-kjapp::postEndOfMatchReport(const std::string& gameToken,
-                            const std::string& matchId,
-                            const nlohmann::json& data)
+kjapp::postMatchReport(const std::string& gameToken,
+                       const std::string& matchId,
+                       const nlohmann::json& data)
 {
     nlohmann::json json =
     {
         {"gameToken", gameToken},
-        {"id", matchId},
+        {"matchID", matchId},
         {"data", data},
     };
 
@@ -369,7 +369,7 @@ kjapp::postEndOfMatchReport(const std::string& gameToken,
     executeCurlRequest("POST",
                        KJAPP_URL + "/match_report/",
                        json.dump(),
-                       local::postEndOfMatchReportCallback,
+                       local::postMatchReportCallback,
                        &output);
 
     return output;
