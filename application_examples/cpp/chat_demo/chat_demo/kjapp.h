@@ -3,8 +3,50 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+
 #include "json.hpp"
 
+/////////////////////////////////////////////////////////////////////
+/// \brief
+///     Contains all the resources needed to get kjapp game lobby
+///     system to work.
+///
+/// \details
+///     The kjapp game lobby system is a game lobby system
+///     that uses HTTP requests to communicate with a database.
+///     This namespace contains wrappers for these HTTP requests
+///     to allow developers to easily integrate simple lobby
+///     functionality into their games.
+///
+/// \par JSON
+///     Kjapp in general uses a lot of json objects, as these
+///     are the ones that are most natural to work with when
+///     discussing HTTP web requests.
+///     For this we have decided on using nlohmann json library.
+///
+/// \par libcurl
+///     For the HTTP requests we use libcurl.
+///
+/// \par game tokens
+///     To use the kjapp game lobby system developers need to
+///     register their games, and apply for a game token.
+///     These tokens are api keys that are used by all kjapp
+///     functions to identify which game different matches
+///     and reports belong to.
+///     One can apply for a game token, but the token must be
+///     valid before it can be used for anything productive.
+///
+/// \par Multiple threads
+///     The kjapp functions are blocking calls, and can be
+///     run in a separate thread. However, be careful about
+///     doing kjapp calls from multiple threads at the same time.
+///     Nothing in kjapp explicitly should cause any issues,
+///     but there might be situations where curl does not like it.
+///
+/// \see <a href="https://github.com/nlohmann/json">nlohmann json</a>
+/// \see <a href="https://curl.haxx.se/libcurl/c/libcurl.html">libcurl</a>
+/// \see <a href="https://curl.haxx.se/libcurl/c/threadsafe.html">curl thread safety</a>
+/////////////////////////////////////////////////////////////////////
 namespace kjapp
 {
     /////////////////////////////////////////////////////////////////
