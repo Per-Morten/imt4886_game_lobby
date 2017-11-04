@@ -4,6 +4,7 @@
 #include <cstring>
 #include <memory>
 #include <stdexcept>
+#include <cinttypes>
 
 #include <curl/curl.h>
 
@@ -31,7 +32,65 @@ createCurlHandle()
         throw std::runtime_error("Could not init curl");
     }
 
+    curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
+
     return CurlHandle(curl);
+}
+
+void
+handleCurlError(const CurlHandle& handle, CURLcode code)
+{
+    std::string error = std::string("kjapp curl error: ") + curl_easy_strerror(code);
+
+    if (code == CURLE_HTTP_RETURNED_ERROR)
+    {
+        long code = 0;
+        curl_easy_getinfo(handle.get(), CURLINFO_RESPONSE_CODE, &code);
+        error += std::string(". Error code:") + std::to_string(code);
+    }
+
+    throw std::runtime_error(error.c_str());
+}
+
+using curlCallback = std::size_t(*)(void*, std::size_t, std::size_t, void*);
+
+void
+executeCurlRequest(const std::string& requestType,
+                   const std::string& url,
+                   const std::string& data,
+                   curlCallback callback = nullptr,
+                   void* callbackData = nullptr)
+{
+    auto handle = createCurlHandle();
+
+    if (callback)
+    {
+        curl_easy_setopt(handle.get(), CURLOPT_WRITEFUNCTION, callback);
+        curl_easy_setopt(handle.get(), CURLOPT_WRITEDATA, callbackData);
+    }
+
+    curl_easy_setopt(handle.get(), CURLOPT_CUSTOMREQUEST, requestType.c_str());
+    curl_easy_setopt(handle.get(), CURLOPT_URL, url.c_str());
+
+    if (data.size() != 0)
+    {
+        curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDS, data.data());
+        curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDSIZE, data.size());
+    }
+
+    curl_slist* headers = nullptr;
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    curl_easy_setopt(handle.get(), CURLOPT_HTTPHEADER, headers);
+
+    CURLcode res = curl_easy_perform(handle.get());
+
+    if (res != CURLE_OK)
+    {
+        curl_slist_free_all(headers);
+        handleCurlError(handle, res);
+    }
+
+    curl_slist_free_all(headers);
 }
 
 namespace
@@ -39,58 +98,34 @@ namespace
     namespace local
     {
         std::size_t
-        getMyIPCallback(void* contents, std::size_t size, std::size_t nmemb, void* userData)
+        curlCallback(void* contents,
+                     std::size_t size,
+                     std::size_t nmemb,
+                     void* userData)
         {
-            auto data = static_cast<std::string*>(userData);
-
             std::size_t realSize = size * nmemb;
-            std::string parseString(static_cast<char*>(contents), realSize);
-            nlohmann::json json = nlohmann::json::parse(parseString);
-            *data = json["ip"];
+
+            auto str = static_cast<std::string*>(userData);
+            str->append(static_cast<char*>(contents), realSize);
 
             return size * nmemb;
-        }
+        };
     }
 }
 
 std::string
 kjapp::getMyIP()
 {
-    auto handle = createCurlHandle();
-    curl_easy_setopt(handle.get(), CURLOPT_WRITEFUNCTION, local::getMyIPCallback);
+    std::string str;
+    executeCurlRequest("GET",
+                       "https://api.ipify.org?format=json",
+                       "",
+                       local::curlCallback,
+                       &str);
 
-    std::string output;
-    curl_easy_setopt(handle.get(), CURLOPT_WRITEDATA, &output);
+    auto json = nlohmann::json::parse(str);
 
-    const auto url = "https://api.ipify.org?format=json";
-
-    curl_easy_setopt(handle.get(), CURLOPT_URL, url);
-
-    const auto res = curl_easy_perform(handle.get());
-
-    if (res != CURLE_OK)
-        throw std::runtime_error(curl_easy_strerror(res));
-
-    return output;
-}
-
-namespace
-{
-    namespace local
-    {
-        std::size_t
-        hostMatchCallback(void* contents, std::size_t size, std::size_t nmemb, void* userData)
-        {
-            std::size_t realSize = size * nmemb;
-
-            // Contents isn't null terminated, and I don't want to rely on Json library there,
-            // so just ensuring that the std::string never reads more than realSize number of characters.
-            std::string jsonString(static_cast<char*>(contents), realSize);
-            nlohmann::json* output = static_cast<nlohmann::json*>(userData);
-            *output = nlohmann::json(jsonString);
-            return size * nmemb;
-        };
-    }
+    return json["ip"];
 }
 
 nlohmann::json
@@ -101,16 +136,21 @@ kjapp::hostMatch(const std::string& gameToken,
                  const std::size_t maxPlayerCount,
                  const std::string& miscInfo)
 {
-    auto handle = createCurlHandle();
+    std::uint8_t octets[4];
+    auto validFields = std::sscanf(hostIP.c_str(),
+                                   "%" SCNu8 "\.%" SCNu8 "\.%" SCNu8 "\.%" SCNu8 "",
+                                   &octets[0],
+                                   &octets[1],
+                                   &octets[2],
+                                   &octets[3]);
 
-    // Setup callback
-    curl_easy_setopt(handle.get(), CURLOPT_WRITEFUNCTION, local::hostMatchCallback);
+    if (validFields != 4 || maxPlayerCount == 0 ||
+        miscInfo.empty() || name.empty())
+    {
+        throw std::invalid_argument("kjapp error: Invalid argument");
+    }
 
-    nlohmann::json output;
-    curl_easy_setopt(handle.get(), CURLOPT_WRITEDATA, &output);
-
-    // Prepare for post call
-    nlohmann::json package =
+    nlohmann::json json =
     {
         {"gameToken", gameToken},
         {"name", name},
@@ -120,56 +160,14 @@ kjapp::hostMatch(const std::string& gameToken,
         {"miscInfo", miscInfo},
     };
 
-    auto jsonString = package.dump();
-    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDS, jsonString.data());
-    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDSIZE, jsonString.size());
+    std::string out;
+    executeCurlRequest("POST",
+                       KJAPP_URL + "/match/",
+                       json.dump(),
+                       local::curlCallback,
+                       &out);
 
-    // Set content type
-    curl_slist* headers = nullptr;
-    headers = curl_slist_append(headers, "Content-Type: application/json");
-    curl_easy_setopt(handle.get(), CURLOPT_HTTPHEADER, headers);
-
-    // Set address
-    std::string url = KJAPP_URL + "/match/";
-    curl_easy_setopt(handle.get(), CURLOPT_URL, url.data());
-
-    // Perform the request
-    const auto res =  curl_easy_perform(handle.get());
-    if (res != CURLE_OK)
-    {
-        curl_slist_free_all(headers);
-        throw std::runtime_error(curl_easy_strerror(res));
-    }
-
-    curl_slist_free_all(headers);
-    return output;
-}
-
-namespace
-{
-    namespace local
-    {
-        std::size_t
-        getMatchesCallback(void* contents,
-                           std::size_t size,
-                           std::size_t nmemb,
-                           void* userData)
-        {
-            std::size_t realSize = size * nmemb;
-
-            // Contents isn't null terminated, and I don't want to rely on Json library there,
-            // so just ensuring that the std::string never reads more than realSize number of characters.
-            std::string jsonString(static_cast<char*>(contents), realSize);
-
-            nlohmann::json var = nlohmann::json::parse(jsonString);
-            std::vector<nlohmann::json>* output = static_cast<std::vector<nlohmann::json>*>(userData);
-
-            for (const auto& item : var)
-                output->push_back(item);
-
-            return size * nmemb;
-        };
-    }
+    return nlohmann::json::parse(out);
 }
 
 std::vector<nlohmann::json>
@@ -177,15 +175,9 @@ kjapp::getMatches(const std::string& gameToken,
                   kjapp::Query query,
                   const std::string& name)
 {
-    auto handle = createCurlHandle();
-    curl_easy_setopt(handle.get(), CURLOPT_WRITEFUNCTION, local::getMatchesCallback);
-
-    std::vector<nlohmann::json> output;
-    curl_easy_setopt(handle.get(), CURLOPT_WRITEDATA, &output);
-
     std::string url = KJAPP_URL + "/matches/";
 
-    switch(query)
+    switch (query)
     {
         case Query::ALL_MATCHES:
             url += "no_body/" + gameToken;
@@ -200,14 +192,14 @@ kjapp::getMatches(const std::string& gameToken,
         break;
 
         case Query::BY_NAME:
-            std::fprintf(stderr, "Query::BY_NAME is not supported yet!\n");
+            if (name.empty())
+                throw std::invalid_argument("kjapp error: Invalid argument");
+
             url += "with_name/no_body/" + gameToken + "/" + name;
-            return {};
         break;
 
         case Query::NOT_IN_SESSION:
-            std::fprintf(stderr, "Query::NOT_IN_SESSION is not supported yet!\n");
-            return {};
+            url += "not_in_session/no_body/" + gameToken;
         break;
 
         default:
@@ -216,11 +208,89 @@ kjapp::getMatches(const std::string& gameToken,
         break;
     }
 
-    curl_easy_setopt(handle.get(), CURLOPT_URL, url.c_str());
+    std::string str;
+    executeCurlRequest("GET",
+                       url,
+                       "",
+                       local::curlCallback,
+                       &str);
 
-    const auto res =  curl_easy_perform(handle.get());
-    if (res != CURLE_OK)
-        throw std::runtime_error(curl_easy_strerror(res));
+    auto jsonArray = nlohmann::json::parse(str);
+    std::vector<nlohmann::json> output;
+    for (const auto& item : jsonArray)
+        output.push_back(item);
 
     return output;
+}
+
+void
+kjapp::deleteMatch(const std::string& gameToken,
+                   const std::string& matchId)
+{
+    nlohmann::json json =
+    {
+        {"gameToken", gameToken},
+        {"id", matchId},
+    };
+
+    executeCurlRequest("DELETE",
+                       KJAPP_URL + "/match/",
+                       json.dump());
+}
+
+void
+kjapp::updateMatchStatus(const std::string& gameToken,
+                         const std::string& matchId,
+                         Status status)
+{
+
+    nlohmann::json json =
+    {
+        {"gameToken", gameToken},
+        {"id", matchId},
+        {"status", static_cast<int>(status)},
+    };
+
+    executeCurlRequest("PUT",
+                       KJAPP_URL + "/match/status",
+                       json.dump());
+}
+
+void
+kjapp::updatePlayerCount(const std::string& gameToken,
+                         const std::string& matchId,
+                         const std::size_t playerCount)
+{
+    nlohmann::json json =
+    {
+        {"gameToken", gameToken},
+        {"id", matchId},
+        {"playerCount", playerCount},
+    };
+
+    executeCurlRequest("PUT",
+                       KJAPP_URL + "/match/player_count",
+                       json.dump());
+}
+
+nlohmann::json
+kjapp::postMatchReport(const std::string& gameToken,
+                       const std::string& matchId,
+                       const nlohmann::json& data)
+{
+    nlohmann::json json =
+    {
+        {"gameToken", gameToken},
+        {"matchID", matchId},
+        {"data", data},
+    };
+
+    std::string out;
+    executeCurlRequest("POST",
+                       KJAPP_URL + "/match_report/",
+                       json.dump(),
+                       local::curlCallback,
+                       &out);
+
+    return nlohmann::json::parse(out);
 }
