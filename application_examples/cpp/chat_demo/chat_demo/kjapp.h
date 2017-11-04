@@ -7,6 +7,22 @@
 
 namespace kjapp
 {
+    /////////////////////////////////////////////////////////////////
+    /// \brief
+    ///     Returns the external IP address of this computer.
+    ///
+    /// \details
+    ///     Does a web request to a remote service to get the
+    ///     external IP of this computer back.
+    ///
+    /// \returns
+    ///     String containing the external IP address of
+    ///     the computer.
+    ///
+    /// \throws std::runtime_exception
+    ///     * A curl handle couldn't be created.
+    ///     * The HTTP request returned an error code, i.e. 40X
+    /////////////////////////////////////////////////////////////////
     std::string
     getMyIP();
 
