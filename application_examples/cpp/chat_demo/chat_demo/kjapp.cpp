@@ -68,9 +68,7 @@ executeCurlRequest(const std::string& requestType,
         curl_easy_setopt(handle.get(), CURLOPT_WRITEDATA, callbackData);
     }
 
-
     curl_easy_setopt(handle.get(), CURLOPT_CUSTOMREQUEST, requestType.c_str());
-
     curl_easy_setopt(handle.get(), CURLOPT_URL, url.c_str());
 
     if (data.size() != 0)
@@ -99,60 +97,34 @@ namespace
     namespace local
     {
         std::size_t
-        getMyIPCallback(void* contents, std::size_t size, std::size_t nmemb, void* userData)
+        curlCallback(void* contents,
+                           std::size_t size,
+                           std::size_t nmemb,
+                           void* userData)
         {
-            auto data = static_cast<std::string*>(userData);
-
             std::size_t realSize = size * nmemb;
-            std::string parseString(static_cast<char*>(contents), realSize);
-            nlohmann::json json = nlohmann::json::parse(parseString);
-            *data = json["ip"];
+
+            auto str = static_cast<std::string*>(userData);
+            str->append(static_cast<char*>(contents), realSize);
 
             return size * nmemb;
-        }
+        };
     }
 }
 
 std::string
 kjapp::getMyIP()
 {
-    auto handle = createCurlHandle();
-    curl_easy_setopt(handle.get(), CURLOPT_WRITEFUNCTION, local::getMyIPCallback);
+    std::string str;
+    executeCurlRequest("GET",
+                       "https://api.ipify.org?format=json",
+                       "",
+                       local::curlCallback,
+                       &str);
 
-    std::string output;
-    curl_easy_setopt(handle.get(), CURLOPT_WRITEDATA, &output);
+    auto json = nlohmann::json::parse(str);
 
-    const auto url = "https://api.ipify.org?format=json";
-
-    curl_easy_setopt(handle.get(), CURLOPT_URL, url);
-
-    const auto res = curl_easy_perform(handle.get());
-
-    if (res != CURLE_OK)
-        throw std::runtime_error(curl_easy_strerror(res));
-
-    return output;
-}
-
-namespace
-{
-    namespace local
-    {
-        std::size_t
-        hostMatchCallback(void* contents, std::size_t size, std::size_t nmemb, void* userData)
-        {
-            std::size_t realSize = size * nmemb;
-
-            // Contents isn't null terminated, and I don't want to rely on Json library there,
-            // so just ensuring that the std::string never reads more than realSize number of characters.
-            std::string jsonString(static_cast<char*>(contents), realSize);
-            nlohmann::json* output = static_cast<nlohmann::json*>(userData);
-
-            // Don't trust implicit constructor, always gets the parsing wrong..... -.-...
-            *output = nlohmann::json::parse(jsonString);
-            return size * nmemb;
-        };
-    }
+    return json["ip"];
 }
 
 nlohmann::json
@@ -173,42 +145,14 @@ kjapp::hostMatch(const std::string& gameToken,
         {"miscInfo", miscInfo},
     };
 
-    nlohmann::json output;
-
+    std::string out;
     executeCurlRequest("POST",
                        KJAPP_URL + "/match/",
                        json.dump(),
-                       local::hostMatchCallback,
-                       &output);
+                       local::curlCallback,
+                       &out);
 
-    return output;
-}
-
-namespace
-{
-    namespace local
-    {
-        std::size_t
-        getMatchesCallback(void* contents,
-                           std::size_t size,
-                           std::size_t nmemb,
-                           void* userData)
-        {
-            std::size_t realSize = size * nmemb;
-
-            // Contents isn't null terminated, and I don't want to rely on Json library there,
-            // so just ensuring that the std::string never reads more than realSize number of characters.
-            std::string jsonString(static_cast<char*>(contents), realSize);
-
-            nlohmann::json var = nlohmann::json::parse(jsonString);
-            std::vector<nlohmann::json>* output = static_cast<std::vector<nlohmann::json>*>(userData);
-
-            for (const auto& item : var)
-                output->push_back(item);
-
-            return size * nmemb;
-        };
-    }
+    return nlohmann::json::parse(out);
 }
 
 std::vector<nlohmann::json>
@@ -246,12 +190,17 @@ kjapp::getMatches(const std::string& gameToken,
         break;
     }
 
-    std::vector<nlohmann::json> output;
+    std::string str;
     executeCurlRequest("GET",
                        url,
                        "",
-                       local::getMatchesCallback,
-                       &output);
+                       local::curlCallback,
+                       &str);
+
+    auto jsonArray = nlohmann::json::parse(str);
+    std::vector<nlohmann::json> output;
+    for (const auto& item : jsonArray)
+        output.push_back(item);
 
     return output;
 }
@@ -306,30 +255,6 @@ kjapp::updatePlayerCount(const std::string& gameToken,
                        json.dump());
 }
 
-namespace
-{
-    namespace local
-    {
-        std::size_t
-        postMatchReportCallback(void* contents,
-                                std::size_t size,
-                                std::size_t nmemb,
-                                void* userData)
-        {
-            std::size_t realSize = size * nmemb;
-
-            // Contents isn't null terminated, and I don't want to rely on Json library there,
-            // so just ensuring that the std::string never reads more than realSize number of characters.
-            std::string jsonString(static_cast<char*>(contents), realSize);
-
-            nlohmann::json* output = static_cast<nlohmann::json*>(userData);
-            *output = nlohmann::json::parse(jsonString);
-
-            return size * nmemb;
-        };
-    }
-}
-
 nlohmann::json
 kjapp::postMatchReport(const std::string& gameToken,
                        const std::string& matchId,
@@ -342,12 +267,12 @@ kjapp::postMatchReport(const std::string& gameToken,
         {"data", data},
     };
 
-    nlohmann::json output;
+    std::string out;
     executeCurlRequest("POST",
                        KJAPP_URL + "/match_report/",
                        json.dump(),
-                       local::postMatchReportCallback,
-                       &output);
+                       local::curlCallback,
+                       &out);
 
-    return output;
+    return nlohmann::json::parse(out);
 }
