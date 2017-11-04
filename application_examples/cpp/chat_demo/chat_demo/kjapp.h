@@ -188,6 +188,30 @@ namespace kjapp
                Query query = Query::ALL_MATCHES,
                const std::string& name = "");
 
+    /////////////////////////////////////////////////////////////////
+    /// \brief
+    ///     Deletes the match with the id matchId, belonging
+    ///     to the game specified by gameToken from the kjapp
+    ///     match database.
+    ///
+    /// \details
+    ///     Informs the kjapp game lobby that a match should be
+    ///     deleted.
+    ///     The match is identified by the matchId and the
+    ///     game token.
+    ///
+    /// \param gameToken
+    ///     The gameToken of the game that the match to be deleted
+    ///     belongs to.
+    ///
+    /// \param matchId
+    ///     The id of the match that is supposed to be deleted.
+    ///
+    /// \throws std::runtime_exception
+    ///     * A curl handle couldn't be created.
+    ///     * The HTTP request returned an error code, i.e. 40X
+    ///     * miscInfo has a length of 0.
+    /////////////////////////////////////////////////////////////////
     void
     deleteMatch(const std::string& gameToken,
                 const std::string& matchId);
