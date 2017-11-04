@@ -73,8 +73,11 @@ executeCurlRequest(const std::string& requestType,
 
     curl_easy_setopt(handle.get(), CURLOPT_URL, url.c_str());
 
-    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDS, data.data());
-    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDSIZE, data.size());
+    if (data.size() != 0)
+    {
+        curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDS, data.data());
+        curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDSIZE, data.size());
+    }
 
     curl_slist* headers = nullptr;
     headers = curl_slist_append(headers, "Content-Type: application/json");
@@ -236,12 +239,6 @@ kjapp::getMatches(const std::string& gameToken,
                   kjapp::Query query,
                   const std::string& name)
 {
-    auto handle = createCurlHandle();
-    curl_easy_setopt(handle.get(), CURLOPT_WRITEFUNCTION, local::getMatchesCallback);
-
-    std::vector<nlohmann::json> output;
-    curl_easy_setopt(handle.get(), CURLOPT_WRITEDATA, &output);
-
     std::string url = KJAPP_URL + "/matches/";
 
     switch(query)
@@ -259,9 +256,7 @@ kjapp::getMatches(const std::string& gameToken,
         break;
 
         case Query::BY_NAME:
-            std::fprintf(stderr, "Query::BY_NAME is not supported yet!\n");
             url += "with_name/no_body/" + gameToken + "/" + name;
-            return {};
         break;
 
         case Query::NOT_IN_SESSION:
@@ -275,11 +270,12 @@ kjapp::getMatches(const std::string& gameToken,
         break;
     }
 
-    curl_easy_setopt(handle.get(), CURLOPT_URL, url.c_str());
-
-    const auto res =  curl_easy_perform(handle.get());
-    if (res != CURLE_OK)
-        handleCurlError(handle, res);
+    std::vector<nlohmann::json> output;
+    executeCurlRequest("GET",
+                       url,
+                       "",
+                       local::getMatchesCallback,
+                       &output);
 
     return output;
 }

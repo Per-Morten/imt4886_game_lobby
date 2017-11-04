@@ -24,7 +24,7 @@ namespace kjapp
         NOT_IN_SESSION, // NOT IMPLEMENTED!
         IN_SESSION,
         NON_FULL_MATCHES,
-        BY_NAME, // NOT IMPLEMENTED!
+        BY_NAME,
     };
 
     std::vector<nlohmann::json>
