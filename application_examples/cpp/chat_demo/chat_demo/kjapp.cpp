@@ -306,7 +306,6 @@ kjapp::updateMatchStatus(const std::string& gameToken,
         {"id", matchId},
         {"status", static_cast<int>(status)},
     };
-    auto jsonString = json.dump();
 
     executeCurlRequest("PUT",
                        KJAPP_URL + "/match/status",
@@ -324,9 +323,54 @@ kjapp::updatePlayerCount(const std::string& gameToken,
         {"id", matchId},
         {"playerCount", playerCount},
     };
-    auto jsonString = json.dump();
 
     executeCurlRequest("PUT",
                        KJAPP_URL + "/match/player_count",
                        json.dump());
+}
+
+namespace
+{
+    namespace local
+    {
+        std::size_t
+        postEndOfMatchReportCallback(void* contents,
+                                     std::size_t size,
+                                     std::size_t nmemb,
+                                     void* userData)
+        {
+            std::size_t realSize = size * nmemb;
+
+            // Contents isn't null terminated, and I don't want to rely on Json library there,
+            // so just ensuring that the std::string never reads more than realSize number of characters.
+            std::string jsonString(static_cast<char*>(contents), realSize);
+
+            nlohmann::json* output = static_cast<nlohmann::json*>(userData);
+            *output = nlohmann::json::parse(jsonString);
+
+            return size * nmemb;
+        };
+    }
+}
+
+nlohmann::json
+kjapp::postEndOfMatchReport(const std::string& gameToken,
+                            const std::string& matchId,
+                            const nlohmann::json& data)
+{
+    nlohmann::json json =
+    {
+        {"gameToken", gameToken},
+        {"id", matchId},
+        {"data", data},
+    };
+
+    nlohmann::json output;
+    executeCurlRequest("POST",
+                       KJAPP_URL + "/match_report/",
+                       json.dump(),
+                       local::postEndOfMatchReportCallback,
+                       &output);
+
+    return output;
 }

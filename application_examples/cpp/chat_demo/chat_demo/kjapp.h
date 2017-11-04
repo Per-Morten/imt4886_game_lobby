@@ -52,4 +52,8 @@ namespace kjapp
                       const std::string& matchId,
                       std::size_t playerCount);
 
+    nlohmann::json
+    postEndOfMatchReport(const std::string& gameToken,
+                         const std::string& matchId,
+                         const nlohmann::json& data);
 }
