@@ -83,7 +83,7 @@ namespace kjapp
     /////////////////////////////////////////////////////////////////
     /// \brief
     ///     Reports to the kjapp game lobby that a match has been
-    ///     started.
+    ///     created.
     ///
     /// \details
     ///     The kjapp game lobby is notified about the creation
@@ -179,7 +179,6 @@ namespace kjapp
     /// \throws std::runtime_exception
     ///     * A curl handle couldn't be created.
     ///     * The HTTP request returned an error code, i.e. 40X
-    ///     * miscInfo has a length of 0.
     ///
     /// \see kjapp::Query
     /////////////////////////////////////////////////////////////////
@@ -210,7 +209,6 @@ namespace kjapp
     /// \throws std::runtime_exception
     ///     * A curl handle couldn't be created.
     ///     * The HTTP request returned an error code, i.e. 40X
-    ///     * miscInfo has a length of 0.
     /////////////////////////////////////////////////////////////////
     void
     deleteMatch(const std::string& gameToken,
@@ -242,7 +240,6 @@ namespace kjapp
     /// \throws std::runtime_exception
     ///     * A curl handle couldn't be created.
     ///     * The HTTP request returned an error code, i.e. 40X
-    ///     * miscInfo has a length of 0.
     /////////////////////////////////////////////////////////////////
     void
     updateMatchStatus(const std::string& gameToken,
