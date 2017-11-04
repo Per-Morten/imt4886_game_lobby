@@ -163,16 +163,7 @@ kjapp::hostMatch(const std::string& gameToken,
                  const std::size_t maxPlayerCount,
                  const std::string& miscInfo)
 {
-    auto handle = createCurlHandle();
-
-    // Setup callback
-    curl_easy_setopt(handle.get(), CURLOPT_WRITEFUNCTION, local::hostMatchCallback);
-
-    nlohmann::json output;
-    curl_easy_setopt(handle.get(), CURLOPT_WRITEDATA, &output);
-
-    // Prepare for post call
-    nlohmann::json package =
+    nlohmann::json json =
     {
         {"gameToken", gameToken},
         {"name", name},
@@ -182,28 +173,14 @@ kjapp::hostMatch(const std::string& gameToken,
         {"miscInfo", miscInfo},
     };
 
-    auto jsonString = package.dump();
-    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDS, jsonString.data());
-    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDSIZE, jsonString.size());
+    nlohmann::json output;
 
-    // Set content type
-    curl_slist* headers = nullptr;
-    headers = curl_slist_append(headers, "Content-Type: application/json");
-    curl_easy_setopt(handle.get(), CURLOPT_HTTPHEADER, headers);
+    executeCurlRequest("POST",
+                       KJAPP_URL + "/match/",
+                       json.dump(),
+                       local::hostMatchCallback,
+                       &output);
 
-    // Set address
-    std::string url = KJAPP_URL + "/match/";
-    curl_easy_setopt(handle.get(), CURLOPT_URL, url.data());
-
-    // Perform the request
-    const auto res =  curl_easy_perform(handle.get());
-    if (res != CURLE_OK)
-    {
-        curl_slist_free_all(headers);
-        handleCurlError(handle, res);
-    }
-
-    curl_slist_free_all(headers);
     return output;
 }
 
