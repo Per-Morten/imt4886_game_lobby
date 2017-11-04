@@ -8,28 +8,28 @@
 namespace kjapp
 {
     /////////////////////////////////////////////////////////////////
-    /// \enum Query
+    /// \enum kjapp::Query
     /// \brief
     ///     Different categories of queries that can be done on
     ///     the kjapp database over matches.
     ///
-    /// \var Query::ALL_MATCHES
+    /// \var kjapp::Query::ALL_MATCHES
     ///     Gets all the matches belonging to a specified
     ///     game token.
     ///
-    /// \var Query::NOT_IN_SESSION
+    /// \var kjapp::Query::NOT_IN_SESSION
     ///     Gets all the matches belonging to a specified
     ///     game token that are not in session.
     ///
-    /// \var Query::IN_SESSION
+    /// \var kjapp::Query::IN_SESSION
     ///     Gets all the matches belonging to a specified
     ///     game token that are in session.
     ///
-    /// \var Query::NON_FULL_MATCHES
+    /// \var kjapp::Query::NON_FULL_MATCHES
     ///     Gets all the matches belonging to a specified
     ///     game token that are not full.
     ///
-    /// \var Query::BY_NAME
+    /// \var kjapp::Query::BY_NAME
     ///     Gets all the matches belonging to a specified
     ///     game token with a specified name.
     ///     Both partial and full names can be specified.
@@ -43,6 +43,18 @@ namespace kjapp
         BY_NAME,
     };
 
+    /////////////////////////////////////////////////////////////////
+    /// \enum kjapp::Status
+    /// \brief
+    ///     The status of a match. Is it in session or not.
+    ///
+    /// \var kjapp::Status::NOT_IN_SESSION
+    ///     This means that the match has not yet been started,
+    ///     or that it has been stopped.
+    ///
+    /// \var kjapp::Status::IN_SESSION
+    ///     This means that the match is currently running.
+    /////////////////////////////////////////////////////////////////
     enum class Status
     {
         NOT_IN_SESSION,
