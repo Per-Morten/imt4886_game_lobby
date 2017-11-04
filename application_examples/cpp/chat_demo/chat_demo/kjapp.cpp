@@ -260,8 +260,7 @@ kjapp::getMatches(const std::string& gameToken,
         break;
 
         case Query::NOT_IN_SESSION:
-            std::fprintf(stderr, "Query::NOT_IN_SESSION is not supported yet!\n");
-            return {};
+            url += "not_in_session/no_body/" + gameToken;
         break;
 
         default:
