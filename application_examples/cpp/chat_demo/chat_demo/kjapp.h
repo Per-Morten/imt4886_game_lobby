@@ -32,4 +32,8 @@ namespace kjapp
                Query query = Query::ALL_MATCHES,
                const std::string& name = "");
 
+    void
+    deleteMatch(const std::string& gameToken,
+                const std::string& matchId);
+
 }

@@ -31,7 +31,24 @@ createCurlHandle()
         throw std::runtime_error("Could not init curl");
     }
 
+    curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
+
     return CurlHandle(curl);
+}
+
+void
+handleCurlError(const CurlHandle& handle, CURLcode code)
+{
+    std::string error = std::string("kjapp curl error: ") + curl_easy_strerror(code);
+
+    if (code == CURLE_HTTP_RETURNED_ERROR)
+    {
+        long code = 0;
+        curl_easy_getinfo(handle.get(), CURLINFO_RESPONSE_CODE, &code);
+        error += std::string(". Error code:") + std::to_string(code);
+    }
+
+    throw std::runtime_error(error.c_str());
 }
 
 namespace
@@ -87,7 +104,9 @@ namespace
             // so just ensuring that the std::string never reads more than realSize number of characters.
             std::string jsonString(static_cast<char*>(contents), realSize);
             nlohmann::json* output = static_cast<nlohmann::json*>(userData);
-            *output = nlohmann::json(jsonString);
+
+            // Don't trust implicit constructor, always gets the parsing wrong..... -.-...
+            *output = nlohmann::json::parse(jsonString);
             return size * nmemb;
         };
     }
@@ -138,7 +157,7 @@ kjapp::hostMatch(const std::string& gameToken,
     if (res != CURLE_OK)
     {
         curl_slist_free_all(headers);
-        throw std::runtime_error(curl_easy_strerror(res));
+        handleCurlError(handle, res);
     }
 
     curl_slist_free_all(headers);
@@ -220,7 +239,44 @@ kjapp::getMatches(const std::string& gameToken,
 
     const auto res =  curl_easy_perform(handle.get());
     if (res != CURLE_OK)
-        throw std::runtime_error(curl_easy_strerror(res));
+        handleCurlError(handle, res);
 
     return output;
+}
+
+void
+kjapp::deleteMatch(const std::string& gameToken,
+                   const std::string& matchId)
+{
+    auto handle = createCurlHandle();
+
+    curl_easy_setopt(handle.get(), CURLOPT_CUSTOMREQUEST, "DELETE");
+
+    std::string url = KJAPP_URL + "/match/";
+
+    curl_easy_setopt(handle.get(), CURLOPT_URL, url.c_str());
+    nlohmann::json json =
+    {
+        {"gameToken", gameToken},
+        {"id", matchId},
+    };
+
+    auto jsonString = json.dump();
+    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDS, jsonString.data());
+    curl_easy_setopt(handle.get(), CURLOPT_POSTFIELDSIZE, jsonString.size());
+
+    curl_slist* headers = nullptr;
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    curl_easy_setopt(handle.get(), CURLOPT_HTTPHEADER, headers);
+
+    CURLcode res = curl_easy_perform(handle.get());
+
+    if (res != CURLE_OK)
+    {
+        curl_slist_free_all(headers);
+        handleCurlError(handle, res);
+    }
+
+    curl_slist_free_all(headers);
+
 }
