@@ -249,6 +249,32 @@ namespace kjapp
                       const std::string& matchId,
                       Status status);
 
+    /////////////////////////////////////////////////////////////////
+    /// \brief
+    ///     Updates the number of players of the match belonging
+    ///     to the game with the specified game token,
+    ///     and identified by the specified matchId.
+    ///
+    /// \details
+    ///     Informs the kjapp game lobby that a match should be
+    ///     have its playerCount changed.
+    ///     This is usually done when a player connects to
+    ///     or drops out of a game.
+    ///
+    /// \param gameToken
+    ///     The gameToken of the game that the match belongs to.
+    ///
+    /// \param matchId
+    ///     The id of the match that is supposed to be updated.
+    ///
+    /// \param playerCount
+    ///     The new playerCount of the match.
+    ///
+    /// \throws std::runtime_exception
+    ///     * A curl handle couldn't be created.
+    ///     * The HTTP request returned an error code, i.e. 40X
+    ///     * miscInfo has a length of 0.
+    /////////////////////////////////////////////////////////////////
     void
     updatePlayerCount(const std::string& gameToken,
                       const std::string& matchId,
