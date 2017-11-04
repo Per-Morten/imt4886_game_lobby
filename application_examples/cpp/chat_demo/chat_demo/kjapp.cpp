@@ -4,6 +4,7 @@
 #include <cstring>
 #include <memory>
 #include <stdexcept>
+#include <cinttypes>
 
 #include <curl/curl.h>
 
@@ -98,9 +99,9 @@ namespace
     {
         std::size_t
         curlCallback(void* contents,
-                           std::size_t size,
-                           std::size_t nmemb,
-                           void* userData)
+                     std::size_t size,
+                     std::size_t nmemb,
+                     void* userData)
         {
             std::size_t realSize = size * nmemb;
 
@@ -135,6 +136,20 @@ kjapp::hostMatch(const std::string& gameToken,
                  const std::size_t maxPlayerCount,
                  const std::string& miscInfo)
 {
+    std::uint8_t octets[4];
+    auto validFields = std::sscanf(hostIP.c_str(),
+                                   "%" SCNu8 "\.%" SCNu8 "\.%" SCNu8 "\.%" SCNu8 "",
+                                   &octets[0],
+                                   &octets[1],
+                                   &octets[2],
+                                   &octets[3]);
+
+    if (validFields != 4 || maxPlayerCount == 0 ||
+        miscInfo.empty() || name.empty())
+    {
+        throw std::invalid_argument("kjapp error: Invalid argument");
+    }
+
     nlohmann::json json =
     {
         {"gameToken", gameToken},
@@ -162,7 +177,7 @@ kjapp::getMatches(const std::string& gameToken,
 {
     std::string url = KJAPP_URL + "/matches/";
 
-    switch(query)
+    switch (query)
     {
         case Query::ALL_MATCHES:
             url += "no_body/" + gameToken;
@@ -177,6 +192,9 @@ kjapp::getMatches(const std::string& gameToken,
         break;
 
         case Query::BY_NAME:
+            if (name.empty())
+                throw std::invalid_argument("kjapp error: Invalid argument");
+
             url += "with_name/no_body/" + gameToken + "/" + name;
         break;
 

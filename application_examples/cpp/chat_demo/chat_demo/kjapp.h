@@ -43,6 +43,19 @@
 ///     Nothing in kjapp explicitly should cause any issues,
 ///     but there might be situations where curl does not like it.
 ///
+/// \par Validation and Error handling
+///     Most validation happens on the server side of kjapp glm.
+///     However, to make it a bit easier to work with, the most
+///     common and easy to make errors results in an exception.
+///     These are mentioned in more detail in documentation of
+///     different functions.
+///     In general the rule is that if something is really obvious
+///     like gameToken and matchId not having a length of 0
+///     is not checked, but more hard to spot errors, like
+///     miscInfo having a length of 0, will result in invalid
+///     argument exceptions.
+///     Any HTTP errors, like 404, will throw a runtime exception.
+///
 /// \see <a href="https://github.com/nlohmann/json">nlohmann json</a>
 /// \see <a href="https://curl.haxx.se/libcurl/c/libcurl.html">libcurl</a>
 /// \see <a href="https://curl.haxx.se/libcurl/c/threadsafe.html">curl thread safety</a>
@@ -181,7 +194,12 @@ namespace kjapp
     /// \throws std::runtime_exception
     ///     * A curl handle couldn't be created.
     ///     * The HTTP request returned an error code, i.e. 40X
-    ///     * miscInfo has a length of 0.
+    ///
+    /// \throws std::invalid_argument
+    ///     * miscInfo.empty() == true.
+    ///     * name.empty() == true.
+    ///     * hostIP is not an IPv4 numeric IP.
+    ///     * maxPlayerCount == 0.
     /////////////////////////////////////////////////////////////////
     nlohmann::json
     hostMatch(const std::string& gameToken,
@@ -221,6 +239,9 @@ namespace kjapp
     /// \throws std::runtime_exception
     ///     * A curl handle couldn't be created.
     ///     * The HTTP request returned an error code, i.e. 40X
+    ///
+    /// \throw std::invalid_argument
+    ///     * query == Query::BY_NAME && name.empty() == true
     ///
     /// \see kjapp::Query
     /////////////////////////////////////////////////////////////////
