@@ -273,13 +273,53 @@ namespace kjapp
     /// \throws std::runtime_exception
     ///     * A curl handle couldn't be created.
     ///     * The HTTP request returned an error code, i.e. 40X
-    ///     * miscInfo has a length of 0.
     /////////////////////////////////////////////////////////////////
     void
     updatePlayerCount(const std::string& gameToken,
                       const std::string& matchId,
                       std::size_t playerCount);
 
+    /////////////////////////////////////////////////////////////////
+    /// \brief
+    ///     Sends a match report to the kjapp game lobby.
+    ///
+    /// \details
+    ///     The kjapp game lobby is sent a match report that will
+    ///     belong to the game identified by the gameToken.
+    ///
+    /// \param gameToken
+    ///     The gameToken of the game that the report belongs to.
+    ///     The gameToken must be valid, otherwise the post request
+    ///     will fail.
+    ///
+    /// \param matchID
+    ///     The id of the match this report was generated from.
+    ///
+    /// \param data
+    ///     A json object containing all the data that the
+    ///     developer wants to restore.
+    ///
+    /// \returns
+    ///     A json object containing all the relevant information
+    ///     of the report. This is in the form of:
+    ///     \code{.cpp}
+    ///     {
+    ///         "_id": "59da7d0e704a440b4fc6d83d",
+    ///         "__v": 0,
+    ///         "matchID": "59c7f0c9b0a0932165c058b6",
+    ///         "gameToken": "59ec8be7890cd692461bb7d4",
+    ///         "data":
+    ///         {
+    ///             "duration": 2000,
+    ///             "score": 50000,
+    ///         }
+    ///     }
+    ///     \endcode
+    ///
+    /// \throws std::runtime_exception
+    ///     * A curl handle couldn't be created.
+    ///     * The HTTP request returned an error code, i.e. 40X
+    /////////////////////////////////////////////////////////////////
     nlohmann::json
     postMatchReport(const std::string& gameToken,
                     const std::string& matchId,
