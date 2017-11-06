@@ -6,10 +6,15 @@ using UnityEngine.UI;
 
 public class UIHandler : MonoBehaviour
 {
+    [Header("Prefabs")]
     public GameObject matchButtonPrefab;
+    public GameObject dynamicTextPrefab;
+
+    [Header("Scene GameObjects")]
+    public GameObject statisticsListObject;
+    public GameObject matchListObject;
 
     [Header("Menus")]
-    public GameObject matchListMenu;
     public GameObject waitForConnectionMenu;
 
     public GameObject rootMenu;
@@ -21,23 +26,34 @@ public class UIHandler : MonoBehaviour
     [Header("Toggles")]
     public Toggle loopBackHostToggle;
 
+    private KJAPPNetworkManager networkManager;
+
     void Start()
     {
         currentMenu = rootMenu;
+        networkManager = NetworkManager.singleton.GetComponent<KJAPPNetworkManager>();
     }
 
     public void StartHost()
     {
         if (matchNameInput.text != null && matchNameInput.text != "")
         {
-            NetworkManager.singleton.GetComponent<KJAPPNetworkManager>().StartHosting(matchNameInput.text, loopBackHostToggle.isOn);
+            networkManager.StartHosting(matchNameInput.text, loopBackHostToggle.isOn);
             ChangeMenu(waitForConnectionMenu);
         }
     }
     
     public void RequestMatches()
     {
-        NetworkManager.singleton.GetComponent<KJAPPNetworkManager>().RequestMatches(GETRequestFilters.noFilter);
+        networkManager.RequestMatches(GETRequestFilters.noFilter, DisplayMatches);
+    }
+
+    public void RequestStatistics()
+    {
+        networkManager.RequestAggregation(MatchReportAggregations.average, "score", DisplayStatistic);
+        networkManager.RequestAggregation(MatchReportAggregations.median, "score", DisplayStatistic);
+        networkManager.RequestAggregation(MatchReportAggregations.average, "duration", DisplayStatistic);
+        networkManager.RequestAggregation(MatchReportAggregations.median, "duration", DisplayStatistic);
     }
 
     public void ChangeMenu(GameObject newMenu)
@@ -51,14 +67,23 @@ public class UIHandler : MonoBehaviour
     {
         foreach(var match in matches)
         {
-            var matchButton = Instantiate(matchButtonPrefab, matchListMenu.transform);
+            var matchButton = Instantiate(matchButtonPrefab, matchListObject.transform);
             matchButton.GetComponent<MatchButton>().Initialize(match, this);
         }
     }
 
-    public void CleanUpMatchList()
+    public void DisplayStatistic(string statisticsData, MatchReportAggregations aggregationType, string aggregatedFieldName)
     {
-        foreach(Transform child in matchListMenu.transform)
+        var isAverage = aggregationType == MatchReportAggregations.average;
+        var displayString = (isAverage ? "Average" : "Median") + " Match " + aggregatedFieldName + ": " + statisticsData + (isAverage ? "s" : "");
+
+        var newTextObject = Instantiate(dynamicTextPrefab, statisticsListObject.transform);
+        newTextObject.GetComponent<Text>().text = displayString;
+    }
+
+    public void CleanUpChildren(GameObject parent)
+    {
+        foreach(Transform child in parent.transform)
         {
             Destroy(child.gameObject);
         }
