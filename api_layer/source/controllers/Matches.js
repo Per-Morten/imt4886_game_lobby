@@ -86,6 +86,44 @@ module.exports = (api) => {
         });
 
     /**
+     * @api {get} /matches/not_in_session/ Request matches that are not in session with given gameToken
+     * @apiName GetMatchesNotInSession
+     * @apiGroup Matches
+     * @apiDescription
+     * Returns a list of all matches that are not in session and contain the provided gameToken.
+     * This list is empty if no matches were found.
+     *
+     * @apiParam {String} gameToken The unique game token of a game.
+     * @apiSuccess (200) Success
+     *
+     */
+    api.route('/matches/not_in_session/')
+        .get((req, res) => {
+            MatchModel.findByTokenNotInSession(req.body.gameToken)
+                .then(list => res.json(list))
+                .catch(err => res.json(err));
+        });
+
+    /**
+     * @api {get} /matches/not_in_session/no_body/:gameToken Request matches that are not in session with given gameToken
+     * @apiName GetMatchesNotInSessionNoBody
+     * @apiGroup Matches
+     * @apiDescription
+     * Returns a list of all matches that are not in session and contain the provided gameToken.
+     * This list is empty if no matches were found.
+     *
+     * @apiParam {String} gameToken The unique game token of a game.
+     * @apiSuccess (200) Success
+     *
+     */
+    api.route('/matches/not_in_session/no_body/:gameToken')
+        .get((req, res) => {
+            MatchModel.findByTokenNotInSession(req.params.gameToken)
+                .then(list => res.json(list))
+                .catch(err => res.json(err));
+        });
+
+    /**
      * @api {get} /matches/not_full/ Request all the matches that are not full with a given gameToken
      * @apiName GetMatchesNotFullJSONBody
      * @apiGroup Matches

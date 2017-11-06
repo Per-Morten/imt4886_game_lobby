@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "scene.h"
+#include "json.hpp"
 
 class ChatServer
     : public Scene
@@ -74,4 +75,6 @@ private:
 
     std::vector<ClientSocket> m_clients{};
     const std::size_t m_maxClients{};
+
+    nlohmann::json m_match{};
 };

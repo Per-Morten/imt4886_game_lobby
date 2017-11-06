@@ -175,6 +175,14 @@ MatchSchema.statics.findByTokenInSession = function (gameToken) {
     });
 };
 
+MatchSchema.statics.findByTokenNotInSession = function (gameToken) {
+    return new Promise((resolve, reject) => {
+        this.find({ gameToken, status: 0 }).exec()
+            .then(matches => resolve(matches))
+            .catch(err => reject(err));
+    });
+};
+
 MatchSchema.statics.findByTokenNotFull = async function(gameToken) {
     try {
         let result = await GameModel.findById({_id: gameToken});
