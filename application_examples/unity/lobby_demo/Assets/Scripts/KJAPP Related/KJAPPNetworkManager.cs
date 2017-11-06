@@ -42,7 +42,7 @@ public class KJAPPNetworkManager : NetworkManager
 
     #region Public Methods
     /// <summary>
-    /// Public method that can be called by a button on the UI(as an example) in order to start the process creating a match.
+    /// Public method for starting the process of creating a match.
     /// </summary>
     /// <param name="matchName">Name of the match</param>
     /// <param name="loopBackHost">Whether we want to use 127.0.0.1 as host IP or not. This primarily used for testing purposes on the local machine</param>
@@ -65,8 +65,11 @@ public class KJAPPNetworkManager : NetworkManager
     }
 
     /// <summary>
-    /// Public method that can be called by a button on the UI(as an example) in order to start the process of connecting to a match.
+    /// Public method for starting the process of connecting to a match.
+    /// Takes ip address and server port as parameters. 
     /// </summary>
+    /// <param name="ip">The IP address we are connecting to.</param>
+    /// <param name="port">The server port we are connecting to</param>
     public void StartClientConnection(string ip, int port)
     {
         networkAddress = ip;
@@ -74,10 +77,13 @@ public class KJAPPNetworkManager : NetworkManager
 
         StartClient();
     }
-    
+
     /// <summary>
-    /// Public method that can be called by a button on the UI(as an example) in order to start the process of requesting a list of matches. 
+    /// Public method for starting the process of displaying matches. 
     /// </summary>
+    /// <param name="filter">What type of filter we want to apply to the request.</param>
+    /// <param name="callback">The callback that receives the array of matches.</param>
+    /// <param name="withName">Default parameter that is set to "". Used whenever filter is set to GETRequestFilters.withName</param>
     public void RequestMatches(GETRequestFilters filter, System.Action<KJAPP.JSONObjects.Match.BaseResponse[]> callback, string withName = "")
     {
         StartCoroutine(GETMatches(filter, callback, withName));
@@ -87,9 +93,9 @@ public class KJAPPNetworkManager : NetworkManager
     /// Public method that can be called to request statistics from match report data. 
     /// Takes a enum representing the aggregation we want returned, a string representing the fieldName and a callback as parameters. 
     /// </summary>
-    /// <param name="aggregationType">Enum representing the type of aggregation we want to retrieve</param>
+    /// <param name="aggregationType">Enum representing the type of aggregation we want to retrieve.</param>
     /// <param name="fieldName">A string representing the name of the field we want to acquire statistics from.</param>
-    /// <param name="callback">A callback taking a string as a parameter that will be called once the request is finished.</param>
+    /// <param name="callback">A callback taking a string as parameter, used to send the aggregated value back.</param>
     public void RequestAggregation(MatchReportAggregations aggregationType, string fieldName, System.Action<string> callback)
     {
         switch(aggregationType)
@@ -110,7 +116,7 @@ public class KJAPPNetworkManager : NetworkManager
     /// Takes a enum representing the aggregation we want returned, a string representing the fieldName and a callback as parameters. 
     /// This overloaded function is primarily made for convenience printing of data so that the callback has all the necessary information to know what it is printing. 
     /// </summary>
-    /// <param name="aggregationType">Enum representing the type of aggregation we want to retrieve</param>
+    /// <param name="aggregationType">Enum representing the type of aggregation we want to retrieve.</param>
     /// <param name="fieldName">A string representing the name of the field we want to acquire statistics from.</param>
     /// <param name="callback">A callback taking three parameters: the string representing the aggregated value, the type of aggregation done and the name of the field we aggregated.</param>
     public void RequestAggregation(MatchReportAggregations aggregationType, string fieldName, System.Action<string, MatchReportAggregations, string> callback)
@@ -131,7 +137,8 @@ public class KJAPPNetworkManager : NetworkManager
 
     #region Private Helper Methods
     /// <summary>
-    /// Helper function for manually building web requests to avoid issues that you might end up having from Unity doing things like url-encoding your body. 
+    /// Helper function for manually building web requests to avoid issues that might end up happening. 
+    /// Unity doing things like url-encoding your body is one of these. 
     /// </summary>
     /// <param name="apiRouteAppendage">The part of the route to the API we want to append, example: "/match/"</param>
     /// <param name="jsonBody">The string containing the JSON object</param>
@@ -139,7 +146,7 @@ public class KJAPPNetworkManager : NetworkManager
     /// <returns>A web request that is ready for usage</returns>
     private UnityWebRequest CreateWebRequestWithBody(string apiRouteAppendage, string jsonBody, string requestType)
     {
-        // http://answers.unity3d.com/questions/1163204/prevent-unitywebrequestpost-from-url-encoding-the.html
+        // Primarily made to solve: http://answers.unity3d.com/questions/1163204/prevent-unitywebrequestpost-from-url-encoding-the.html
         var webRequest = new UnityWebRequest(apiUrl + apiRouteAppendage);
         webRequest.uploadHandler = new UploadHandlerRaw(Encoding.ASCII.GetBytes(jsonBody));
         webRequest.downloadHandler = new DownloadHandlerBuffer();
@@ -150,7 +157,7 @@ public class KJAPPNetworkManager : NetworkManager
     }
 
     /// <summary>
-    /// Coroutine that fetches the external IP address before calling UploadMatch();
+    /// Coroutine that fetches the external IP address before calling POSTMatch();
     /// </summary>
     /// <param name="matchName">The name of the match acquired from the InputField in the UI</param>
     private IEnumerator AcquireExternalNetworkAddress(string matchName)
@@ -171,9 +178,11 @@ public class KJAPPNetworkManager : NetworkManager
     #endregion
 
     #region API Coroutines
+
     /// <summary>
     /// Coroutine that sends a web request to the API in order to create a new match.
     /// </summary>
+    /// <param name="matchName">The name of the match we are POSTing.</param>
     private IEnumerator POSTMatch(string matchName)
     {
         var webRequest = CreateWebRequestWithBody("/match/", 
@@ -189,7 +198,7 @@ public class KJAPPNetworkManager : NetworkManager
         {
             var jsonString = webRequest.downloadHandler.text;
             matchId = JsonUtility.FromJson<KJAPP.JSONObjects.Match.BaseResponse>(jsonString)._id;
-            StartCoroutine(PUTMatchStatus());
+            StartCoroutine(PUTMatchStatus(MATCH_STATUS_IN_SESSION));
             StartHost();
 
             // OpenNat will attempt to portforward for you, but there is no guarantee that it will work. 
@@ -197,13 +206,16 @@ public class KJAPPNetworkManager : NetworkManager
         }
     }
 
+
     /// <summary>
-    /// Coroutine that sends a web request to the API in order to set the status to the newly created match as in session. 
+    /// Coroutine that sends a web request to the API in order to set the status of a match.
+    /// Currently this is only used to set the status of a newly created match to in session.
     /// </summary>
-    private IEnumerator PUTMatchStatus()
+    /// <param name="newStatus">The status int we want to update to.</param>
+    private IEnumerator PUTMatchStatus(int newStatus)
     {
         var webRequest = CreateWebRequestWithBody("/match/status", 
-                                                  JsonUtility.ToJson(new KJAPP.JSONObjects.Match.StatusPUTRequest(matchId, MATCH_STATUS_IN_SESSION)), 
+                                                  JsonUtility.ToJson(new KJAPP.JSONObjects.Match.StatusPUTRequest(matchId, newStatus)), 
                                                   UnityWebRequest.kHttpVerbPUT);
         yield return webRequest.Send();
 
@@ -214,7 +226,8 @@ public class KJAPPNetworkManager : NetworkManager
     }
 
     /// <summary>
-    /// Coroutine that sends a web request to the API and receives a list of matches with given gameToken. A filter is sent to specify what types of matches to GET.
+    /// Coroutine that sends a web request to the API and receives a list of matches with given gameToken. 
+    /// A filter is sent to specify what types of matches to GET.
     /// A callback is also sent which is used to send the retrieved matches back. 
     /// </summary>
     /// <param name="filter">The enum specifying how to filter the matches that are to be acquired.</param>
@@ -406,15 +419,15 @@ public class KJAPPNetworkManager : NetworkManager
     /// <summary>
     /// NetworkManager callback that runs on the server whenever it stops.
     /// A finished match should be deleted from the database so this callback can be used to do so. 
-    /// If you want to send match reports after a match ends, this could be a potential place to do so. 
+    /// This callback also makes sure to send a match report to the API if this functionality is enabled. 
     /// </summary>
     public override void OnStopServer()
     {
         if (matchReportsEnabled)
         {
             StartCoroutine(POSTMatchReport(new ReportPOSTRequest(matchId,
-                                      gameToken,
-                                      new KJAPP.JSONObjects.Report.ExampleDataObject(GameManager.instance.score, (int)(Time.realtimeSinceStartup - matchStartTime)))));
+                                                                 gameToken,
+                                                                 new KJAPP.JSONObjects.Report.ExampleDataObject(GameManager.instance.score, (int)(Time.realtimeSinceStartup - matchStartTime)))));
         }
 
         StartCoroutine(DELETEMatch());
