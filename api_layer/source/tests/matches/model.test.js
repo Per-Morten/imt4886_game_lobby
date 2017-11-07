@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const MatchModel = require('../../models/Match');
 const GameModel = require('../../models/Game');
 
-
 const match = {
     name: 'Test Match 1',
     gameToken: 'Game 1',
@@ -197,4 +196,3 @@ test.serial('Find in session matches with gameToken', async (t) => {
         t.fail('Found 2 matches where only 1 is in session');
     }
 });
-
