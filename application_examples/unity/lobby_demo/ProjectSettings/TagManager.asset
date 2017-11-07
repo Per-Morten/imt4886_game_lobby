@@ -6,6 +6,7 @@ TagManager:
   tags:
   - UIHandler
   - GameManager
+  - Score
   layers:
   - Default
   - TransparentFX
