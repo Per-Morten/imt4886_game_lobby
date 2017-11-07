@@ -59,6 +59,15 @@ GameSchema.statics.findGame = async function(id) {
     } catch(err) {
         throw errors.ERROR_500;
     }
+};
+
+GameSchema.statics.getAll = async function() {
+    try {
+        let res = await this.find({});
+        return {code: 200, games: res};
+    } catch(err) {
+        throw errors.ERROR_500;
+    }
 }
 
 

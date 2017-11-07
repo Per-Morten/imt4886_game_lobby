@@ -99,3 +99,19 @@ test.serial('Should get a game by id', async(t) => {
     t.pass();
 });
 
+///////////////////////////////////////////////////////////
+/// Multiple Games Tests
+///////////////////////////////////////////////////////////
+test.serial('Get All Games', async(t) => {
+    await request(server)
+        .get('/games/')
+        .expect(200)
+        .then(response => {
+            if (response.body.length != t.context.games.length) {
+                t.fail(`Returned ${response.body.length} games then ${t.context.games.length} should have been returned`);
+            }
+        })
+        .catch(err => t.fail(err));
+
+    t.pass();
+});
