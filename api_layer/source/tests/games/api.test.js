@@ -114,6 +114,39 @@ test.serial('Should get a game by id', async(t) => {
     t.pass();
 });
 
+test.serial('Should delete a game', async(t) => {
+    const games = t.context.games;
+
+    await request(server)
+        .get('/game/' + games[0]._id)
+        .expect(200)
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .delete('/game/')
+        .send({id: games[0]._id})
+        .expect(204)
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .get('/game/' + games[0]._id)
+        .expect(404)
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .delete('/game/')
+        .send({id: games[0]._id})
+        .expect(404)
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .get('/game/' + games[1]._id)
+        .expect(200)
+        .catch(err => t.fail(err));
+
+    t.pass();
+});
+
 ///////////////////////////////////////////////////////////
 /// Multiple Games Tests
 ///////////////////////////////////////////////////////////

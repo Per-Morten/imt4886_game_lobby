@@ -76,6 +76,16 @@ GameSchema.statics.findByName = async function(name) {
     }
 }
 
+GameSchema.statics.deleteGame = async function(id) {
+    try {
+        const res = await this.findByIdAndRemove(id);
+        const code = (res) ? 204 : 404;
+        return {code: code};
+    } catch (err) {
+        throw errors.ERROR_500;
+    }
+}
+
 GameSchema.statics.getAll = async function() {
     try {
         let res = await this.find({});

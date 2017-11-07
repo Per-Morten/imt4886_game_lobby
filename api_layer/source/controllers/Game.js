@@ -75,4 +75,34 @@ module.exports = (api) => {
             .then(out => res.status(out.code).json(out.game))
             .catch(err => res.status(err.code).json(err));
        });
+
+    /**
+     * @api {delete} /game/ Delete the specified game
+     * @apiName DeleteGame
+     * @apiGroup Game
+     * @apiDescription
+     *  Deletes the game with the requested id.
+     *  Returns 204 on success,
+     *  404 if the game with requested id couldn't be found.
+     *
+     * @apiParam {Id} id The unique ID of the game.
+     *
+     * @apiSuccess (204) Success
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 204 OK
+     *     {}
+     *
+     * @apiError (404) GameNotFound The supplied ID was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {}
+     */
+     api.route('/game/')
+        .delete((req, res) => {
+            GameModel.deleteGame(req.body.id)
+            .then(out => res.status(out.code).send())
+            .catch(err => res.status(err.code).json(err));
+        });
 }
