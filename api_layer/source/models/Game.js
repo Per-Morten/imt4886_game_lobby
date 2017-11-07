@@ -13,6 +13,11 @@ const GameSchema = mongoose.Schema({
         required: true,
         default: false,
     },
+    description: {
+        type: String,
+        required: true,
+        default: ' ',
+    },
 });
 
 GameSchema.statics.isValid = async function(id) {
@@ -25,13 +30,19 @@ GameSchema.statics.nameAvailable = async function(name) {
     return (game.length) == 0;
 };
 
-GameSchema.statics.createGame = async function(name) {
+GameSchema.statics.createGame = async function(game) {
     try {
-        if (!await this.nameAvailable(name)) {
+        if (!await this.nameAvailable(game.name)) {
             return {code: 400};
         }
-        let game = await this.create({name: name});
-        return {code: 200, game: game};
+
+        let tmp = {
+            name: game.name,
+            description: encodeURIComponent(game.description),
+        };
+
+        let out = await this.create(Object.assign({}, tmp));
+        return {code: 200, game: out};
     } catch(err) {
         throw errors.ERROR_500;
     }

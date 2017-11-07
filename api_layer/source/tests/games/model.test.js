@@ -52,7 +52,8 @@ test.cb.beforeEach((t) => {
 test.serial('Create a new Game', async(t) => {
     t.plan(1);
 
-    const g = await GameModel.createGame(newGameName);
+    const newGame = {name: newGameName};
+    const g = await GameModel.createGame(newGame);
     if (g.code == 200 && g.game.valid == false)
         t.pass();
     else
@@ -62,7 +63,7 @@ test.serial('Create a new Game', async(t) => {
 test.serial('Reject game with non-unique name', async(t) => {
     t.plan(1);
 
-    const g = await GameModel.createGame(testGame1.name);
+    const g = await GameModel.createGame(testGame1);
     if (g.code === 400) {
         t.pass();
         return;
