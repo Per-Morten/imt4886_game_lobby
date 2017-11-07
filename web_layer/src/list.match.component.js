@@ -26,16 +26,22 @@ export class ListMatch extends React.Component {
         this.setState({matchID: event.target.value});
     }
 
+    //Get all matches for specified game
     getMatches(event) {
         let _this = this;
+        //let tempList;
 
         this.setState({
-            list: null,
+            list: "",
             errorText: null
         });
         this.props.dataService.getAllMatches(this.state.gameID).then(
             function (results) {
-                _this.setState({list: JSON.stringify(results, null, '\t')});
+                if (results[0].hasOwnProperty('gameToken')) {
+                    _this.setState({list: results});
+                } else {
+                    _this.setState({list: JSON.parse({"name":"Bad Game id"})})
+                }
             },
             function (err) {
                 _this.setState({errorText: err});
@@ -43,6 +49,7 @@ export class ListMatch extends React.Component {
         )
     }
 
+    //Get match by name
     getMatch(event) {
         let _this = this;
 
@@ -68,15 +75,25 @@ export class ListMatch extends React.Component {
                 <h1 >List matches for a specified game</h1>
                 <div>
                   <label>
-                    List all matches for GameID:
-                    <input type="text" id="gameID_input" className="gameID_in" value={this.state.gameID} onChange={this.handleGameIdInput}/>
+                    {"Get all matches"}
+                    <input type="checkbox" name="getAll" value="All"/><br/>
+                    {"List all matches for GameID:"}
+                    <input type="text" id="gameID_input" className="gameID_in" pattern="[0-9a-fA-F]{24}" title="GameID" value={this.state.gameID} onChange={this.handleGameIdInput}/>
                   </label>
                   <button type="submit" name="request_matches" onClick={this.getMatches}>
                     {"Request matches"}
                   </button>
                   <br/><br/>
                   <span>
-                    <pre>{(this.state.list) ? this.state.list : ""}</pre>
+                    {(this.state.list) ?
+                        <ul className="MatchList">
+                        {
+                            this.state.list.map((item, key) => {
+                                return(<li key={key}>{item.name}</li>)
+                            })
+                        }
+                        </ul>
+                        : ""}
                   </span>
                 </div>
               </div>

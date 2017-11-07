@@ -1,5 +1,3 @@
-import React from 'react';
-
 export class DataService {
     constructor(url) {
         this.baseURL = url;

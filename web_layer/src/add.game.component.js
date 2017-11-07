@@ -37,7 +37,7 @@ export class AddGame extends React.Component {
             <div>
             <h1 >Add Game</h1>
                 <div>
-                    <form class="register_game" action="placeholder" method="post">
+                    <form class="register_game" action="">
                         <label>
                             Game name
                             <br/>
