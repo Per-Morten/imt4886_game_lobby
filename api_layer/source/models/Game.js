@@ -61,6 +61,21 @@ GameSchema.statics.findGame = async function(id) {
     }
 };
 
+GameSchema.statics.findByName = async function(name) {
+    try {
+        const regex = new RegExp(name, 'i');
+        const res = await this.find({name: regex});
+
+        if (res.length > 0) {
+            return {code: 200, games: res};
+        } else {
+            return {code: 404};
+        }
+    } catch(err) {
+        throw errors.ERROR_500;
+    }
+}
+
 GameSchema.statics.getAll = async function() {
     try {
         let res = await this.find({});
@@ -68,7 +83,7 @@ GameSchema.statics.getAll = async function() {
     } catch(err) {
         throw errors.ERROR_500;
     }
-}
+};
 
 
 module.exports = mongoose.model('GameModel', GameSchema, 'games');

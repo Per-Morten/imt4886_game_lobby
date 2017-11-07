@@ -30,10 +30,25 @@ const testGame1 = {
     name: 'Test Game 1',
 };
 
+const testGame2 = {
+    name: 'Test Game 2',
+};
+
+const testGame3 = {
+    name: 'Test Game 3',
+};
+
+const testGame4 = {
+    name: 'Non T name',
+};
+
 test.cb.beforeEach((t) => {
     GameModel.remove({}, () => {
         let promises = [
             GameModel.create(Object.assign({}, testGame1)),
+            GameModel.create(Object.assign({}, testGame2)),
+            GameModel.create(Object.assign({}, testGame3)),
+            GameModel.create(Object.assign({}, testGame4)),
         ];
         Promise.all(promises)
             .then(games => {
@@ -108,6 +123,31 @@ test.serial('Get All Games', async(t) => {
         .expect(200)
         .then(response => {
             if (response.body.length != t.context.games.length) {
+                t.fail(`Returned ${response.body.length} games then ${t.context.games.length} should have been returned`);
+            }
+        })
+        .catch(err => t.fail(err));
+
+    t.pass();
+});
+
+test.serial('Get Games By Name', async(t) => {
+    await request(server)
+        .get('/games/' + 'Test')
+        .expect(200)
+        .then(response => {
+            if (response.body.length != t.context.games.length - 1) {
+                t.fail(`Returned ${response.body.length} games then ${t.context.games.length} should have been returned`);
+            }
+        })
+        .catch(err => t.fail(err));
+
+    // Invalid Name
+    await request(server)
+        .get('/games/' + 'Invalid Name')
+        .expect(404)
+        .then(response => {
+            if (response.body.length != 0) {
                 t.fail(`Returned ${response.body.length} games then ${t.context.games.length} should have been returned`);
             }
         })
