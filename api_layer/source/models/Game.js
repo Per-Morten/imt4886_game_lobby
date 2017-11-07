@@ -48,4 +48,18 @@ GameSchema.statics.createGame = async function(game) {
     }
 };
 
+GameSchema.statics.findGame = async function(id) {
+    try {
+        let res = await this.findById(id);
+        if (!res) {
+            return {code: 404};
+        }
+
+        return {code: 200, game: res};
+    } catch(err) {
+        throw errors.ERROR_500;
+    }
+}
+
+
 module.exports = mongoose.model('GameModel', GameSchema, 'games');

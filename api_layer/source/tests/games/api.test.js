@@ -26,6 +26,24 @@ test.cb.after((t) => {
     });
 });
 
+const testGame1 = {
+    name: 'Test Game 1',
+};
+
+test.cb.beforeEach((t) => {
+    GameModel.remove({}, () => {
+        let promises = [
+            GameModel.create(Object.assign({}, testGame1)),
+        ];
+        Promise.all(promises)
+            .then(games => {
+                if (games.length > 0) {
+                    t.context.games = games;
+                    t.end();
+                }
+            }).catch(err => console.log(err))
+    });
+});
 
 const server = require('../../classes/App');
 
@@ -42,6 +60,28 @@ test.serial('Should create a game', async(t) => {
     await request(server)
         .post('/game/')
         .send(newGame)
+        .expect(200)
+        .then(response => {
+            Object.entries(response.body).forEach(
+                ([key, value]) => {
+                    if (gameDesc.indexOf(key) === -1 || value === '') {
+                        t.fail(`Match returned invalid object name ${key} value ${value}`);
+                    } else {
+                        t.pass();
+                    }
+                }
+            )
+        })
+        .catch(err => t.fail(err));
+
+    t.pass();
+});
+
+test.serial('Should get a game by id', async(t) => {
+    t.plan(gameDesc.length + 1);
+
+    await request(server)
+        .get('/game/' + t.context.games[0]._id)
         .expect(200)
         .then(response => {
             Object.entries(response.body).forEach(
