@@ -39,7 +39,7 @@ module.exports = (api) => {
        });
 
     /**
-     * @api {get} /game/ Get game with a specific id
+     * @api {get} /game/:id Get game with a specific id
      * @apiName GetGame
      * @apiGroup Game
      * @apiDescription
