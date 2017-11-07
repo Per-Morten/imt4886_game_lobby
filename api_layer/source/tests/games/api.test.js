@@ -147,6 +147,47 @@ test.serial('Should delete a game', async(t) => {
     t.pass();
 });
 
+test.serial('Should update a game', async(t) => {
+    const games = t.context.games;
+
+    await request(server)
+        .put('/game/')
+        .send({id: games[0]._id, name: "New Name"})
+        .expect(204)
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .put('/game/')
+        .send({id: games[0]._id, description: "description"})
+        .expect(204)
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .get('/game/' + games[0]._id)
+        .expect(200)
+        .then(res => {
+            if (res.body.name != "New Name" || res.body.description != "description")
+                t.fail('Did not assign the name or description variable properly');
+        })
+        .catch(err => t.fail(err));
+
+    // Can't set the same name twice
+    await request(server)
+        .put('/game/')
+        .send({id: games[1]._id, name: "New Name"})
+        .expect(400)
+        .catch(err => t.fail(err));
+
+    const invalidId = '111111111111111111111111';
+    await request(server)
+        .put('/game/')
+        .send({id: invalidId, name: "woot"})
+        .expect(404)
+        .catch(err => t.fail(err));
+
+    t.pass();
+})
+
 ///////////////////////////////////////////////////////////
 /// Multiple Games Tests
 ///////////////////////////////////////////////////////////

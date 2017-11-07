@@ -74,7 +74,7 @@ GameSchema.statics.findByName = async function(name) {
     } catch(err) {
         throw errors.ERROR_500;
     }
-}
+};
 
 GameSchema.statics.deleteGame = async function(id) {
     try {
@@ -82,6 +82,39 @@ GameSchema.statics.deleteGame = async function(id) {
         const code = (res) ? 204 : 404;
         return {code: code};
     } catch (err) {
+        throw errors.ERROR_500;
+    }
+};
+
+GameSchema.statics.updateGame = async function(game) {
+    try {
+        let currGame = await this.findGame(game.id);
+        if (!currGame || !currGame.game) {
+            return {code: 404};
+        }
+
+        if (game.name) {
+            if (!await this.nameAvailable(game.name)) {
+                return {code: 400};
+            }
+
+            currGame.game.name = game.name;
+        }
+
+        if (game.valid) {
+            currGame.game.valid = game.valid;
+        }
+
+        if (game.description) {
+            currGame.game.description = encodeURIComponent(game.description);
+        }
+
+        await currGame.game.save();
+
+        return {code: 204};
+
+    } catch (err) {
+        console.log(err);
         throw errors.ERROR_500;
     }
 }

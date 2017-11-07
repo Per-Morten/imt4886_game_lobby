@@ -105,4 +105,38 @@ module.exports = (api) => {
             .then(out => res.status(out.code).send())
             .catch(err => res.status(err.code).json(err));
         });
+
+    /**
+     * @api {put} /game/ Update the specified game
+     * @apiName UpdateGame
+     * @apiGroup Game
+     * @apiDescription
+     *   Updates the game that is specified with the new value.
+     *   Returns 204 on success.
+     *   404 if the game with requested ID couldn't be found.
+     *   400 if validation fails, for example if name is not available.
+     *
+     * @apiParam {Id} id the unique ID of the game.
+     * @apiParam {String} [name] The new name of the game
+     * @apiParam {Boolean} [valid] Set the valid value of the game
+     * @apiParam {String} [description] A description of the game.
+     *
+     * @apiSuccess (204) Success
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 204 OK
+     *     {}
+     *
+     * @apiError (404) GameNotFound The supplied ID was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {}
+     */
+    api.route('/game/')
+        .put((req, res) => {
+            GameModel.updateGame(req.body)
+            .then(out => res.status(out.code).send())
+            .catch(err => res.status(err.code).json(err));
+        });
 }
