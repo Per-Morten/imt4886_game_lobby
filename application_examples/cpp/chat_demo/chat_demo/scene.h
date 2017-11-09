@@ -4,8 +4,7 @@
 #include <utility>
 #include <vector>
 
-#include <SDL2/SDL_net.h>
-#include <SDL2/SDL_ttf.h>
+#include "sdl_headers.h"
 
 class Scene;
 using SceneResult = std::pair<bool, std::unique_ptr<Scene>>;

@@ -23,6 +23,8 @@ ChatServer::ChatServer(SDL_Window* window,
     if (!m_socket)
         throw std::runtime_error(SDLNet_GetError());
 
+    // We need the socket set to use the CheckSockets SocketReady functions,
+    // I.e. non blocking socket checking.
     // +1 here because the serverSocket is part of the set
     m_socketSet = SDLNet_AllocSocketSet(m_maxClients + 1);
     if (!m_socketSet)
@@ -47,14 +49,13 @@ ChatServer::ChatServer(SDL_Window* window,
                                  m_match["_id"].get<std::string>(),
                                  kjapp::Status::IN_SESSION);
 
-        char buffer[128];
-        std::sprintf(buffer, "Running server on: %s", myIp.c_str());
+        const std::string msg = "Running on server: " + myIp;
 
-        broadcastMessage(buffer);
+        broadcastMessage(msg.c_str());
     }
     catch (const std::exception& e)
     {
-        std::printf("what: %s\n", e.what());
+        std::fprintf(stderr, "what: %s\n", e.what());
         SDLNet_FreeSocketSet(m_socketSet);
         SDLNet_TCP_Close(m_socket);
         throw e;
