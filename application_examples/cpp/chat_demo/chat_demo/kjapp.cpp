@@ -152,7 +152,7 @@ kjapp::hostMatch(const std::string& gameToken,
     // TODO: Check if \. is needed on linux, think I remember having problems with that.
     // It warns on windows, which isn't optimal.
     auto validFields = std::sscanf(hostIP.c_str(),
-                                   "%" SCNu8 "\.%" SCNu8 "\.%" SCNu8 "\.%" SCNu8 "",
+                                   "%" SCNu8 ".%" SCNu8 ".%" SCNu8 ".%" SCNu8 "",
                                    &octets[0],
                                    &octets[1],
                                    &octets[2],

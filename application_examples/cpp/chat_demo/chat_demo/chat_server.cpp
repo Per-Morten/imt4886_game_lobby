@@ -175,9 +175,16 @@ ChatServer::removeDisconnectedClients()
                                    { return item.toBeDeleted; }),
                     std::end(m_clients));
 
-    kjapp::updatePlayerCount(GAME_TOKEN,
-                             m_match["_id"].get<std::string>(),
-                             m_clients.size());
+    try
+    {
+        kjapp::updatePlayerCount(GAME_TOKEN,
+                                 m_match["_id"].get<std::string>(),
+                                 m_clients.size());
+    }
+    catch(const std::exception& e)
+    {
+        std::fprintf(stderr, "Could not update updatePlayerCount: %s\n", e.what());
+    }
 }
 
 void
