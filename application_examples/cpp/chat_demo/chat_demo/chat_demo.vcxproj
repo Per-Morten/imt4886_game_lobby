@@ -75,11 +75,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalUsingDirectories>%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(SDL_NET_HOME)\include;$(SDL_HOME)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SDL_NET_HOME)\include;$(SDL_HOME)\include;$(SDL_TTF_HOME)\include;$(CURL_HOME)\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SDL_NET_HOME)\lib\x86;$(SDL_HOME)\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2_net.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SDL_NET_HOME)\lib\x86;$(SDL_HOME)\lib\x86;$(SDL_TTF_HOME)\lib\x86;$(CURL_HOME)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2_net.lib;SDL2.lib;SDL2_ttf.lib;libcurl.dll.a;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -97,13 +97,13 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalUsingDirectories>%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(SDL_NET_HOME)\include;$(SDL_HOME)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SDL_NET_HOME)\include;$(SDL_HOME)\include;$(SDL_TTF_HOME)\include;$(CURL_HOME)\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SDL_NET_HOME)\lib\x86;$(SDL_HOME)\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2_net.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SDL_NET_HOME)\lib\x86;$(SDL_HOME)\lib\x86;$(SDL_TTF_HOME)\lib\x86;$(CURL_HOME)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2_net.lib;SDL2.lib;SDL2_ttf.lib;libcurl.dll.a;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -121,14 +121,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="chat_client.cpp" />
+    <ClCompile Include="chat_menu.cpp" />
+    <ClCompile Include="chat_room_lister.cpp" />
     <ClCompile Include="chat_server.cpp" />
+    <ClCompile Include="chat_server_configurator.cpp" />
     <ClCompile Include="kjapp.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="chat_client.h" />
+    <ClInclude Include="chat_menu.h" />
+    <ClInclude Include="chat_room_lister.h" />
     <ClInclude Include="chat_server.h" />
+    <ClInclude Include="chat_server_configurator.h" />
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="kjapp.h" />
+    <ClInclude Include="scene.h" />
+    <ClInclude Include="sdl_headers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

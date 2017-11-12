@@ -8,6 +8,12 @@
 
 #include <curl/curl.h>
 
+// Turn off unsafe warning for sscanf
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#endif
+
 const std::string KJAPP_URL = "up.imt.hig.no:8333";
 
 struct CurlDeleter
@@ -71,6 +77,12 @@ executeCurlRequest(const std::string& requestType,
 
     curl_easy_setopt(handle.get(), CURLOPT_CUSTOMREQUEST, requestType.c_str());
     curl_easy_setopt(handle.get(), CURLOPT_URL, url.c_str());
+
+    // Not necessarily cool!
+    // But needed it to work on windows
+    // Should be fixed if project continues:
+    // https://curl.haxx.se/libcurl/c/CURLOPT_SSL_VERIFYPEER.html
+    curl_easy_setopt(handle.get(), CURLOPT_SSL_VERIFYPEER, 0);
 
     if (data.size() != 0)
     {
@@ -137,8 +149,10 @@ kjapp::hostMatch(const std::string& gameToken,
                  const std::string& miscInfo)
 {
     std::uint8_t octets[4];
+    // TODO: Check if \. is needed on linux, think I remember having problems with that.
+    // It warns on windows, which isn't optimal.
     auto validFields = std::sscanf(hostIP.c_str(),
-                                   "%" SCNu8 "\.%" SCNu8 "\.%" SCNu8 "\.%" SCNu8 "",
+                                   "%" SCNu8 ".%" SCNu8 ".%" SCNu8 ".%" SCNu8 "",
                                    &octets[0],
                                    &octets[1],
                                    &octets[2],
@@ -294,3 +308,7 @@ kjapp::postMatchReport(const std::string& gameToken,
 
     return nlohmann::json::parse(out);
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

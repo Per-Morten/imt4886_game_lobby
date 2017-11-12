@@ -121,7 +121,7 @@ ChatRoomLister::run()
                     }
                     catch (const std::exception& e)
                     {
-                        std::printf("Error: %s\n", e.what());
+                        std::fprintf(stderr, "Error: %s\n", e.what());
                     }
                 }
 
@@ -158,7 +158,7 @@ ChatRoomLister::run()
             }
             catch (const std::exception& e)
             {
-                std::printf("Error: %s\n", e.what());
+                std::fprintf(stderr, "Error: %s\n", e.what());
             }
         }
 
