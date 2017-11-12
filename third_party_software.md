@@ -15,3 +15,8 @@
 | SDL2_ttf              | zlib      |
 | SDL2                  | zlib      |
 | pthread               | GFDL 1.2+ |
+
+## Unity demo
+| Name                  | license   |
+| ----------------------|---------  |
+| Open.Nat              | MIT       |
