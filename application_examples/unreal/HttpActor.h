@@ -96,12 +96,32 @@ public:
 	void HttpGetAllMatchesNotInSession();
 
 	UFUNCTION()
+	void HttpGetMatchById(FString MatchName);
+
+	UFUNCTION()
 	void HttpCreateMatch(FNewMatchData MatchData);
+
+	UFUNCTION()
+	void HttpDeleteMatch(FString MatchId);
+
+	UFUNCTION()
+	void HttpUpdatePlayerCount(FString MatchId, int NewPlayerCount);
+
+	UFUNCTION()
+	void HttpUpdateMatchStatus(FString MatchId, int MatchStatus);
+
+	UFUNCTION()
+	void HttpSendMatchReport(FString MatchId, FString MatchReport);
 
 protected:
 	// Assign these functions to call when the http requests processes sucessfully
 	void OnHttpGetResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void OnHttpGetMatchResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void OnHttpCreateMatchResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void OnHttpDeleteMatchResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void OnHttpUpdatePlayerCountResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void OnHttpUpdateMatchStatusResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void OnHttpSendMatchReportResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
