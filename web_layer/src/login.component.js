@@ -18,12 +18,10 @@ export class LoginComponent extends React.Component {
 
     handleEmailInput(event) {
         this.setState({email: event.target.value});
-        console.log(event.target.value);
     }
 
     handlePasswordInput(event) {
         this.setState({password: event.target.value});
-        console.log(event.target.value);
     }
 
     handleLogin(event) {
@@ -34,9 +32,8 @@ export class LoginComponent extends React.Component {
     render() {
         return(
             <div>
-            <h1>There will be login</h1>
+            <h1>Login</h1>
             <form className="login-form" action="">
-              <h2>Sign In</h2>
               <div>
                 {"Email:"}
                 <input type="email" name="Email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" value={this.state.user.email} onChange={this.handleEmailInput}/>

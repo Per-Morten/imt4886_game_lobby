@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import {ListMatch} from './list.match.component'
 import {ListGame} from './list.game.component'
 import {DataService} from './data.service'
 import {AddGame} from './add.game.component'
+import {EditGame} from './edit.game.component'
 import {VerifyGame} from './verify.game.component'
 import {LoginComponent} from './login.component'
 import {SignupComponent} from './signup.component'
@@ -42,6 +42,10 @@ class KjappContainer extends Component {
                 }}>{"Add Game"}</button>
 
                 <button type="button" className="Nav-Button" onClick={() => {
+                    this.handleNavButton("EditGame")
+                }}>{"Edit Game"}</button>
+
+                <button type="button" className="Nav-Button" onClick={() => {
                     this.handleNavButton("VerifyGame")
                 }}>{"Verify Game"}</button>
 
@@ -61,6 +65,9 @@ class KjappContainer extends Component {
               }
               {this.state.CurrentPage === "AddGame" &&
               <AddGame dataService={this.dataService}/>
+              }
+              {this.state.CurrentPage === "EditGame" &&
+              <EditGame dataService={this.dataService}/>
               }
               {this.state.CurrentPage === "VerifyGame" &&
               <VerifyGame dataService={this.dataService}/>

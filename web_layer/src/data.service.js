@@ -138,7 +138,7 @@ export class DataService {
             let params = "name="+ GameName + "&description=" + description;
             console.log(params);
 
-            xhr.open('POST', _this.baseURL + '/game/', true);//TODO
+            xhr.open('POST', _this.baseURL + '/game/', true);
             xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhr.send(params);
             xhr.addEventListener("readystatechange", processRequest, false);
@@ -169,12 +169,85 @@ export class DataService {
         let _this = this;
         return new Promise(function(resolve, reject) {
             var xhr = new XMLHttpRequest();
-            let status = true;
-            let params = "id=" + GameId + "&valid=" + status;
+            let params = {"id": GameId, "valid": true};
 
 
             xhr.open('PUT', _this.baseURL + '/game/', true);//TODO
-            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
+            xhr.send(params);
+            xhr.addEventListener("readystatechange", processRequest, false);
+            xhr.onreadystatechange = processRequest;
+            xhr.onerror = processError;
+            xhr.onabort = processError;
+
+
+            function processRequest(e) {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        resolve(response);
+                    } else {
+                        var error = xhr.statusText;
+                        reject("http/app Error: " + error);
+                    }
+                }
+            }
+
+            function processError(err) {
+                reject("Network Error: " + err.target.status);
+            }
+        })
+    }
+
+    deleteGame(GameId: string) {
+        let _this = this;
+        return new Promise(function(resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            let params = {"id": GameId};
+
+
+            xhr.open('DELETE', _this.baseURL + '/game/', true);//TODO
+            xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
+            xhr.send(params);
+            xhr.addEventListener("readystatechange", processRequest, false);
+            xhr.onreadystatechange = processRequest;
+            xhr.onerror = processError;
+            xhr.onabort = processError;
+
+
+            function processRequest(e) {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        resolve(response);
+                    } else {
+                        var error = xhr.statusText;
+                        reject("http/app Error: " + error);
+                    }
+                }
+            }
+
+            function processError(err) {
+                reject("Network Error: " + err.target.status);
+            }
+        })
+    }
+
+    updateGame(GameId: string, Update: object) {
+        let _this = this;
+        return new Promise(function(resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            let params = {"id": GameId};
+            if (Update.name) {
+                params +=  {"name": Update.name};
+            }
+            if (Update.description) {
+                params += {"description": Update.description};
+            }
+
+
+            xhr.open('PUT', _this.baseURL + '/game/', true);//TODO
+            xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
             xhr.send(params);
             xhr.addEventListener("readystatechange", processRequest, false);
             xhr.onreadystatechange = processRequest;
