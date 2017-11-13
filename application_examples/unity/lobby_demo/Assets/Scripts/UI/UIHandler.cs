@@ -75,7 +75,7 @@ public class UIHandler : MonoBehaviour
     public void DisplayStatistic(string statisticsData, MatchReportAggregations aggregationType, string aggregatedFieldName)
     {
         var isAverage = aggregationType == MatchReportAggregations.average;
-        var displayString = (isAverage ? "Average" : "Median") + " Match " + aggregatedFieldName + ": " + statisticsData + (isAverage ? "s" : "");
+        var displayString = (isAverage ? "Average" : "Median") + " Match " + aggregatedFieldName + ": " + statisticsData + ((aggregatedFieldName == "duration") ? "s" : "");
 
         var newTextObject = Instantiate(dynamicTextPrefab, statisticsListObject.transform);
         newTextObject.GetComponent<Text>().text = displayString;
