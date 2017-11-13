@@ -5,6 +5,7 @@ import {ListMatch} from './list.match.component'
 import {ListGame} from './list.game.component'
 import {DataService} from './data.service'
 import {AddGame} from './add.game.component'
+import {VerifyGame} from './verify.game.component'
 import {LoginComponent} from './login.component'
 import {SignupComponent} from './signup.component'
 
@@ -39,9 +40,15 @@ class KjappContainer extends Component {
                 <button type="button" className="Nav-Button" onClick={() => {
                     this.handleNavButton("AddGame")
                 }}>{"Add Game"}</button>
+
+                <button type="button" className="Nav-Button" onClick={() => {
+                    this.handleNavButton("VerifyGame")
+                }}>{"Verify Game"}</button>
+
                 <button type="button" className="Nav-Button" onClick={() => {
                     this.handleNavButton("SignIn")
                 }}>{"Login"}</button>
+
                 <button type="button" className="Nav-Button" onClick={() => {
                     this.handleNavButton("Signup")
                 }}>{"Register"}</button>
@@ -55,6 +62,9 @@ class KjappContainer extends Component {
               {this.state.CurrentPage === "AddGame" &&
               <AddGame dataService={this.dataService}/>
               }
+              {this.state.CurrentPage === "VerifyGame" &&
+              <VerifyGame dataService={this.dataService}/>
+              }
               {this.state.CurrentPage === "SignIn" &&
               <LoginComponent dataService={this.dataService}/>
               }
@@ -62,13 +72,14 @@ class KjappContainer extends Component {
               <SignupComponent dataService={this.dataService}/>
               }
             </div>
-            <div className="Footer">
-              <footer>{"Developed by kjapp"}</footer>
-            </div>
           </div>
         );
     }
 }
+
+//<div className="Footer">
+//<footer>{"Developed by kjapp"}</footer>
+//</div>
 
 class App extends Component {
   render() {

@@ -5,31 +5,35 @@ export class ListGame extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            gameID : null,
+            GameName : null,
             list: null,
             text : null,
             errorText : null,
             listAll : true
         }
-        this.handleGameIdInput = this.handleGameIdInput.bind(this);
+        this.handleGameNameInput = this.handleGameNameInput.bind(this);
         this.getGames = this.getGames.bind(this);
         this.getGame = this.getGame.bind(this);
     }
 
-    handleGameIdInput(event) {
-        this.setState({gameID: event.target.value});
+    handleGameNameInput(event) {
+        this.setState({GameName: event.target.value});
     }
 
     getGames(event) {
         let _this = this;
 
         this.setState({
-            list: "placeholder",//TODO
+            list: "",
             errorText: null
         });
         this.props.dataService.getAllGames().then(
             function (results) {
-                _this.setState({list: JSON.stringify(results, null, '\t')});
+                if (results[0].hasOwnProperty('name')) {
+                    _this.setState({list: results, text: null});
+                } else {
+                    _this.setState({list: JSON.parse({"name":"Bad request"})})
+                }
             },
             function (err) {
                 _this.setState({errorText: err});
@@ -41,13 +45,17 @@ export class ListGame extends React.Component {
         let _this = this;
 
         this.setState({
-            text: "Placeholder",//TODO
+            text: "",
             errorText: null
         });
 
-        this.props.dataService.getSingleGame(this.state.gameID).then(
+        this.props.dataService.getSingleGame(this.state.GameName).then(
             function (results) {
-                _this.setState({text: JSON.stringify(results, null, '\t')});
+                if (results[0].hasOwnProperty('name')) {
+                    _this.setState({text: results, list: null});
+                } else {
+                    _this.setState({text: JSON.parse({"name":"Bad request"})})
+                }
             },
             function (err) {
                 _this.setState({errorText: err});
@@ -69,22 +77,38 @@ export class ListGame extends React.Component {
                   </button>
                   <br/><br/>
                   <span>
-                    <pre>{(this.state.list) ? this.state.list : ""}</pre>
+                  {(this.state.list) ?
+                      <ul className="GameList">
+                      {
+                          this.state.list.map((item, key) => {
+                              return(<li key={key}><b>{"ID: "}</b>{item._id} <b>{"Name: "}</b>{item.name} <b>{"Description: "}</b> {decodeURI(item.description)}</li>)
+                          })
+                      }
+                      </ul>
+                      : ""}
                   </span>
                 </div>
               </div>
               <div>
-                <h1>Find game by ID(may be by name later)</h1>
+                <h1>Find game by Name</h1>
                 <label>
-                  Find game by ID:
-                  <input type="text" name="gameID_input" className="gameID_in" value={this.state.gameID} onChange={this.handleGameIdInput}/>
+                  Game name:
+                  <input type="text" name="GameName_input" className="GameName_in" value={this.state.GameName} onChange={this.handleGameNameInput}/>
                 </label>
                 <button type="submit" name="request_game" onClick={this.getGame}>
                   {"Find game"}
                 </button>
                 <br/><br/>
                 <span>
-                  <pre>{this.state.text ? this.state.text : ""}</pre>
+                {(this.state.text) ?
+                    <ul className="GameList">
+                    {
+                        this.state.text.map((item, key) => {
+                            return(<li key={key}><b>{"ID: "}</b>{item._id} <b>{"Name: "}</b>{item.name} <b>{"Description: "}</b> {decodeURI(item.description)}</li>)
+                        })
+                    }
+                    </ul>
+                    : ""}
                 </span>
               </div>
             </div>

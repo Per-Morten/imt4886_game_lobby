@@ -75,8 +75,6 @@ export class ListMatch extends React.Component {
                 <h1 >List matches for a specified game</h1>
                 <div>
                   <label>
-                    {"Get all matches"}
-                    <input type="checkbox" name="getAll" value="All"/><br/>
                     {"List all matches for GameID:"}
                     <input type="text" id="gameID_input" className="gameID_in" pattern="[0-9a-fA-F]{24}" title="GameID" value={this.state.gameID} onChange={this.handleGameIdInput}/>
                   </label>
@@ -89,27 +87,13 @@ export class ListMatch extends React.Component {
                         <ul className="MatchList">
                         {
                             this.state.list.map((item, key) => {
-                                return(<li key={key}>{item.name}</li>)
+                                return(<li key={key}><b>{"Name: "}</b>{item.name} <b>{"Player count: "}</b> {item.playerCount}</li>)
                             })
                         }
                         </ul>
                         : ""}
                   </span>
                 </div>
-              </div>
-              <div>
-                <h1>Find match by ID(may be by name later)</h1>
-                <label>
-                  Find match by ID:
-                  <input type="text" name="matchID_input" className="matchID_in" value={this.state.matchID} onChange={this.handleMatchIdInput}/>
-                </label>
-                <button type="submit" name="request_match" onClick={this.getMatch}>
-                  {"Find match"}
-                </button>
-                <br/><br/>
-                <span>
-                  <pre>{this.state.text ? this.state.text : ""}</pre>
-                </span>
               </div>
             </div>
         );

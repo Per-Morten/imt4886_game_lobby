@@ -74,7 +74,7 @@ export class DataService {
         return new Promise(function(resolve, reject) {
             var xhr = new XMLHttpRequest();
 
-            xhr.open('GET', _this.baseURL + '/games/all/placeholder', true);//TODO: MAKE
+            xhr.open('GET', _this.baseURL + '/games/', true);
             xhr.send();
             xhr.addEventListener("readystatechange", processRequest, false);
             xhr.onreadystatechange = processRequest;
@@ -100,12 +100,12 @@ export class DataService {
         })
     }
 
-    getSingleGame (GameID: string) {
+    getSingleGame (GameName: string) {
         let _this = this;
         return new Promise(function(resolve, reject) {
             var xhr = new XMLHttpRequest();
 
-            xhr.open('GET', _this.baseURL + '/game/placeholder' + GameID, true);//TODO: MAKE
+            xhr.open('GET', _this.baseURL + '/games/' + GameName, true);
             xhr.send();
             xhr.addEventListener("readystatechange", processRequest, false);
             xhr.onreadystatechange = processRequest;
@@ -131,15 +131,50 @@ export class DataService {
         })
     }
 
-    addGame (GameName: string) {
+    addGame (GameName: string, description: string) {
         let _this = this;
         return new Promise(function(resolve, reject) {
             var xhr = new XMLHttpRequest();
-            let params = {
-                "name": GameName
+            let params = "name="+ GameName + "&description=" + description;
+            console.log(params);
+
+            xhr.open('POST', _this.baseURL + '/game/', true);//TODO
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhr.send(params);
+            xhr.addEventListener("readystatechange", processRequest, false);
+            xhr.onreadystatechange = processRequest;
+            xhr.onerror = processError;
+            xhr.onabort = processError;
+
+
+            function processRequest(e) {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        resolve(response);
+                    } else {
+                        var error = xhr.statusText;
+                        reject("http/app Error: " + error);
+                    }
+                }
             }
 
-            xhr.open('POST', _this.baseURL + '/placeholder/', true);//TODO
+            function processError(err) {
+                reject("Network Error: " + err.target.status);
+            }
+        })
+    }
+
+    approveGame(GameId: string) {
+        let _this = this;
+        return new Promise(function(resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            let status = true;
+            let params = "id=" + GameId + "&valid=" + status;
+
+
+            xhr.open('PUT', _this.baseURL + '/game/', true);//TODO
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhr.send(params);
             xhr.addEventListener("readystatechange", processRequest, false);
             xhr.onreadystatechange = processRequest;
