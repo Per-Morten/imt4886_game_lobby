@@ -5,7 +5,7 @@ export class SignupComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            error : null,
+            errors : {},
             user : {
                 email : null,
                 name : null,
