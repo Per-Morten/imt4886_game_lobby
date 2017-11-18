@@ -81,7 +81,7 @@ export class ListGame extends React.Component {
                       <ul className="GameList">
                       {
                           this.state.list.map((item, key) => {
-                              return(<li key={key}><b>{"ID: "}</b>{item._id} <b>{"Name: "}</b>{item.name} <b>{"Description: "}</b> {decodeURI(item.description)}</li>)
+                              return(<li key={key}>{/*<b>{"ID: "}</b>{item._id}*/} <b>{"Name: "}</b>{item.name} <b>{"Description: "}</b> {decodeURI(item.description)}</li>)
                           })
                       }
                       </ul>
