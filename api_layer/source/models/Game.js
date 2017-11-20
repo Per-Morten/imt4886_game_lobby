@@ -114,7 +114,6 @@ GameSchema.statics.updateGame = async function(game) {
         return {code: 204};
 
     } catch (err) {
-        console.log(err);
         throw errors.ERROR_500;
     }
 }

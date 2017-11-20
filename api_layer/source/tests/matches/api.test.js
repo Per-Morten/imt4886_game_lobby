@@ -301,6 +301,27 @@ test.serial('Update playercount', async(t) => {
         .expect(404)
         .then(response => t.pass())
         .catch(err => t.fail(err));
+
+    await request(server)
+        .put('/match/player_count/')
+        .send({id: t.context.matches[5]._id, playerCount: t.context.matches[5].maxPlayerCount + 1})
+        .expect(400)
+        .then(response => t.pass())
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .put('/match/player_count/')
+        .send({id: t.context.matches[5]._id, playerCount: t.context.matches[5].maxPlayerCount})
+        .expect(204)
+        .then(response => t.pass())
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .put('/match/player_count/')
+        .send({id: t.context.matches[5]._id, playerCount: 0})
+        .expect(204)
+        .then(response => t.pass())
+        .catch(err => t.fail(err));
 })
 
 test.serial('Cannot create match without valid token', async(t) => {
@@ -395,24 +416,43 @@ test.serial('Cannot create invalid match', async(t) => {
         .expect(200)
         .catch(err => t.fail(err));
 
-    // Ignore playerCount
-    const ignorePlayerCountMatch = {
+    // playerCount higher than maxPlayerCount
+    const playerCountHigherThanMax = {
         gameToken: t.context.games[0]._id,
-        name: 'ignorePlayerCountMatch',
+        name: 'playerCountHigherThanMax',
         status: 0,
         hostIP: '128.0.0.1',
         hostPort: 3000,
         playerCount: 300,
+        maxPlayerCount: 200,
     };
 
     await request(server)
         .post('/match/')
-        .send(ignorePlayerCountMatch)
-        .expect(200)
+        .send(playerCountHigherThanMax)
+        .expect(400)
         .then(res => {
-            if (res.body && res.body.playerCount !== 1) {
-                t.fail(`playerCount ${res.body.playerCount} was not 1`);
-            }
+            t.pass();
+        })
+        .catch(err => t.fail(err));
+
+    // Negative playerCount
+    const negativePlayerCount = {
+        gameToken: t.context.games[0]._id,
+        name: 'negativePlayerCount',
+        status: 0,
+        hostIP: '128.0.0.1',
+        hostPort: 3000,
+        playerCount: -300,
+        maxPlayerCount: 200,
+    };
+
+    await request(server)
+        .post('/match/')
+        .send(negativePlayerCount)
+        .expect(400)
+        .then(res => {
+            t.pass();
         })
         .catch(err => t.fail(err));
 
