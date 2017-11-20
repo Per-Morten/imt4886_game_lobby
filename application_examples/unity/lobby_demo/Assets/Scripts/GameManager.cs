@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class GameManager : NetworkBehaviour {
     public static GameManager instance = null;
 
-    [SyncVar]
+    [SyncVar(hook = "OnScoreChange")]
     public int score = 0;
 
     public GameObject pickupSpawnPositionObjects;
     public GameObject pickupPrefab;
+    public Text scoreText;
 
     private Transform[] pickupSpawnPositions;
 
@@ -24,8 +26,6 @@ public class GameManager : NetworkBehaviour {
         {
             Destroy(gameObject);
         }
-
-        DontDestroyOnLoad(gameObject);
     }
 
     public override void OnStartServer()
@@ -33,10 +33,21 @@ public class GameManager : NetworkBehaviour {
         pickupSpawnPositions = pickupSpawnPositionObjects.GetComponentsInChildren<Transform>();
     }
 
+    public override void OnStartClient()
+    {
+        OnScoreChange(score);
+    }
+
     [ServerCallback]
     public void SpawnNewPickup()
     {
         var pickup = Instantiate(pickupPrefab, pickupSpawnPositions[Random.Range(0, pickupSpawnPositions.Length)].position, Quaternion.identity);
         NetworkServer.Spawn(pickup);
+    }
+
+    private void OnScoreChange(int newScore)
+    {
+        score = newScore;
+        scoreText.text = "Score: " + score.ToString();
     }
 }

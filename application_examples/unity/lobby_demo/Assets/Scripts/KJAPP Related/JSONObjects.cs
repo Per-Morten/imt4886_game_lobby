@@ -5,6 +5,9 @@ namespace KJAPP
     {
         namespace Match
         {
+            /// <summary>
+            /// BaseResponse is the default response acquired from GET requests and the return of POST requests. 
+            /// </summary>
             [System.Serializable]
             public class BaseResponse
             {
@@ -51,11 +54,11 @@ namespace KJAPP
             }
 
             [System.Serializable]
-            public class DeleteRequest
+            public class DELETERequest
             {
                 public string id = "";
 
-                public DeleteRequest(string id)
+                public DELETERequest(string id)
                 {
                     this.id = id;
                 }

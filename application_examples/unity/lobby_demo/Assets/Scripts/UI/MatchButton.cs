@@ -28,6 +28,6 @@ public class MatchButton : MonoBehaviour {
     {
         NetworkManager.singleton.GetComponent<KJAPPNetworkManager>().StartClientConnection(match.hostIP, match.hostPort);
         uiHandler.ChangeMenu(uiHandler.waitForConnectionMenu);
-        uiHandler.CleanUpMatchList();
+        uiHandler.CleanUpChildren(uiHandler.matchListObject);
     }
 }

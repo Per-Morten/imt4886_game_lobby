@@ -1,0 +1,85 @@
+\hypertarget{classnlohmann_1_1detail_1_1output__vector__adapter}{}\section{nlohmann\+:\+:detail\+:\+:output\+\_\+vector\+\_\+adapter$<$ Char\+Type $>$ Class Template Reference}
+\label{classnlohmann_1_1detail_1_1output__vector__adapter}\index{nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter$<$ Char\+Type $>$@{nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter$<$ Char\+Type $>$}}
+
+
+output adapter for byte vectors  
+
+
+
+
+{\ttfamily \#include $<$json.\+hpp$>$}
+
+
+
+Inheritance diagram for nlohmann\+:\+:detail\+:\+:output\+\_\+vector\+\_\+adapter$<$ Char\+Type $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=235pt]{classnlohmann_1_1detail_1_1output__vector__adapter__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for nlohmann\+:\+:detail\+:\+:output\+\_\+vector\+\_\+adapter$<$ Char\+Type $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=235pt]{classnlohmann_1_1detail_1_1output__vector__adapter__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classnlohmann_1_1detail_1_1output__vector__adapter_abc6695e8c0274afad31bd581c8acf24f}{output\+\_\+vector\+\_\+adapter} (std\+::vector$<$ Char\+Type $>$ \&vec)
+\item 
+void \hyperlink{classnlohmann_1_1detail_1_1output__vector__adapter_af6a22d4210bb7bc2da66021300ddd6db}{write\+\_\+character} (Char\+Type c) override
+\item 
+void \hyperlink{classnlohmann_1_1detail_1_1output__vector__adapter_ad6f6c461dec7bedd5359454dc22fc9aa}{write\+\_\+characters} (const Char\+Type $\ast$s, std\+::size\+\_\+t length) override
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename Char\+Type$>$\\*
+class nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter$<$ Char\+Type $>$}
+
+output adapter for byte vectors 
+
+\subsection{Constructor \& Destructor Documentation}
+\index{nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter@{nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter}!output\+\_\+vector\+\_\+adapter@{output\+\_\+vector\+\_\+adapter}}
+\index{output\+\_\+vector\+\_\+adapter@{output\+\_\+vector\+\_\+adapter}!nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter@{nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter}}
+\subsubsection[{\texorpdfstring{output\+\_\+vector\+\_\+adapter(std\+::vector$<$ Char\+Type $>$ \&vec)}{output_vector_adapter(std::vector< CharType > &vec)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename Char\+Type $>$ {\bf nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter}$<$ Char\+Type $>$\+::{\bf output\+\_\+vector\+\_\+adapter} (
+\begin{DoxyParamCaption}
+\item[{std\+::vector$<$ Char\+Type $>$ \&}]{vec}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}\hypertarget{classnlohmann_1_1detail_1_1output__vector__adapter_abc6695e8c0274afad31bd581c8acf24f}{}\label{classnlohmann_1_1detail_1_1output__vector__adapter_abc6695e8c0274afad31bd581c8acf24f}
+
+
+\subsection{Member Function Documentation}
+\index{nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter@{nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter}!write\+\_\+character@{write\+\_\+character}}
+\index{write\+\_\+character@{write\+\_\+character}!nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter@{nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter}}
+\subsubsection[{\texorpdfstring{write\+\_\+character(\+Char\+Type c) override}{write_character(CharType c) override}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename Char\+Type $>$ void {\bf nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter}$<$ Char\+Type $>$\+::write\+\_\+character (
+\begin{DoxyParamCaption}
+\item[{Char\+Type}]{c}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{classnlohmann_1_1detail_1_1output__vector__adapter_af6a22d4210bb7bc2da66021300ddd6db}{}\label{classnlohmann_1_1detail_1_1output__vector__adapter_af6a22d4210bb7bc2da66021300ddd6db}
+
+
+Implements \hyperlink{structnlohmann_1_1detail_1_1output__adapter__protocol_a3381896fe1be557f591de2e917cdc7d5}{nlohmann\+::detail\+::output\+\_\+adapter\+\_\+protocol$<$ Char\+Type $>$}.
+
+\index{nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter@{nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter}!write\+\_\+characters@{write\+\_\+characters}}
+\index{write\+\_\+characters@{write\+\_\+characters}!nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter@{nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter}}
+\subsubsection[{\texorpdfstring{write\+\_\+characters(const Char\+Type $\ast$s, std\+::size\+\_\+t length) override}{write_characters(const CharType *s, std::size_t length) override}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename Char\+Type $>$ void {\bf nlohmann\+::detail\+::output\+\_\+vector\+\_\+adapter}$<$ Char\+Type $>$\+::write\+\_\+characters (
+\begin{DoxyParamCaption}
+\item[{const Char\+Type $\ast$}]{s, }
+\item[{std\+::size\+\_\+t}]{length}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{classnlohmann_1_1detail_1_1output__vector__adapter_ad6f6c461dec7bedd5359454dc22fc9aa}{}\label{classnlohmann_1_1detail_1_1output__vector__adapter_ad6f6c461dec7bedd5359454dc22fc9aa}
+
+
+Implements \hyperlink{structnlohmann_1_1detail_1_1output__adapter__protocol_a2f410a164e0eda17cf6561114b0eee4a}{nlohmann\+::detail\+::output\+\_\+adapter\+\_\+protocol$<$ Char\+Type $>$}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{json_8hpp}{json.\+hpp}\end{DoxyCompactItemize}

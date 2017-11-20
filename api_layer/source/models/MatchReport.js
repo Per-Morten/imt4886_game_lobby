@@ -4,11 +4,11 @@ const GameModel = require('./Game');
 
 const MatchReportSchema = mongoose.Schema({
     matchID: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
     gameToken: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
     data: {

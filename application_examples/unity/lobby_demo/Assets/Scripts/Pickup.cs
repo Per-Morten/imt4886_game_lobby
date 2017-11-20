@@ -15,7 +15,7 @@ public class Pickup : NetworkBehaviour {
 
     void Start()
     {
-        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        gameManager = GameManager.instance;
     }
 
 	void Update () {
@@ -34,7 +34,7 @@ public class Pickup : NetworkBehaviour {
             triggered = true;
             if (gameManager == null)
             {
-                gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+                gameManager = GameManager.instance;
             }
 
 

@@ -27,7 +27,7 @@ const MatchSchema = mongoose.Schema({
     playerCount: {
         type: Number,
         required: true,
-        default: 1,
+        default: 0,
     },
     maxPlayerCount: {
         type: Number,
@@ -35,7 +35,10 @@ const MatchSchema = mongoose.Schema({
 
         // Adding this default to deal with getting non-full matches that
         // does not have a maxPlayerCount.
-        default: Number.MAX_SAFE_INTEGER,
+        // (2^32)-1, max value of 32 uint, to ensure we can parse it on C++ side
+        // as safe integers in javascript is (2^53) - 1, which there isn't any good
+        // types for in C++.
+        default: 4294967295,
     },
     miscInfo: {
         type: String,
@@ -57,6 +60,11 @@ MatchSchema.statics.isValidMatch = function(match) {
     // Check that we have a legal maxPlayerCount
     if (match.maxPlayerCount && (match.maxPlayerCount < 1 || isNaN(match.maxPlayerCount)))
         return false;
+
+    if (match.maxPlayerCount && match.playerCount
+        && (isNaN(match.playerCount) || match.playerCount < 0 || match.playerCount > match.maxPlayerCount))
+        return false;
+
 
     return true;
 };
@@ -114,6 +122,7 @@ MatchSchema.statics.createMatch = async function(matchInfo) {
                     name: matchInfo.name,
                     hostIP: matchInfo.hostIP,
                     hostPort: matchInfo.hostPort,
+                    playerCount: matchInfo.playerCount,
                     maxPlayerCount: matchInfo.maxPlayerCount,
                     miscInfo: encodeURIComponent(matchInfo.miscInfo),
         };
@@ -151,25 +160,39 @@ MatchSchema.statics.updateStatus = function(id, status) {
     });
 }
 
-MatchSchema.statics.updatePlayerCount = function(id, playerCount) {
-    return new Promise((resolve, reject) => {
-        if (playerCount < 1) {
-            resolve({code: 400});
-            return;
+MatchSchema.statics.updatePlayerCount = async function(id, playerCount) {
+    try {
+        let match = await this.findById(id);
+
+        if (!match) {
+            return {code: 404};
         }
 
-        this.findByIdAndUpdate(id, {playerCount: playerCount}).exec()
-            .then(match => {
-                const code = (match) ? 204 : 404;
-                resolve({code});
-            })
-            .catch(err => reject(errors.ERROR_500));
-    });
+        if (isNaN(playerCount) || playerCount < 0 || playerCount > match.maxPlayerCount) {
+            return {code: 400};
+        }
+
+        match.playerCount = playerCount;
+        await match.save();
+
+        return {code: 204};
+
+    } catch(err) {
+        throw errors.ERROR_500;
+    }
 }
 
 MatchSchema.statics.findByTokenInSession = function (gameToken) {
     return new Promise((resolve, reject) => {
         this.find({ gameToken, status: 1 }).exec()
+            .then(matches => resolve(matches))
+            .catch(err => reject(err));
+    });
+};
+
+MatchSchema.statics.findByTokenNotInSession = function (gameToken) {
+    return new Promise((resolve, reject) => {
+        this.find({ gameToken, status: 0 }).exec()
             .then(matches => resolve(matches))
             .catch(err => reject(err));
     });
