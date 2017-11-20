@@ -146,20 +146,17 @@ kjapp::hostMatch(const std::string& gameToken,
                  const std::string& hostIP,
                  const std::uint16_t hostPort,
                  const std::size_t maxPlayerCount,
+                 const std::size_t playerCount,
                  const std::string& miscInfo)
 {
     std::uint8_t octets[4];
-    // TODO: Check if \. is needed on linux, think I remember having problems with that.
-    // It warns on windows, which isn't optimal.
     auto validFields = std::sscanf(hostIP.c_str(),
                                    "%" SCNu8 ".%" SCNu8 ".%" SCNu8 ".%" SCNu8 "",
-                                   &octets[0],
-                                   &octets[1],
-                                   &octets[2],
-                                   &octets[3]);
+                                   &octets[0], &octets[1], &octets[2], &octets[3]);
 
     if (validFields != 4 || maxPlayerCount == 0 ||
-        miscInfo.empty() || name.empty())
+        playerCount > maxPlayerCount || miscInfo.empty() ||
+        name.empty())
     {
         throw std::invalid_argument("kjapp error: Invalid argument");
     }
@@ -171,6 +168,7 @@ kjapp::hostMatch(const std::string& gameToken,
         {"hostIP", hostIP},
         {"hostPort", hostPort},
         {"maxPlayerCount", maxPlayerCount},
+        {"playerCount", playerCount},
         {"miscInfo", miscInfo},
     };
 

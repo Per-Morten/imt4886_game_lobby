@@ -167,6 +167,9 @@ namespace kjapp
     ///     The maximum number of players that can join this match.
     ///     Must be > 0.
     ///
+    /// \param playerCount
+    ///     The current number of players in the match.
+    ///
     /// \param miscInfo
     ///     A string containing any other information about the
     ///     match.
@@ -200,6 +203,7 @@ namespace kjapp
     ///     * name.empty() == true.
     ///     * hostIP is not an IPv4 numeric IP.
     ///     * maxPlayerCount == 0.
+    ///     * playerCount > maxPlayerCount.
     /////////////////////////////////////////////////////////////////
     nlohmann::json
     hostMatch(const std::string& gameToken,
@@ -207,6 +211,7 @@ namespace kjapp
               const std::string& hostIP,
               const std::uint16_t hostPort,
               const std::size_t maxPlayerCount,
+              const std::size_t playerCount = 0,
               const std::string& miscInfo = " ");
 
     /////////////////////////////////////////////////////////////////
@@ -352,7 +357,7 @@ namespace kjapp
     ///     The gameToken must be valid, otherwise the post request
     ///     will fail.
     ///
-    /// \param matchID
+    /// \param matchId
     ///     The id of the match this report was generated from.
     ///
     /// \param data
@@ -366,7 +371,7 @@ namespace kjapp
     ///     {
     ///         "_id": "59da7d0e704a440b4fc6d83d",
     ///         "__v": 0,
-    ///         "matchID": "59c7f0c9b0a0932165c058b6",
+    ///         "matchId": "59c7f0c9b0a0932165c058b6",
     ///         "gameToken": "59ec8be7890cd692461bb7d4",
     ///         "data":
     ///         {
