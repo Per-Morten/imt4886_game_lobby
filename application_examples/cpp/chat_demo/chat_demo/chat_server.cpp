@@ -23,6 +23,8 @@ ChatServer::ChatServer(SDL_Window* window,
     if (!m_socket)
         throw std::runtime_error(SDLNet_GetError());
 
+    // We need the socket set to use the CheckSockets SocketReady functions,
+    // I.e. non blocking socket checking.
     // +1 here because the serverSocket is part of the set
     m_socketSet = SDLNet_AllocSocketSet(m_maxClients + 1);
     if (!m_socketSet)
@@ -37,19 +39,23 @@ ChatServer::ChatServer(SDL_Window* window,
     try
     {
         auto myIp = kjapp::getMyIP();
-        kjapp::hostMatch(GAME_TOKEN,
-                         name,
-                         myIp,
-                         port,
-                         maxClients);
+        m_match = kjapp::hostMatch(GAME_TOKEN,
+                                   name,
+                                   myIp,
+                                   port,
+                                   maxClients);
 
-        char buffer[128];
-        std::sprintf(buffer, "Running server on: %s", myIp.c_str());
+        kjapp::updateMatchStatus(GAME_TOKEN,
+                                 m_match["_id"].get<std::string>(),
+                                 kjapp::Status::IN_SESSION);
 
-        broadcastMessage(buffer);
+        const std::string msg = "Running on server: " + myIp;
+
+        broadcastMessage(msg.c_str());
     }
     catch (const std::exception& e)
     {
+        std::fprintf(stderr, "what: %s\n", e.what());
         SDLNet_FreeSocketSet(m_socketSet);
         SDLNet_TCP_Close(m_socket);
         throw e;
@@ -58,6 +64,15 @@ ChatServer::ChatServer(SDL_Window* window,
 
 ChatServer::~ChatServer()
 {
+    try
+    {
+        kjapp::deleteMatch(GAME_TOKEN,
+                           m_match["_id"].get<std::string>());
+    }
+    catch (const std::exception& e)
+    {
+        std::fprintf(stderr, "what: %s\n", e.what());
+    }
     SDLNet_FreeSocketSet(m_socketSet);
     SDLNet_TCP_Close(m_socket);
 }
@@ -128,6 +143,9 @@ ChatServer::checkForNewConnections()
             m_clients.back().socket = SDLNet_TCP_Accept(m_socket);
             SDLNet_TCP_AddSocket(m_socketSet, m_clients.back().socket);
             broadcastMessage("New client has connected");
+            kjapp::updatePlayerCount(GAME_TOKEN,
+                                     m_match["_id"].get<std::string>(),
+                                     m_clients.size());
         }
         else
         {
@@ -156,6 +174,17 @@ ChatServer::removeDisconnectedClients()
                                    [](const auto& item)
                                    { return item.toBeDeleted; }),
                     std::end(m_clients));
+
+    try
+    {
+        kjapp::updatePlayerCount(GAME_TOKEN,
+                                 m_match["_id"].get<std::string>(),
+                                 m_clients.size());
+    }
+    catch(const std::exception& e)
+    {
+        std::fprintf(stderr, "Could not update updatePlayerCount: %s\n", e.what());
+    }
 }
 
 void

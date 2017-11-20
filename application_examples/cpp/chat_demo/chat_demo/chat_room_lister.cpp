@@ -82,11 +82,8 @@ ChatRoomLister::run()
 
                 if (isClicked(m_notInSessionButton, mouseX, mouseY))
                 {
-                    std::printf("Not implemented\n");
-                    #if 0
                     m_currentQuery = kjapp::Query::NOT_IN_SESSION;
                     m_updateMatches = true;
-                    #endif
                 }
 
                 if (isClicked(m_nonFullButton, mouseX, mouseY))
@@ -97,12 +94,9 @@ ChatRoomLister::run()
 
                 if (isClicked(m_byNameButton, mouseX, mouseY))
                 {
-                    std::printf("Not implemented\n");
-                    #if 0
                     m_currentQuery = kjapp::Query::BY_NAME;
                     m_updateMatches = true;
                     m_input = &m_search;
-                    #endif
                 }
 
                 if (isClicked(m_usernameButton, mouseX, mouseY))
@@ -127,7 +121,7 @@ ChatRoomLister::run()
                     }
                     catch (const std::exception& e)
                     {
-                        std::printf("Error: %s\n", e.what());
+                        std::fprintf(stderr, "Error: %s\n", e.what());
                     }
                 }
 
@@ -164,7 +158,7 @@ ChatRoomLister::run()
             }
             catch (const std::exception& e)
             {
-                std::printf("Error: %s\n", e.what());
+                std::fprintf(stderr, "Error: %s\n", e.what());
             }
         }
 
@@ -184,7 +178,7 @@ ChatRoomLister::run()
         displayText("In Session", m_inSessionButton.x, m_inSessionButton.y);
         displayText("Not In Session", m_notInSessionButton.x, m_notInSessionButton.y);
         displayText("Not Full", m_nonFullButton.x, m_nonFullButton.y);
-        displayText("By Name", m_byNameButton.x, m_byNameButton.y);
+        displayText("By Name: " + m_search, m_byNameButton.x, m_byNameButton.y);
         displayText("Join", m_joinButton.x, m_joinButton.y);
 
         drawMatches();

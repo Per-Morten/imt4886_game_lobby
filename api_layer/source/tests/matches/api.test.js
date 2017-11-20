@@ -301,6 +301,27 @@ test.serial('Update playercount', async(t) => {
         .expect(404)
         .then(response => t.pass())
         .catch(err => t.fail(err));
+
+    await request(server)
+        .put('/match/player_count/')
+        .send({id: t.context.matches[5]._id, playerCount: t.context.matches[5].maxPlayerCount + 1})
+        .expect(400)
+        .then(response => t.pass())
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .put('/match/player_count/')
+        .send({id: t.context.matches[5]._id, playerCount: t.context.matches[5].maxPlayerCount})
+        .expect(204)
+        .then(response => t.pass())
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .put('/match/player_count/')
+        .send({id: t.context.matches[5]._id, playerCount: 0})
+        .expect(204)
+        .then(response => t.pass())
+        .catch(err => t.fail(err));
 })
 
 test.serial('Cannot create match without valid token', async(t) => {
@@ -395,24 +416,43 @@ test.serial('Cannot create invalid match', async(t) => {
         .expect(200)
         .catch(err => t.fail(err));
 
-    // Ignore playerCount
-    const ignorePlayerCountMatch = {
+    // playerCount higher than maxPlayerCount
+    const playerCountHigherThanMax = {
         gameToken: t.context.games[0]._id,
-        name: 'ignorePlayerCountMatch',
+        name: 'playerCountHigherThanMax',
         status: 0,
         hostIP: '128.0.0.1',
         hostPort: 3000,
         playerCount: 300,
+        maxPlayerCount: 200,
     };
 
     await request(server)
         .post('/match/')
-        .send(ignorePlayerCountMatch)
-        .expect(200)
+        .send(playerCountHigherThanMax)
+        .expect(400)
         .then(res => {
-            if (res.body && res.body.playerCount !== 1) {
-                t.fail(`playerCount ${res.body.playerCount} was not 1`);
-            }
+            t.pass();
+        })
+        .catch(err => t.fail(err));
+
+    // Negative playerCount
+    const negativePlayerCount = {
+        gameToken: t.context.games[0]._id,
+        name: 'negativePlayerCount',
+        status: 0,
+        hostIP: '128.0.0.1',
+        hostPort: 3000,
+        playerCount: -300,
+        maxPlayerCount: 200,
+    };
+
+    await request(server)
+        .post('/match/')
+        .send(negativePlayerCount)
+        .expect(400)
+        .then(res => {
+            t.pass();
         })
         .catch(err => t.fail(err));
 
@@ -510,6 +550,29 @@ test.serial('Returning matches with given gameToken: test that are in session', 
     t.pass();
 });
 
+test.serial('Returning matches with given gameToken: test that are not in session', async(t) => {
+    t.plan(1);
+
+    await request(server)
+        .put('/match/status/')
+        .send({id: t.context.matches[0]._id, status: 1})
+        .expect(204)
+        .catch(err => t.fail(err));
+
+    await request(server)
+        .get('/matches/not_in_session/')
+        .send({gameToken: t.context.matches[0].gameToken})
+        .expect(200)
+        .then(response => {
+            if(response.body.length != 1) {
+                t.fail(`Returned ${response.body.length} matches when 1 match should have been returned`);
+            }
+        })
+        .catch(err => t.fail(err));
+
+    t.pass();
+});
+
 test.serial('Get all matches that are not full', async(t) => {
     t.plan(2);
 
@@ -571,83 +634,6 @@ test.serial('Returning matches with given gameToken and partial matched name', a
         .get('/matches/with_name/')
         .send({ gameToken: t.context.matches[5].gameToken, name: 'øaishphfhdfisduhf'})
         .expect(404)
-        .then(response => t.pass())
-        .catch(err => t.fail(err));
-
-    t.pass();
-});
-
-///////////////////////////////////////////////////////////
-/// Post Match Reports Tests
-///////////////////////////////////////////////////////////
-test.serial('Match report tests for POST, GET, DELETE and average values', async(t) => {
-    t.plan(5);
-    let deleteTestID = 0;
-
-    const testReport1 = {
-        matchID: '09mwuxcenwqiucnapsdfuhc',
-        gameToken: t.context.games[0]._id,
-        data: {
-            duration: 1500,
-            score: 10000000,
-        },
-    };
-
-    const testReport2 = {
-        matchID: 'p9dyfp9aweuns0weucnr0weu',
-        gameToken: t.context.games[0]._id,
-        data: {
-            duration: 200,
-            score: 500,
-        },
-    };
-
-    await request(server)
-        .post('/match_report/')
-        .send(testReport1)
-        .expect(200)
-        .then(response => {
-            deleteTestID = response.body._id;
-            t.pass();
-        })
-        .catch(err => t.fail(err));
-
-    await request(server)
-        .post('/match_report/')
-        .send(testReport2)
-        .expect(200)
-        .then(response => t.pass())
-        .catch(err => t.fail(err));
-
-    await request(server)
-        .get('/match_reports/')
-        .send({ gameToken: testReport1.gameToken})
-        .expect(200)
-        .then(response => {
-            if(response.body.length != 2) {
-                t.fail(`Returned ${response.body.length} reports when 2 should have been returned`);
-            }
-        })
-        .catch(err => t.fail(err));
-
-    const expectedAverage = (testReport1.data.duration + testReport2.data.duration) / 2;
-    await request(server)
-        .get('/match_reports/average/')
-        .send({ gameToken: testReport1.gameToken, fieldName: 'duration' })
-        .expect(200)
-        .then(response => {
-            if(response.body == expectedAverage) {
-                t.pass();
-            } else {
-                t.fail(`Received ${response.body} when ${expectedAverage} was expected`);
-            }
-        })
-        .catch(err => t.fail(err));
-
-    await request(server)
-        .delete('/match_report/')
-        .send({ id: deleteTestID })
-        .expect(204)
         .then(response => t.pass())
         .catch(err => t.fail(err));
 

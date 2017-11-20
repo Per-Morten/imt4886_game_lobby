@@ -20,6 +20,7 @@ module.exports = (api) => {
      * @apiSuccess (200) hostIP The ip address of the host of the match.
      * @apiSuccess (200) hostPort The port that the match is run on.
      * @apiSuccess (200) playerCount The number of players in the match.
+     * @apiSuccess (200) maxPlayerCount The maximum number of players in the match.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -31,7 +32,8 @@ module.exports = (api) => {
      *       "status": 1,
      *       "hostIP": "127.0.0.0",
      *       "hostPort": 3000,
-     *       "playerCount": 1
+     *       "playerCount": 1,
+     *       "maxPlayerCount": 2
      *     }
      *
      * @apiError (404) MatchNotFound The supplied ID was not found.
@@ -93,6 +95,8 @@ module.exports = (api) => {
      * @apiParam (MatchInfo){String} hostIP The ip address of the machine hosting the match.
      * @apiParam (MatchInfo){Number} hostPort The port which the host is listening on for the match.
      * @apiParam (MatchInfo){Number} maxPlayerCount (optional) The maximum number of players in the match.
+     * @apiParam (MatchInfo){Number} playerCount (optional) The current number of players, defaults to 0.
+     *                                                      Cannot be less than 0 or more than maxPlayerCount.
      *
      * @apiSuccess (200) _id The unique identifier of the match.
      * @apiSuccess (200) __v The version of the match in the database.
@@ -102,6 +106,7 @@ module.exports = (api) => {
      * @apiSuccess (200) hostIP The ip address of the host of the match.
      * @apiSuccess (200) hostPort The port that the match is run on.
      * @apiSuccess (200) playerCount The number of players in the match.
+     * @apiSuccess (200) maxPlayerCount The maximum number of players in the match.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -176,7 +181,9 @@ module.exports = (api) => {
      *  400 if the request was invalid.
      *
      * @apiParam {Id} id The unique ID of the match.
-     * @apiParam {Number={1..inf}} player_count The new number of players.
+     * @apiParam {Number={0..match.maxPlayerCount}} playerCount The new number of players.
+     *                                              Cannot be less than 0, or greater than the maxPlayerCount
+     *                                              the match is created with.
      *
      * @apiSuccess (204) Success
      *
