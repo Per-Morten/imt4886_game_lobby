@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['query',['Query',['../namespacekjapp.html#a98b9b721617fe3ae75dd6f92507d2121',1,'kjapp']]]
+  ['status',['Status',['../namespacekjapp.html#a424e0b2658aa21768d94092bc8155d5e',1,'kjapp']]]
 ];

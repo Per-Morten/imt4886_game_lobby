@@ -1,30 +1,30 @@
 var indexSectionsWithContent =
 {
-  0: "abcdghiknpqsu",
-  1: "cs",
-  2: "k",
-  3: "dghpu",
-  4: "qs",
-  5: "abin"
+  0: "abdghiknpqsu",
+  1: "k",
+  2: "dghpu",
+  3: "qs",
+  4: "abin",
+  5: "k"
 };
 
 var indexSectionNames =
 {
   0: "all",
-  1: "classes",
-  2: "namespaces",
-  3: "functions",
-  4: "enums",
-  5: "enumvalues"
+  1: "namespaces",
+  2: "functions",
+  3: "enums",
+  4: "enumvalues",
+  5: "pages"
 };
 
 var indexSectionLabels =
 {
   0: "All",
-  1: "Classes",
-  2: "Namespaces",
-  3: "Functions",
-  4: "Enumerations",
-  5: "Enumerator"
+  1: "Namespaces",
+  2: "Functions",
+  3: "Enumerations",
+  4: "Enumerator",
+  5: "Pages"
 };
 

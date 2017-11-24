@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['scene',['Scene',['../classScene.html',1,'']]],
-  ['status',['Status',['../namespacekjapp.html#a424e0b2658aa21768d94092bc8155d5e',1,'kjapp']]]
+  ['updatematchstatus',['updateMatchStatus',['../namespacekjapp.html#aab9e24c5c8377e6ea59e261573a8886c',1,'kjapp']]],
+  ['updateplayercount',['updatePlayerCount',['../namespacekjapp.html#ae7b42c3ae999b0f34c20202585ce7791',1,'kjapp']]]
 ];

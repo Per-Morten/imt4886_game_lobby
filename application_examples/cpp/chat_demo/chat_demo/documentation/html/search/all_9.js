@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['postmatchreport',['postMatchReport',['../namespacekjapp.html#a1967229dd0630020ab4e19cab9b09d74',1,'kjapp']]]
+  ['query',['Query',['../namespacekjapp.html#a98b9b721617fe3ae75dd6f92507d2121',1,'kjapp']]]
 ];
