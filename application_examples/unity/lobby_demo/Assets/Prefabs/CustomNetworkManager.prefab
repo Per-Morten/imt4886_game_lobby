@@ -124,6 +124,6 @@ MonoBehaviour:
   isNetworkActive: 0
   matchMaker: {fileID: 0}
   gameToken: 59db2ce5899d1b843c18f01a
-  apiUrl: http://192.168.56.101:8333
+  apiUrl: up.imt.hig.no:8333
   maxPlayersPerMatch: 8
   matchReportsEnabled: 1
