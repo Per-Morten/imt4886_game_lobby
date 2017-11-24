@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Kjapp gamelobby: kjapp Namespace Reference</title>
+<title>Kjapp gamelobby C++: kjapp Namespace Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -23,7 +23,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Kjapp gamelobby
+   <div id="projectname">Kjapp gamelobby C++
    </div>
   </td>
  </tr>
@@ -39,7 +39,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li class="current"><a href="namespaces.html"><span>Namespaces</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -119,9 +118,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a22cf098842afd3b77a7c8635c26a7f95"><td class="memItemLeft" align="right" valign="top">nlohmann::json&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacekjapp.html#a22cf098842afd3b77a7c8635c26a7f95">hostMatch</a> (const std::string &amp;gameToken, const std::string &amp;name, const std::string &amp;hostIP, const std::uint16_t hostPort, const std::size_t maxPlayerCount, const std::size_t playerCount=0, const std::string &amp;miscInfo=&quot; &quot;)</td></tr>
 <tr class="memdesc:a22cf098842afd3b77a7c8635c26a7f95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reports to the kjapp game lobby that a match has been created.  <a href="#a22cf098842afd3b77a7c8635c26a7f95">More...</a><br /></td></tr>
 <tr class="separator:a22cf098842afd3b77a7c8635c26a7f95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8eb2ba8b8328013a3e48b4427f602c8e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; nlohmann::json &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacekjapp.html#a8eb2ba8b8328013a3e48b4427f602c8e">getMatches</a> (const std::string &amp;gameToken, <a class="el" href="namespacekjapp.html#a98b9b721617fe3ae75dd6f92507d2121">Query</a> query=<a class="el" href="namespacekjapp.html#a98b9b721617fe3ae75dd6f92507d2121a446d73d3d33c027a52dea354cbb89f6a">Query::ALL_MATCHES</a>, const std::string &amp;name=&quot;&quot;)</td></tr>
-<tr class="memdesc:a8eb2ba8b8328013a3e48b4427f602c8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all the matches belonging to the specified game token that also fits within the specified query.  <a href="#a8eb2ba8b8328013a3e48b4427f602c8e">More...</a><br /></td></tr>
-<tr class="separator:a8eb2ba8b8328013a3e48b4427f602c8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b1eef7b6490d2f3a6918695ad123cc3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; nlohmann::json &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacekjapp.html#a3b1eef7b6490d2f3a6918695ad123cc3">getMatches</a> (const std::string &amp;gameToken, <a class="el" href="namespacekjapp.html#a98b9b721617fe3ae75dd6f92507d2121">Query</a> query=<a class="el" href="namespacekjapp.html#a98b9b721617fe3ae75dd6f92507d2121a446d73d3d33c027a52dea354cbb89f6a">Query::ALL_MATCHES</a>, const std::string &amp;name=&quot;&quot;)</td></tr>
+<tr class="memdesc:a3b1eef7b6490d2f3a6918695ad123cc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all the matches belonging to the specified game token that also fits within the specified query.  <a href="#a3b1eef7b6490d2f3a6918695ad123cc3">More...</a><br /></td></tr>
+<tr class="separator:a3b1eef7b6490d2f3a6918695ad123cc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb16af4f3688ee259d2dad309ce65e9c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacekjapp.html#afb16af4f3688ee259d2dad309ce65e9c">deleteMatch</a> (const std::string &amp;gameToken, const std::string &amp;matchId)</td></tr>
 <tr class="memdesc:afb16af4f3688ee259d2dad309ce65e9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the match with the id matchId, belonging to the game specified by gameToken from the kjapp match database.  <a href="#afb16af4f3688ee259d2dad309ce65e9c">More...</a><br /></td></tr>
 <tr class="separator:afb16af4f3688ee259d2dad309ce65e9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -237,12 +236,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a8eb2ba8b8328013a3e48b4427f602c8e"></a>
+<a class="anchor" id="a3b1eef7b6490d2f3a6918695ad123cc3"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; nlohmann::json &gt; kjapp::getMatches </td>
+          <td class="memname">std::vector&lt;nlohmann::json&gt; kjapp::getMatches </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>gameToken</em>, </td>
@@ -250,7 +249,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacekjapp.html#a98b9b721617fe3ae75dd6f92507d2121">kjapp::Query</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacekjapp.html#a98b9b721617fe3ae75dd6f92507d2121">Query</a>&#160;</td>
           <td class="paramname"><em>query</em> = <code><a class="el" href="namespacekjapp.html#a98b9b721617fe3ae75dd6f92507d2121a446d73d3d33c027a52dea354cbb89f6a">Query::ALL_MATCHES</a></code>, </td>
         </tr>
         <tr>

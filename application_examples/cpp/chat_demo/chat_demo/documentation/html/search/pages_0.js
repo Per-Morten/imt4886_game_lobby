@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['deprecated_20list',['Deprecated List',['../deprecated.html',1,'']]]
+  ['kjapp_20wrapper_20installation_20_26_20chat_20demo',['Kjapp Wrapper Installation &amp; Chat Demo',['../index.html',1,'']]]
 ];

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Kjapp gamelobby: Main Page</title>
+<title>Kjapp gamelobby C++: Kjapp Wrapper Installation &amp; Chat Demo</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -23,7 +23,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Kjapp gamelobby
+   <div id="projectname">Kjapp gamelobby C++
    </div>
   </td>
  </tr>
@@ -39,7 +39,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -76,10 +75,39 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div class="header">
   <div class="headertitle">
-<div class="title">Kjapp gamelobby Documentation</div>  </div>
+<div class="title">Kjapp Wrapper Installation &amp; Chat Demo </div>  </div>
 </div><!--header-->
 <div class="contents">
-</div><!-- contents -->
+<div class="textblock"><p>This chat demo shows an example of using kjapp in C++. It also includes <a class="el" href="kjapp_8h_source.html">kjapp.h</a> and kjapp.cpp which is a wrapper lib for interaction with the kjapp REST API using curl. Below follows some instructions on using the wrapper library or running the demo. They are relatively short on the linux side, as that is easier to set up. Most time has been used to write the visual studio setup, as that is a bit more involved.</p>
+<h2>"Installing" kjapp wrapper library</h2>
+<h3>Linux</h3>
+<p>Using the wrapper library on linux is pretty straight forward, just copy the two kjapp files, add them to your cmake/make files and add curl as a dependency. If you don't have curl installed it can probably be added with a simple apt-get like command.</p>
+<h3>Windows (Visual Studio)</h3>
+<p>To use the kjapp wrapper library on windows copy the two kjapp files into your visual studio project. Additionally you need to setup curl, which is a bit more involved on windows. You can build curl from scratch which there are tutorials for on the net, or you can download what you need from <a href="https://curl.haxx.se/download.html">https://curl.haxx.se/download.html</a>. This guide assumes you don't build curl yourself, and that you download the version from Viktor Szakáts.</p>
+<p>After downloading you need to add the library paths to your visual studio project. I suggest setting up an environment variable that points to the curl folder (called "CURL_HOME" or something), however this is not strictly necessary.</p>
+<p>Add: "&lt;your_curl_path&gt;\include" (Without quotation marks) to the additional include directories field. This field is found by going: project -&gt; properties -&gt; C/C++ -&gt; General If you are using an environment variable it should look something like this: </p><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;$(CURL_HOME)\include</div></div><!-- fragment --><p>Add: "&lt;your_curl_path&gt;\lib" (Without quotation marks) to the additional library directories field. This field is found by going: project -&gt; properties -&gt; Linker -&gt; General If you are using an environment variable it should look something like this: </p><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;$(CURL_HOME)\lib</div></div><!-- fragment --><p>Add: "libcurl.dll.a" (Without quotation marks) to the additional dependencies field. This field is found by going: project -&gt; properties -&gt; Linker -&gt; Input This step probably depends on how you got Curl, if you built it yourself or downloaded it from a different source. You can read about .a files here: <a href="https://stackoverflow.com/questions/2337949/whats-the-difference-between-lib-and-a-files">Stack Overflow</a>.</p>
+<p>You should now be able to build the files, but will probably get an error about missing libcurl.dll. In that case copy the libcurl.dll from "&lt;your_curl_path&gt;\bin" into your visual studio projects outermost Debug/Release folder.</p>
+<p>In the case where you get more missing dll's like: libcypto-1_1.dll and libssl-1_1.dll Download these from the net and add them to your visual studio projects outermost Debug/Release folder.</p>
+<p>This should be everything you need to use the kjapp wrapper lib in your visual studio project.</p>
+<h2>Running the Chat Demo</h2>
+<h3>Linux</h3>
+<p>To run the chat demo on linux, just change into the directory of the Makefile and write make run. In case you don't have g++-7 you can probably change that to regular g++, as long as it has c++14 support. Additionally you need to have downloaded curl, which is probably just a simple apt-get like command. You also need SDL2, SDL2_net and SDL2_ttf, but again, these should be relatively simple to install on linux.</p>
+<h3>Windows (Visual Studio)</h3>
+<p>The project in the repo assumes that you have setup curl as described in the ""installing" kjapp wrapper library", and that you have set up an environment variable called CURL_HOME. Additionally you need to have downloaded the following libraries and set up correct environment variables for them:</p>
+<table class="doxtable">
+<tr>
+<th>Library </th><th>Environment Variable  </th></tr>
+<tr>
+<td>SDL2 </td><td>SDL_HOME </td></tr>
+<tr>
+<td>SDL2_net </td><td>SDL_NET_HOME </td></tr>
+<tr>
+<td>SDL2_ttf </td><td>SDL_TTF_HOME </td></tr>
+</table>
+<p>Additionally you need to add all the DLL's from those libraries to the outermost Debug/Release folder. That should be all.</p>
+<h2>Chat Demo Code</h2>
+<p>The code in the chat demo should be pretty self explanatory, especially after seeing the demo in action. The exception is probably all the random magic numbers used when creating rectangles etc. This is just to get the demo to look semi decent on screen. </p>
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
