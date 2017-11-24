@@ -1,10 +1,10 @@
 #include "kjapp.h"
 
+#include <cinttypes>
 #include <cstdio>
 #include <cstring>
 #include <memory>
 #include <stdexcept>
-#include <cinttypes>
 
 #include <curl/curl.h>
 
@@ -58,13 +58,13 @@ handleCurlError(const CurlHandle& handle, CURLcode code)
     throw std::runtime_error(error.c_str());
 }
 
-using curlCallback = std::size_t(*)(void*, std::size_t, std::size_t, void*);
+using CurlCallback = std::size_t(*)(void*, std::size_t, std::size_t, void*);
 
 void
 executeCurlRequest(const std::string& requestType,
                    const std::string& url,
                    const std::string& data,
-                   curlCallback callback = nullptr,
+                   CurlCallback callback = nullptr,
                    void* callbackData = nullptr)
 {
     auto handle = createCurlHandle();
