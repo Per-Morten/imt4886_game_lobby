@@ -1,4 +1,4 @@
-# Chat Demo
+# Kjapp Wrapper Installation & Chat Demo 
 This chat demo shows an example of using kjapp in C++.  
 It also includes kjapp.h and kjapp.cpp which is a wrapper lib for interaction with
 the kjapp REST API using curl.  
@@ -25,11 +25,17 @@ however this is not strictly necessary.
 
 Add: "<your_curl_path>\include" (Without quotation marks) to the additional include directories field.  
 This field is found by going: project -> properties -> C/C++ -> General  
-If you are using an environment variable it should look something like this: $(CURL_HOME)\include  
+If you are using an environment variable it should look something like this: 
+```
+$(CURL_HOME)\include
+```
 
 Add: "<your_curl_path>\lib" (Without quotation marks) to the additional library directories field.  
 This field is found by going: project -> properties -> Linker -> General  
-If you are using an environment variable it should look something like this: $(CURL_HOME)\lib  
+If you are using an environment variable it should look something like this: 
+```
+$(CURL_HOME)\lib
+```
 
 Add: "libcurl.dll.a" (Without quotation marks) to the additional dependencies field.  
 This field is found by going: project -> properties -> Linker -> Input  
@@ -37,7 +43,7 @@ This step probably depends on how you got Curl, if you built it yourself or down
 You can read about .a files here: [Stack Overflow](https://stackoverflow.com/questions/2337949/whats-the-difference-between-lib-and-a-files).  
 
 You should now be able to build the files, but will probably get an error about missing libcurl.dll.  
-In that case copy the libcurl.dll from <your_curl_path>\bin into your visual studio projects outermost Debug/Release folder.  
+In that case copy the libcurl.dll from "<your_curl_path>\bin" into your visual studio projects outermost Debug/Release folder.  
 
 In the case where you get more missing dll's like: libcypto-1_1.dll and libssl-1_1.dll  
 Download these from the net and add them to your visual studio projects outermost Debug/Release folder.  
